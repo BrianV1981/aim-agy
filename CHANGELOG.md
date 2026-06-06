@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.71.0] - 2026-06-06
+- Feature: Implement Tmux Knock Protocol Guardrails for Agent Chat (Closes #40)
+
+
 ## [v1.70.0] - 2026-06-06
 - Feature: Add install-agent.sh for True Sovereign Co-Agents (Closes #34)
 
