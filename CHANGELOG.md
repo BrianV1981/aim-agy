@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.12] - 2026-06-06
+- Fix: Harden onboarding process, add mandate, fix memory-wiki paths and db (Closes #12)
+
+
 ## [v1.69.11] - 2026-06-06
 - Fix: final f-string syntax error in aim_init.py (Closes #11)
 

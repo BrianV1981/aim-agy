@@ -86,7 +86,7 @@ def cmd_search(args):
 
 def cmd_wiki(args):
     """Manages the Persistent LLM Wiki."""
-    from .aim_core.wiki_tools import search_wiki, process_wiki
+    from wiki_tools import search_wiki, process_wiki
     if args.wiki_command == "search":
         query = " ".join(args.query)
         search_wiki(query)

@@ -220,6 +220,11 @@ def init_workspace(args=None):
     files = {
         ".agyignore": """workspace/
 archive/
+memory_lance/
+memory-wiki/
+foundry/
+planning-artifacts/
+engrams/
 """,
         ".agy/settings.json": """{
   "context": {
@@ -237,7 +242,24 @@ archive/
     "ignoreGlobal": true
   }
 }
-"""
+""",
+        ".aim_core/CONFIG.json": json.dumps({
+            "agent_identity": {
+                "name": "A.I.M.",
+                "role": "High-context technical lead and sovereign orchestrator.",
+                "version": "1.0.0"
+            },
+            "paths": {
+                "continuity_dir": os.path.join(BASE_DIR, "continuity"),
+                "archive_dir": os.path.join(BASE_DIR, "archive"),
+                "memory_dir": os.path.join(BASE_DIR, "memory_lance"),
+                "wiki_dir": os.path.join(BASE_DIR, "memory-wiki")
+            },
+            "settings": {
+                "obsidian_vault_path": os.path.join(BASE_DIR, "memory-wiki"),
+                "allowed_root": BASE_DIR
+            }
+        }, indent=2) + "\n"
     }
     
     for fp, content in files.items():
