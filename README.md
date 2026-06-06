@@ -14,14 +14,14 @@ A.I.M. provides two completely self-contained, isolated installation paths depen
 Use this if you want to wrap A.I.M. around your own unique coding project. It installs the engine, severs the Git connection, and deletes the developer artifacts (like tests and benchmarks) to give you a clean, lightweight shell.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim/main/install-clean.sh | bash
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-clean.sh | bash
 ```
 
 ### Option B: The Core Contributor
 Use this if you intend to hack on the core A.I.M. framework itself. It preserves the GitHub connection and all internal testing folders.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim/main/install-core.sh | bash
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-core.sh | bash
 ```
 
 ### 2. The Agentic Interview
@@ -82,7 +82,7 @@ A.I.M. separates fast onboarding documentation from deep philosophical essays an
 > ⚠️ **DISCLAIMER: WORK IN PROGRESS**
 > The repositories below are experimental adaptations. **This repository (`aim`) is the primary "Soul" of the project.** The core architectural decisions, the memory logic, and the central integrations happen here first before being ported to the external adaptations.
 
-- **[aim](https://github.com/BrianV1981/aim):** The Core Engine (Built for Gemini CLI).
+- **[aim-agy](https://github.com/BrianV1981/aim-agy):** The Core Engine (Built for Antigravity CLI).
 - **[aim-opencode](https://github.com/BrianV1981/aim-opencode):** Experimental adaptation for OpenCode.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

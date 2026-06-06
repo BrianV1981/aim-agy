@@ -12,7 +12,7 @@ Ensure the host system has Python 3 and `git` installed.
 ### 1. Clone the Repository
 Clone the A.I.M. repository directly into the target project folder.
 ```bash
-git clone https://github.com/BrianV1981/aim.git /path/to/target_directory
+git clone https://github.com/BrianV1981/aim-agy.git /path/to/target_directory
 cd /path/to/target_directory
 ```
 

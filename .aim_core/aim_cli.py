@@ -714,7 +714,7 @@ def cmd_update(args):
         shutil.rmtree(temp_dir)
         
     try:
-        subprocess.run(["git", "clone", "--depth", "1", "https://github.com/BrianV1981/aim.git", temp_dir], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["git", "clone", "--depth", "1", "https://github.com/BrianV1981/aim-agy.git", temp_dir], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print("    [SUCCESS] Remote payload secured.")
     except Exception as e:
         print(f"[ERROR] Failed to connect to Swarm network: {e}")
