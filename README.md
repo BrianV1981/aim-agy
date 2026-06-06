@@ -24,6 +24,14 @@ Use this if you intend to hack on the core A.I.M. framework itself. It preserves
 curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-core.sh | bash
 ```
 
+### Option C: The Sovereign Co-Agent
+Use this to spin up a completely independent, headless A.I.M. Co-Agent. It creates a dedicated OS, downloads a specific persona blueprint from the `aim-coagents` DNA Bank, and links it to a Chalkboard for autonomous background work without interfering with your main project's database.
+
+```bash
+# Example: Spawns a sovereign Python Developer node
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-agent.sh | bash -s python-developer
+```
+
 ### 2. The Agentic Interview
 After installation, reload your shell (`source ~/.bashrc`). Your A.I.M. agent will be fully functional with default settings. 
 
@@ -79,14 +87,12 @@ A.I.M. separates fast onboarding documentation from deep philosophical essays an
 
 ### 🧬 The A.I.M. Ecosystem
 
-> ⚠️ **DISCLAIMER: WORK IN PROGRESS**
-> The repositories below are experimental adaptations. **This repository (`aim`) is the primary "Soul" of the project.** The core architectural decisions, the memory logic, and the central integrations happen here first before being ported to the external adaptations.
+> ⚠️ **ARCHITECTURAL SHIFT NOTICE**
+> Google is sunsetting the original `gemini-cli` for standard subscribers, restricting it to Enterprise environments. As a result, **this repository (`aim-agy`) is now the primary "Soul" of the project.** The core architectural decisions, the memory logic, and the central integrations will happen here (and in `aim-opencode`) first. 
 
-- **[aim-agy](https://github.com/BrianV1981/aim-agy):** The Core Engine (Built for Antigravity CLI).
-- **[aim-opencode](https://github.com/BrianV1981/aim-opencode):** Experimental adaptation for OpenCode.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-☕ **Support the project:** [Buy Me a Coffee](https://buymeacoffee.com/brianv1981)1)/MCP Desktop adaptation.
+- **[aim-agy](https://github.com/BrianV1981/aim-agy):** The Core Engine (Built for Antigravity CLI). *This is the flagship repository.*
+- **[aim-opencode](https://github.com/BrianV1981/aim-opencode):** Core adaptation for the OpenCode ecosystem.
+- **[aim](https://github.com/BrianV1981/aim):** The original framework built for Google's Gemini CLI. It will continue to receive updates for Enterprise use cases, but is no longer the primary development focus.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-☕ **Support the project:** [Buy Me a Coffee](https://buymeacoffee.com/brianv1981)1)
+☕ **Support the project:** [Buy Me a Coffee](https://buymeacoffee.com/brianv1981)
