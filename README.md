@@ -24,6 +24,14 @@ Use this if you intend to hack on the core A.I.M. framework itself. It preserves
 curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-core.sh | bash
 ```
 
+### Option C: The Sovereign Co-Agent
+Use this to spin up a completely independent, headless A.I.M. Co-Agent. It creates a dedicated OS, downloads a specific persona blueprint from the `aim-coagents` DNA Bank, and links it to a Chalkboard for autonomous background work without interfering with your main project's database.
+
+```bash
+# Example: Spawns a sovereign Python Developer node
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-agent.sh | bash -s python-developer
+```
+
 ### 2. The Agentic Interview
 After installation, reload your shell (`source ~/.bashrc`). Your A.I.M. agent will be fully functional with default settings. 
 
