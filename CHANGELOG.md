@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.9] - 2026-06-06
+- Fix: aim_init.py syntax error and core dir path (Closes #9)
+
+
 ## [v1.69.8] - 2026-06-06
 - Fix: Correct malformed .aim_.aim_core paths to .aim_core (Closes #8)
 

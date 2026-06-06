@@ -205,12 +205,12 @@ def init_workspace(args=None):
     if args is None: args = []
     is_interactive = "--headless" not in args
 
-    print("
---- A.I.M. SOVEREIGN INSTALLER ---")
+    print("""
+--- A.I.M. SOVEREIGN INSTALLER ---""")
     
     # 1. Mechanical Provisioning (Folders & Settings)
     dirs = ["archive/raw", "archive/history", "archive/sync", "archive/cartridges",
-            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", "core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".agy"]
+            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".agy"]
     for d in dirs: os.makedirs(os.path.join(BASE_DIR, d), exist_ok=True)
 
     is_light_mode = "--light" in args
