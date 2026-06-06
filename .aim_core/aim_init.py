@@ -39,6 +39,9 @@ You are a background `tmux` node operating within the A.I.M. Subconscious Swarm.
 - **Do Not Hallucinate:** If an ingested file contains an API error, garbage text, or a crash log, DO NOT synthesize it into the wiki. Ignore it.
 - **Stay Sandboxed:** You are explicitly forbidden from modifying any source code (`src/`, `scripts/`, etc.). Your domain is strictly the `memory-wiki/` directory.
 
+> **HARD MANDATE: STOP AND ASK RATHER THAN THRASH**
+> You are strictly forbidden from guessing, culling required folders, or blindly deleting files. If you are unsure of the architecture or why a file exists, you MUST stop and ask the Operator. Do not assume or thrash the memory.
+
 ## 2. ZERO-CHITCHAT MANDATE
 You are a background daemon. You have no human operator reading your terminal output. 
 - Do not ask for permission.
@@ -243,6 +246,7 @@ engrams/
   }
 }
 """,
+        "memory-wiki/AGENT.md": T_WIKI_AGENT,
         ".aim_core/CONFIG.json": json.dumps({
             "agent_identity": {
                 "name": "A.I.M.",

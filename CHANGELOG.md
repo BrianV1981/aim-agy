@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.13] - 2026-06-06
+- Fix: Ensure AGENT.md is generated and add Stop and Ask mandate to agent templates (Closes #14)
+
+
 ## [v1.69.12] - 2026-06-06
 - Fix: Harden onboarding process, add mandate, fix memory-wiki paths and db (Closes #12)
 
