@@ -694,11 +694,12 @@ def cmd_update(args):
 
 def cmd_import(args):
     """Manually ingests files into the LLM Wiki (JSONL -> Scribe, MD -> Weaver)."""
-    if len(args) < 2:
+    filepath = getattr(args, 'file', None)
+    if not filepath:
         print("Usage: aim import <path/to/file.jsonl | file.md>")
         sys.exit(1)
         
-    filepath = args[1]
+    filepath = args.file
     if not os.path.exists(filepath):
         print(f"[ERROR] File not found: {filepath}")
         sys.exit(1)
@@ -799,6 +800,9 @@ def main():
     delegate_parser = subparsers.add_parser("delegate", help="Spawn parallel sub-agents to analyze multiple files (The RLM Pattern)")
     delegate_parser.add_argument("instruction", help="The prompt to give each sub-agent")
     delegate_parser.add_argument("--files", nargs="+", required=True, help="List of files to analyze")
+
+    import_parser = subparsers.add_parser("import", help="Manually ingest files into the LLM Wiki")
+    import_parser.add_argument("file", help="Path to the .jsonl or .md file")
     
     subparsers.add_parser("clean")
     subparsers.add_parser("exchange", help="Export/Import .engram cartridges")
@@ -925,6 +929,7 @@ def main():
     elif args.command == "bake": cmd_bake(args)
     elif args.command == "exchange": cmd_exchange(args)
     elif args.command == "export": cmd_export(args)
+    elif args.command == "import": cmd_import(args)
     elif args.command == "jack-in": cmd_jack_in(args)
     elif args.command == "unplug": cmd_unplug(args)
 

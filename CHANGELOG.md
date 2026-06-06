@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.71.1] - 2026-06-06
+- Fix: Route 'import' command in argparse for aim_cli.py (Closes #42)
+
 ## [v1.71.0] - 2026-06-06
 - Feature: Implement Tmux Knock Protocol Guardrails for Agent Chat (Closes #40)
 
