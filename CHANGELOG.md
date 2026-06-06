@@ -1,7 +1,47 @@
 # Changelog
 
+## [v1.69.16] - 2026-06-06
+- Fix: Remove dead scrape_github_issues.py execution to unblock aim pulse (Closes #22)
+- Fix: Deprecate custom daemon.py in favor of native Antigravity schedule tooling (Closes #23)
+- Fix: Disable aggressive background ghost session auditing to prevent double-ingestion (Closes #20)
+- Fix: Deprecate obsolete crash recovery protocol and remove aim_crash.py (Closes #18)
+
+
+## [v1.69.15] - 2026-06-06
+- Fix: Overhaul paths in aim_core scripts to support antigravity-cli brain directory (Closes #16)
+
+
+## [v1.69.14] - 2026-06-06
+- Fix: Spawning architect uses tmux buffers instead of removed flag (Closes #15)
+
+
+## [v1.69.13] - 2026-06-06
+- Fix: Ensure AGENT.md is generated and add Stop and Ask mandate to agent templates (Closes #14)
+
+
+## [v1.69.12] - 2026-06-06
+- Fix: Harden onboarding process, add mandate, fix memory-wiki paths and db (Closes #12)
+
+
+## [v1.69.11] - 2026-06-06
+- Fix: final f-string syntax error in aim_init.py (Closes #11)
+
+
+## [v1.69.10] - 2026-06-06
+- Fix: multiple aim_init.py syntax errors (Closes #10)
+
+
+## [v1.69.9] - 2026-06-06
+- Fix: aim_init.py syntax error and core dir path (Closes #9)
+
+
+## [v1.69.8] - 2026-06-06
+- Fix: Correct malformed .aim_.aim_core paths to .aim_core (Closes #8)
+
+
 ## [v1.69.7] - 2026-06-06
-- Fix: Isolate daemon LLM calls to prevent session leakage (Closes #6)
+- Fix: Replace hardcoded core/CONFIG.json with .aim_core/CONFIG.json (Closes #7)
+>>>>>>> origin/main
 
 
 ## [v1.69.6] - 2026-06-05

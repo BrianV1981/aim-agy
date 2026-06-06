@@ -24,7 +24,7 @@ from plugins.datajack.forensic_utils import chunk_text, get_embedding
 from wiki_tools import process_wiki
 from blackbox_vault import vault_session
 
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 if not os.path.exists(CONFIG_PATH):
     sys.exit(0)
 
@@ -65,12 +65,15 @@ def process_transcript(md_path):
         session_id = os.path.basename(md_path).replace('.md', '')
         
         # --- PHASE 0: Immutable Black Box Vaulting ---
-        match = re.search(r'(session-[a-zA-Z0-9T:-]+)', os.path.basename(md_path))
-        if match:
-            jsonl_filename = match.group(1) + ".jsonl"
-            project_name = os.path.basename(AIM_ROOT)
-            jsonl_path = os.path.expanduser(f"~/.agy/tmp/{project_name}/chats/{jsonl_filename}")
-            print(f"[WATCHDOG] Securing {jsonl_filename} into the Immutable Black Box...")
+        session_id = os.path.basename(md_path).replace('.md', '')
+        if '_' in session_id:
+            # Handle timestamp prefix if present (e.g., 2026-06-06_1230_uuid)
+            parts = session_id.split('_')
+            session_id = parts[-1] if len(parts) >= 2 else session_id
+            
+        jsonl_path = os.path.expanduser(f"~/.gemini/antigravity-cli/brain/{session_id}/.system_generated/logs/transcript.jsonl")
+        if os.path.exists(jsonl_path):
+            print(f"[WATCHDOG] Securing {session_id} into the Immutable Black Box...")
             vault_session(jsonl_path)
             
         # 1. Chunk and Stage the Raw Logs

@@ -10,13 +10,13 @@ except ImportError:
 def get_base_dir():
     # First, try to resolve from the current working directory (crucial for decoupled child projects)
     current = os.path.abspath(os.getcwd())
-    while current != '/' and not (os.path.exists(os.path.join(current, "core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh"))):
+    while current != '/' and not (os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh"))):
         current = os.path.dirname(current)
     if current != '/': return current
     
     # Fallback to the global engine path
     current = os.path.dirname(os.path.abspath(__file__))
-    while current != '/' and not (os.path.exists(os.path.join(current, "core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh"))):
+    while current != '/' and not (os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh"))):
         current = os.path.dirname(current)
     return current if current != '/' else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

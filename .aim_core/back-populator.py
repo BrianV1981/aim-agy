@@ -6,9 +6,9 @@ import glob
 import sys
 from datetime import datetime
 
-# --- CONFIGURATION (Load from core/CONFIG.json) ---
+# --- CONFIGURATION (Load from .aim_core/CONFIG.json) ---
 from config_utils import CONFIG, AIM_ROOT
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 
 TMP_CHATS_DIR = CONFIG['paths']['tmp_chats_dir']
 SUMMARIZER_PATH = os.path.join(CONFIG['paths']['hooks_dir'], "session_summarizer.py")

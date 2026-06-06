@@ -10,14 +10,14 @@ from datetime import datetime
 def find_aim_root(start_dir):
     current = os.path.abspath(start_dir)
     while current != '/':
-        config_path = os.path.join(current, "core/CONFIG.json")
+        config_path = os.path.join(current, ".aim_core/CONFIG.json")
         if os.path.exists(config_path):
             return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root(os.getcwd())
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 
 def load_vault_path():
     if not os.path.exists(CONFIG_PATH): return None
@@ -57,7 +57,7 @@ def pull_path(vault_src, aim_dest, extensions=["*.md"]):
 def full_vault_pull():
     vault_root = load_vault_path()
     if not vault_root:
-        print("[ERROR] Obsidian vault path not configured in core/CONFIG.json.")
+        print("[ERROR] Obsidian vault path not configured in .aim_core/CONFIG.json.")
         return
 
     print(f"--- A.I.M. Obsidian Vault Ingest (Pull): {datetime.now().strftime('%H:%M:%S')} ---")

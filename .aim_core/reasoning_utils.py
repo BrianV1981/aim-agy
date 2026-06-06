@@ -10,12 +10,12 @@ import keyring
 def find_aim_root():
     current = os.path.dirname(os.path.abspath(__file__))
     while current != '/':
-        if os.path.exists(os.path.join(current, "core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
+        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root()
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 
 def load_config():
     if not os.path.exists(CONFIG_PATH): return {}
@@ -78,12 +78,8 @@ def execute_google(prompt, system_instruction, model, auth_type="API Key", timeo
         # to avoid recursion loops and session pollution.
         env = os.environ.copy()
         
-        # Always disable user hooks and checkpoints for generate_reasoning calls
         # because this is an internal API wrapper, not a primary user session.
-        bg_tmp = "/tmp/aim_background_sessions"
-        bg_config = "/tmp/aim_background_config"
-        os.makedirs(bg_tmp, exist_ok=True)
-        env["GEMINI_CLI_HOME"] = bg_tmp
+        env["GEMINI_CLI_DISABLE_CHECKPOINT"] = "true"
         env["AIM_INTERNAL_REASONING"] = "1"
 
         # Increase timeout for Pro models

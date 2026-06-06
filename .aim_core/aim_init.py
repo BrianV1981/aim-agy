@@ -11,7 +11,7 @@ from datetime import datetime
 def find_aim_root(start_dir):
     current = os.path.abspath(start_dir)
     while current != '/':
-        if os.path.exists(os.path.join(current, "core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
+        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
         if os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,6 +38,9 @@ You are a background `tmux` node operating within the A.I.M. Subconscious Swarm.
 - **Compounding Knowledge:** Never just summarize. Integrate. If a new source relates to an existing entity, it must be cross-referenced so the knowledge is available for retrieval later.
 - **Do Not Hallucinate:** If an ingested file contains an API error, garbage text, or a crash log, DO NOT synthesize it into the wiki. Ignore it.
 - **Stay Sandboxed:** You are explicitly forbidden from modifying any source code (`src/`, `scripts/`, etc.). Your domain is strictly the `memory-wiki/` directory.
+
+> **HARD MANDATE: STOP AND ASK RATHER THAN THRASH**
+> You are strictly forbidden from guessing, culling required folders, or blindly deleting files. If you are unsure of the architecture or why a file exists, you MUST stop and ask the Operator. Do not assume or thrash the memory.
 
 ## 2. ZERO-CHITCHAT MANDATE
 You are a background daemon. You have no human operator reading your terminal output. 
@@ -144,9 +147,9 @@ def load_existing_identity_defaults():
 
     return defaults
 def register_hooks(is_light_mode=False):
-    settings_path = os.path.expanduser("~/.agy/settings.json")
+    settings_path = os.path.expanduser("~/.gemini/antigravity-cli/settings.json")
     router_src = os.path.join(BASE_DIR, ".aim_core/aim_router.py")
-    router_dest = os.path.expanduser("~/.agy/aim_router.py")
+    router_dest = os.path.expanduser("~/.gemini/antigravity-cli/aim_router.py")
 
     if os.path.exists(router_src):
         import shutil
@@ -205,12 +208,12 @@ def init_workspace(args=None):
     if args is None: args = []
     is_interactive = "--headless" not in args
 
-    print("
---- A.I.M. SOVEREIGN INSTALLER ---")
+    print("""
+--- A.I.M. SOVEREIGN INSTALLER ---""")
     
     # 1. Mechanical Provisioning (Folders & Settings)
     dirs = ["archive/raw", "archive/history", "archive/sync", "archive/cartridges",
-            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", "core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".agy"]
+            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".gemini"]
     for d in dirs: os.makedirs(os.path.join(BASE_DIR, d), exist_ok=True)
 
     is_light_mode = "--light" in args
@@ -218,18 +221,23 @@ def init_workspace(args=None):
 
     # Base settings and ignores
     files = {
-        ".agyignore": "workspace/
+        ".geminiignore": """workspace/
 archive/
-",
-        ".agy/settings.json": '{
+memory_lance/
+memory-wiki/
+foundry/
+planning-artifacts/
+engrams/
+""",
+        ".gemini/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENTS.md", ".git"],
     "discoveryMaxDirs": 0,
     "fileName": ["AGENTS.md"]
   }
 }
-',
-        "memory-wiki/.agy/settings.json": '{
+""",
+        "memory-wiki/.gemini/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENT.md"],
     "discoveryMaxDirs": 0,
@@ -237,7 +245,25 @@ archive/
     "ignoreGlobal": true
   }
 }
-'
+""",
+        "memory-wiki/AGENTS.md": T_WIKI_AGENT,
+        ".aim_core/CONFIG.json": json.dumps({
+            "agent_identity": {
+                "name": "A.I.M.",
+                "role": "High-context technical lead and sovereign orchestrator.",
+                "version": "1.0.0"
+            },
+            "paths": {
+                "continuity_dir": os.path.join(BASE_DIR, "continuity"),
+                "archive_dir": os.path.join(BASE_DIR, "archive"),
+                "memory_dir": os.path.join(BASE_DIR, "memory_lance"),
+                "wiki_dir": os.path.join(BASE_DIR, "memory-wiki")
+            },
+            "settings": {
+                "obsidian_vault_path": os.path.join(BASE_DIR, "memory-wiki"),
+                "allowed_root": BASE_DIR
+            }
+        }, indent=2) + "\n"
     }
     
     for fp, content in files.items():
@@ -262,12 +288,17 @@ archive/
 
     try:
         print("Spawning the Onboarding Architect...")
-        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions --prompt-file BOOTSTRAP.md"], check=True)
+        with open(bootstrap_file, "r") as f:
+            bootstrap_content = f.read()
+        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
+        subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
+        subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
-        print(f"
-Please attach to the session to complete your interview:")
-        print(f"    tmux attach-session -t {session_name}
-")
+        print(f"""
+Please attach to the session to complete your interview:""")
+        print(f"""    tmux attach-session -t {session_name}
+""")
     except Exception as e:
         print(f"[ERROR] Failed to spawn onboarding agent: {e}")
 

@@ -166,7 +166,7 @@ def main():
 
     current = os.path.abspath(os.getcwd())
     while current != '/':
-        if os.path.exists(os.path.join(current, "core/CONFIG.json")): break
+        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")): break
         if os.path.exists(os.path.join(current, "setup.sh")): break
         current = os.path.dirname(current)
     aim_root = current if current != '/' else os.getcwd()
