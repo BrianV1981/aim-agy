@@ -106,7 +106,7 @@ setup_arena() {
 
     elif [ "$type" == "matrix" ]; then
         # Matrix arenas require the strict aim_os -> workspace structural mandate
-        git clone "$AIM_SOURCE" aim_os >/dev/null 2>&1
+        git clone --depth 1 "$AIM_SOURCE" aim_os >/dev/null 2>&1
         cd aim_os
         
         # Initialize the exoskeleton

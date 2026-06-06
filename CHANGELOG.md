@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.4] - 2026-06-05
+- Fix: Shallow clone install scripts to resolve GnuTLS decryption errors (Closes #2)
+
+
 ## [v1.69.3] - 2026-06-05
 - Fix: Migrate to Antigravity CLI (Closes #1)
 
