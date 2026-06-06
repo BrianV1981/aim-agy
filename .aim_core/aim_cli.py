@@ -376,9 +376,7 @@ def cmd_sync_issues(args):
     """Synchronizes remote GitHub issues to the local ISSUE_TRACKER.md file."""
     run_script(os.path.join(AIM_CORE_DIR, "sync_issue_tracker.py"), [])
 
-def cmd_crash(args):
-    """Executes the crash recovery protocol to salvage interrupted sessions."""
-    run_script(os.path.join(AIM_CORE_DIR, "aim_crash.py"), [])
+
 
 def cmd_reincarnate(args):
     """Triggers the automated reincarnate handoff loop."""
@@ -592,57 +590,7 @@ def cmd_jack_in(args):
     # Standard Local Engram Injection (File Path)
     run_script(os.path.join(AIM_CORE_DIR, "plugins", "datajack", "aim_exchange.py"), ["import", target])
 
-def cmd_daemon(args):
-    """Manages the Autonomous Background Daemon."""
-    daemon_script = os.path.join(AIM_CORE_DIR, "daemon.py")
-    pid_file = os.path.join(BASE_DIR, "archive/daemon.pid")
-    
-    if args.action == "start":
-        if os.path.exists(pid_file):
-            print("[WARNING] Daemon may already be running. Check 'aim daemon status'.")
-            return
-        print("--- A.I.M. AUTONOMOUS DAEMON ---")
-        print("[INFO] Igniting the Heartbeat Engine...")
-        # Run in background
-        proc = subprocess.Popen(["nohup", VENV_PYTHON, daemon_script], capture_output=True, text=True, start_new_session=True)
-        if args.seed:
-            print("[INFO] Starting Seeding Daemon...")
-            torrent_handler = os.path.join(AIM_CORE_DIR, "aim_torrent.py")
-            subprocess.Popen(["nohup", VENV_PYTHON, torrent_handler, "daemon-seed"], capture_output=True, text=True, start_new_session=True)
-        with open(pid_file, "w") as f:
-            f.write(str(proc.pid))
-        print(f"[SUCCESS] Daemon is now running in the background (PID {proc.pid}).")
-        
-    elif args.action == "stop":
-        if os.path.exists(pid_file):
-            with open(pid_file, "r") as f:
-                pid = f.read().strip()
-            try:
-                subprocess.run(["kill", pid], check=False)
-                os.remove(pid_file)
-                print(f"[SUCCESS] Daemon (PID {pid}) terminated.")
-            except Exception:
-                print("[ERROR] Failed to kill daemon. It may have already crashed.")
-        else:
-            print("[INFO] No daemon is currently running.")
-            
-    elif args.action == "status":
-        if os.path.exists(pid_file):
-            with open(pid_file, "r") as f:
-                pid = f.read().strip()
-            # Check if process actually exists
-            try:
-                os.kill(int(pid), 0)
-                print(f"[ACTIVE] Daemon is running (PID {pid}).")
-                log_file = os.path.join(BASE_DIR, "archive/daemon.log")
-                if os.path.exists(log_file):
-                    print("\nLatest Pulse:")
-                    subprocess.run(["tail", "-n", "3", log_file])
-            except OSError:
-                print("[DEAD] PID file exists but process is dead. Cleaning up.")
-                os.remove(pid_file)
-        else:
-            print("[INACTIVE] Daemon is completely offline.")
+
 
 def cmd_unplug(args):
     """Dispatches to aim_exchange.py unplug."""
@@ -845,7 +793,7 @@ def main():
     subparsers.add_parser("handoff", aliases=["pulse"])
     subparsers.add_parser("sync")
     subparsers.add_parser("sync-issues", help="Synchronize remote GitHub issues to local ledger")
-    subparsers.add_parser("crash", help="Trigger the Crash Recovery Protocol (Extracts signal from crashed session, generates handoff, and syncs issues)")
+
     subparsers.add_parser("reincarnate", help="Trigger the Reincarnation Protocol (Automated context handoff and terminal swap)")
     
     delegate_parser = subparsers.add_parser("delegate", help="Spawn parallel sub-agents to analyze multiple files (The RLM Pattern)")
@@ -894,9 +842,7 @@ def main():
     unplug_parser = subparsers.add_parser("unplug", help=f"Alias for {CLI_NAME} exchange unplug")
     unplug_parser.add_argument("keyword", help="The keyword to delete (e.g., 'python314')")
 
-    daemon_parser = subparsers.add_parser("daemon", help="Manage the Autonomous Heartbeat Daemon")
-    daemon_parser.add_argument("action", choices=["start", "stop", "status"], help="Action to perform")
-    daemon_parser.add_argument("--seed", action="store_true", help="Start the background seeding daemon")
+
 
     wiki_parser = subparsers.add_parser("memory-wiki", help="Manage the Persistent LLM Wiki")
     wiki_subparsers = wiki_parser.add_subparsers(dest="wiki_command")
@@ -973,7 +919,7 @@ def main():
     elif args.command == "push": cmd_push(args)
     elif args.command == "sync": cmd_sync(args)
     elif args.command == "sync-issues": cmd_sync_issues(args)
-    elif args.command == "crash": cmd_crash(args)
+
     elif args.command == "reincarnate": cmd_reincarnate(args)
     elif args.command == "clean": cmd_clean(args)
     elif args.command == "bake": cmd_bake(args)
@@ -981,7 +927,7 @@ def main():
     elif args.command == "export": cmd_export(args)
     elif args.command == "jack-in": cmd_jack_in(args)
     elif args.command == "unplug": cmd_unplug(args)
-    elif args.command == "daemon": cmd_daemon(args)
+
     elif args.command == "audit": cmd_audit(args)
     elif args.command == "recall": cmd_recall(args)
     elif args.command == "mail": cmd_mail(args)

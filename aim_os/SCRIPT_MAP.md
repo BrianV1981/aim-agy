@@ -37,7 +37,7 @@ This document is the literal map of every internal script running the A.I.M. OS.
 *   **`extract_signal.py`**: The Zero-Token Scribe. Uses pure Python to strip 85% of JSON noise from native CLI transcripts.
 *   **`session_porter.py`**: Fast mirroring of global CLI transcripts to the local raw archive.
 *   **`wiki_tools.py`**: The Persistent LLM Wiki engine managing lexical search and Subconscious Daemon execution.
-*   **`daemon.py`**: The overarching background service orchestrator.
+
 *   **`maintenance.py`**: Automated janitor for purging logs and maintaining retention policies.
 *   **`heartbeat.py`**: Zero-token diagnostic tool verifying system integrity.
 *   **`blackbox_vault.py`**: Encrypted storage for raw JSONL sessions.
