@@ -1,6 +1,7 @@
 # Changelog
 
 ## [v1.69.16] - 2026-06-06
+- Fix: Remove dead scrape_github_issues.py execution to unblock aim pulse (Closes #22)
 - Fix: Deprecate custom daemon.py in favor of native Antigravity schedule tooling (Closes #23)
 - Fix: Disable aggressive background ghost session auditing to prevent double-ingestion (Closes #20)
 - Fix: Deprecate obsolete crash recovery protocol and remove aim_crash.py (Closes #18)
