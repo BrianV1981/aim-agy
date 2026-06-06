@@ -10,7 +10,7 @@ from google import genai
 
 # --- CONFIGURATION (Dynamic Load) ---
 from config_utils import CONFIG, AIM_ROOT
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
 
 # --- PROVIDER LOGIC ---
 PROVIDER_TYPE = CONFIG['models'].get('embedding_provider', 'local') # google, local (ollama), openai-compat

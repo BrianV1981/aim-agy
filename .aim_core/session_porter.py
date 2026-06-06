@@ -10,7 +10,7 @@ def find_aim_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root()
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
 
 if not os.path.exists(CONFIG_PATH):
     sys.exit(0)

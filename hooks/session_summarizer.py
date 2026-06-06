@@ -24,7 +24,7 @@ from plugins.datajack.forensic_utils import chunk_text, get_embedding
 from wiki_tools import process_wiki
 from blackbox_vault import vault_session
 
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
 if not os.path.exists(CONFIG_PATH):
     sys.exit(0)
 

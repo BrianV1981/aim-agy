@@ -28,7 +28,7 @@ if src_dir not in sys.path: sys.path.append(src_dir)
 from reasoning_utils import generate_reasoning
 from aim_vault import get_key, set_key
 
-CONFIG_PATH = os.path.join(AIM_ROOT, "core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
 
 def load_config():
     if os.path.exists(CONFIG_PATH):

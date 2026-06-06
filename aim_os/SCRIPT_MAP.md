@@ -10,7 +10,7 @@ This document is the literal map of every internal script running the A.I.M. OS.
 *   **`lance_backend.py`**: The LanceDB PyArrow wrapper. Manages RAG 5.21 schema definition and vector database connectivity.
 *   **`retriever.py`**: A.I.M. Autonomous Knowledge Retriever (Native LanceDB/Parquet). The Hybrid RAG search engine combining vector embeddings with Tantivy FTS.
 *   **`reasoning_utils.py`**: The universal LLM client. Dynamically routes API calls based on the Tiers defined in `CONFIG.json`.
-*   **`config_utils.py`**: The single source of truth for loading, validating, and auto-repairing `core/CONFIG.json` paths.
+*   **`config_utils.py`**: The single source of truth for loading, validating, and auto-repairing `.aim_core/CONFIG.json` paths.
 *   **`bootstrap_brain.py`**: The initialization engine. Re-indexes core documents into `memory_lance`.
 
 ---

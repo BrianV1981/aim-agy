@@ -2,7 +2,7 @@
 
 # 1. Personal Identity & Secrets (DYNAMICALLY GENERATED)
 .env
-core/CONFIG.json
+.aim_core/CONFIG.json
 core/MEMORY.md
 core/OPERATOR.md
 core/OPERATOR_PROFILE.md

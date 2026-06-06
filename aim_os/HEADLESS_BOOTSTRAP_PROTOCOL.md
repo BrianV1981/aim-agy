@@ -36,7 +36,7 @@ venv/bin/python aim_core/aim_init.py --headless
 
 ### 4. Verification
 If the deployment is successful, the terminal will output `[SUCCESS] A.I.M. Singularity initialized`. You should verify the generation of the following artifacts:
-- `core/CONFIG.json` (The primary routing and configuration state)
+- `.aim_core/CONFIG.json` (The primary routing and configuration state)
 - `.agy/settings.json` (The workspace context bindings)
 - `memory_lance/` (The initialized vector database)
 
