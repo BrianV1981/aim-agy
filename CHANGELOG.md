@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.15] - 2026-06-06
+- Fix: Overhaul paths in aim_core scripts to support antigravity-cli brain directory (Closes #16)
+
+
 ## [v1.69.14] - 2026-06-06
 - Fix: Spawning architect uses tmux buffers instead of removed flag (Closes #15)
 

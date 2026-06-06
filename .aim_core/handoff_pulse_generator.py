@@ -45,9 +45,22 @@ def generate_handoff_pulse():
     Reads the latest significant session transcript directly from the native CLI temporary folder
     (to bypass context compression logic), extracts the signal, and overwrites CURRENT_PULSE.md.
     """
-    project_name = os.path.basename(AIM_ROOT)
-    native_cli_dir = os.path.expanduser(f"~/.agy/tmp/{project_name}/chats/*.jsonl")
-    raw_files = glob.glob(native_cli_dir)
+    project_dir = os.path.abspath(AIM_ROOT)
+    raw_files = []
+    history_file = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, 'r') as f:
+                for line in f:
+                    if not line.strip(): continue
+                    data = json.loads(line)
+                    if data.get('workspace') == project_dir:
+                        cid = data.get('conversationId')
+                        path = os.path.expanduser(f"~/.gemini/antigravity-cli/brain/{cid}/.system_generated/logs/transcript.jsonl")
+                        if cid and os.path.exists(path) and path not in raw_files:
+                            raw_files.append(path)
+        except Exception as e:
+            print(f"Handoff Generator: Warning reading history: {e}")
     
     if not raw_files:
         raw_files = glob.glob(os.path.join(ARCHIVE_RAW_DIR, "*.jsonl"))

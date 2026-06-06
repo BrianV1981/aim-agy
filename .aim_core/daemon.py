@@ -35,17 +35,28 @@ def load_config():
 def audit_ghost_sessions():
     """Finds JSONL transcripts that were ungracefully closed without an .md history artifact and summarizes them."""
     log("Auditing for Ghost Sessions...")
-    project_name = os.path.basename(AIM_ROOT)
-    chats_dir = os.path.expanduser(f"~/.agy/tmp/{project_name}/chats")
-    if not os.path.exists(chats_dir):
-        return
-        
-    raw_files = glob.glob(os.path.join(chats_dir, "*.jsonl"))
+    project_dir = os.path.abspath(AIM_ROOT)
+    raw_files = []
+    history_file = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, 'r') as f:
+                for line in f:
+                    if not line.strip(): continue
+                    data = json.loads(line)
+                    if data.get('workspace') == project_dir:
+                        cid = data.get('conversationId')
+                        path = os.path.expanduser(f"~/.gemini/antigravity-cli/brain/{cid}/.system_generated/logs/transcript.jsonl")
+                        if cid and os.path.exists(path) and path not in raw_files:
+                            raw_files.append(path)
+        except Exception as e:
+            log(f"Warning reading history: {e}")
+            
     history_dir = os.path.join(AIM_ROOT, "archive/history")
     os.makedirs(history_dir, exist_ok=True)
     
     for json_path in raw_files:
-        session_id = os.path.basename(json_path).replace('.jsonl', '').replace('.json', '')
+        session_id = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(json_path))))
         matching_mds = glob.glob(os.path.join(history_dir, f"*_{session_id}.md"))
         if not matching_mds:
             # Ghost session detected!
