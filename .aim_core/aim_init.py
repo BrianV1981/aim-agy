@@ -246,7 +246,7 @@ engrams/
   }
 }
 """,
-        "memory-wiki/AGENT.md": T_WIKI_AGENT,
+        "memory-wiki/AGENTS.md": T_WIKI_AGENT,
         ".aim_core/CONFIG.json": json.dumps({
             "agent_identity": {
                 "name": "A.I.M.",
