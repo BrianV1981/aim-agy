@@ -48,7 +48,7 @@ You are a ruthless, highly disciplined Senior Python/Django Architect operating 
 You are NOT a 'vibe coder.' You are a methodical engineer. You do not guess APIs. You prove everything.
 
 ## 2. THE KNOWLEDGE MATRIX (DO NOT GUESS)
-You have been injected with highly specialized knowledge cartridges. Before proposing a plan or writing code, you MUST use 'aim_os search \"<concept>\"' to pull the definitive architectural rules from your Engram DB. Never hallucinate APIs.
+You have been injected with highly specialized knowledge cartridges. Before proposing a plan or writing code, you MUST use 'aim-agy search \"<concept>\"' to pull the definitive architectural rules from your Engram DB. Never hallucinate APIs.
 
 ## 3. THE TDD PIPELINE (RED-GREEN-REFACTOR)
 You are strictly forbidden from writing a patch without first proving the bug exists.
@@ -59,9 +59,9 @@ You are strictly forbidden from writing a patch without first proving the bug ex
 5. Run the test again. Witness the success (Green).
 
 ## 4. THE GITOPS MANDATE
-1. **Report:** Use 'aim_os bug \"desc\"' to log the issue.
-2. **Isolate:** You MUST use 'aim_os fix <id>' to check out an isolated branch.
-3. **Release:** Use 'aim_os push \"msg\"' only when the TDD pipeline is green.
+1. **Report:** Use 'aim-agy bug \"desc\"' to log the issue.
+2. **Isolate:** You MUST use 'aim-agy fix <id>' to check out an isolated branch.
+3. **Release:** Use 'aim-agy push \"msg\"' only when the TDD pipeline is green.
 "
 
 TASK_CONTENT="# SWE-Bench Target (Proxy)
@@ -76,9 +76,9 @@ TASK_CONTENT="# SWE-Bench Target (Proxy)
 # 1. The Universal Hook Router: A.I.M. relies on a global '~/.gemini/antigravity-cli/aim_router.py' to manage background loops (Mantra, Memory).
 #    This router dynamically detects the active workspace. This allows us to run 4 concurrent benchmark arenas simultaneously 
 #    without them cross-contaminating each other's databases.
-# 2. Directory Naming: The A.I.M. clone MUST be named 'aim_os' (or similar) to prevent the agent from getting confused 
+# 2. Directory Naming: The A.I.M. clone MUST be named 'aim-agy_os' (or similar) to prevent the agent from getting confused 
 #    between the A.I.M. framework code and the target test code.
-# 3. The Workstation: The actual test codebase (e.g. django_repo) and the TASK.md MUST be placed inside an 'aim_os/workspace' folder. 
+# 3. The Workstation: The actual test codebase (e.g. django_repo) and the TASK.md MUST be placed inside an 'aim-agy_os/workspace' folder. 
 #    The AI is instructed to operate *from* this workspace directory. The router will walk up the tree to find the engram.db.
 
 # Setup Function
@@ -105,9 +105,9 @@ setup_arena() {
         cd ..
 
     elif [ "$type" == "matrix" ]; then
-        # Matrix arenas require the strict aim_os -> workspace structural mandate
-        git clone --depth 1 "$AIM_SOURCE" aim_os >/dev/null 2>&1
-        cd aim_os
+        # Matrix arenas require the strict aim-agy_os -> workspace structural mandate
+        git clone --depth 1 "$AIM_SOURCE" aim-agy_os >/dev/null 2>&1
+        cd aim-agy_os
         
         # Initialize the exoskeleton
         ./setup.sh >/dev/null 2>&1
@@ -119,7 +119,7 @@ setup_arena() {
         # Inject the specialized prompt
         echo "$MATRIX_PROMPT" > GEMINI.md
         
-        # Build the isolated workspace *inside* aim_os
+        # Build the isolated workspace *inside* aim-agy_os
         mkdir -p workspace
         cd workspace
         echo "$TASK_CONTENT" > TASK.md
@@ -144,4 +144,4 @@ setup_arena "django_matrix_flash" "matrix"
 echo ""
 echo "--- FOUNDRY COMPLETE ---"
 echo "Arenas deployed to: $TEST_DIR"
-echo "To test a Matrix Agent, remember to 'cd aim_os', 'source ~/.bashrc', and use 'aim_os status'!"
+echo "To test a Matrix Agent, remember to 'cd aim-agy_os', 'source ~/.bashrc', and use 'aim-agy status'!"
