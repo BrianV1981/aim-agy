@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.18] - 2026-06-06
+- Fix: Rename aim_os to aim-agy_os across architecture (Closes #27)
+
+
 ## [v1.69.17] - 2026-06-06
 - Fix: Restore native Workspace boundaries via memory-wiki/AGENTS.md to isolate Daemon LLM calls (Closes #6)
 

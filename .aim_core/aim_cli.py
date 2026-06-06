@@ -675,10 +675,10 @@ def cmd_update(args):
     # Note: the downloaded repo has "aim_core", we rename it to ".aim_core" locally
     shutil.copytree(os.path.join(temp_dir, ".aim_core"), local_core)
     
-    # Overwrite aim_os protocols
-    local_os = os.path.join(BASE_DIR, "aim_os")
+    # Overwrite aim-agy_os protocols
+    local_os = os.path.join(BASE_DIR, "aim-agy_os")
     if os.path.exists(local_os): shutil.rmtree(local_os)
-    shutil.copytree(os.path.join(temp_dir, "aim_os"), local_os)
+    shutil.copytree(os.path.join(temp_dir, "aim-agy_os"), local_os)
     
     # Overwrite setup scripts
     shutil.copy2(os.path.join(temp_dir, "setup.sh"), os.path.join(BASE_DIR, "setup.sh"))
