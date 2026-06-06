@@ -147,9 +147,9 @@ def load_existing_identity_defaults():
 
     return defaults
 def register_hooks(is_light_mode=False):
-    settings_path = os.path.expanduser("~/.agy/settings.json")
+    settings_path = os.path.expanduser("~/.gemini/antigravity-cli/settings.json")
     router_src = os.path.join(BASE_DIR, ".aim_core/aim_router.py")
-    router_dest = os.path.expanduser("~/.agy/aim_router.py")
+    router_dest = os.path.expanduser("~/.gemini/antigravity-cli/aim_router.py")
 
     if os.path.exists(router_src):
         import shutil
@@ -213,7 +213,7 @@ def init_workspace(args=None):
     
     # 1. Mechanical Provisioning (Folders & Settings)
     dirs = ["archive/raw", "archive/history", "archive/sync", "archive/cartridges",
-            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".agy"]
+            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".gemini"]
     for d in dirs: os.makedirs(os.path.join(BASE_DIR, d), exist_ok=True)
 
     is_light_mode = "--light" in args
@@ -221,7 +221,7 @@ def init_workspace(args=None):
 
     # Base settings and ignores
     files = {
-        ".agyignore": """workspace/
+        ".geminiignore": """workspace/
 archive/
 memory_lance/
 memory-wiki/
@@ -229,7 +229,7 @@ foundry/
 planning-artifacts/
 engrams/
 """,
-        ".agy/settings.json": """{
+        ".gemini/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENTS.md", ".git"],
     "discoveryMaxDirs": 0,
@@ -237,7 +237,7 @@ engrams/
   }
 }
 """,
-        "memory-wiki/.agy/settings.json": """{
+        "memory-wiki/.gemini/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENT.md"],
     "discoveryMaxDirs": 0,

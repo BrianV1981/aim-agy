@@ -15,7 +15,6 @@ def find_aim_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root()
-CHATS_DIR = os.path.expanduser("~/.agy/tmp/aim/chats/")
 ARCHIVE_HISTORY = os.path.join(AIM_ROOT, "archive", "history")
 CONTINUITY_DIR = os.path.join(AIM_ROOT, "continuity")
 LAST_SESSION_CLEAN = os.path.join(CONTINUITY_DIR, "LAST_SESSION_FLIGHT_RECORDER.md")
@@ -23,14 +22,27 @@ LAST_SESSION_CLEAN = os.path.join(CONTINUITY_DIR, "LAST_SESSION_FLIGHT_RECORDER.
 def main():
     print("--- A.I.M. CRASH RECOVERY PROTOCOL ---")
     
-    # 1. Find all JSONL files in ~/.agy/tmp/aim/chats/
-    if not os.path.exists(CHATS_DIR):
-        print(f"[ERROR] Chats directory not found: {CHATS_DIR}")
-        sys.exit(1)
-        
-    json_files = glob.glob(os.path.join(CHATS_DIR, "session-*.jsonl"))
+    # 1. Find all JSONL files from the antigravity-cli history
+    project_dir = os.path.abspath(AIM_ROOT)
+    json_files = []
+    history_file = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
+    if os.path.exists(history_file):
+        try:
+            import json
+            with open(history_file, 'r') as f:
+                for line in f:
+                    if not line.strip(): continue
+                    data = json.loads(line)
+                    if data.get('workspace') == project_dir:
+                        cid = data.get('conversationId')
+                        path = os.path.expanduser(f"~/.gemini/antigravity-cli/brain/{cid}/.system_generated/logs/transcript.jsonl")
+                        if cid and os.path.exists(path) and path not in json_files:
+                            json_files.append(path)
+        except Exception as e:
+            print(f"[ERROR] Warning reading history: {e}")
+
     if not json_files:
-        print(f"[ERROR] No session files found in {CHATS_DIR}.")
+        print(f"[ERROR] No session files found for this project in {history_file}.")
         sys.exit(1)
         
     # Sort by modification time, newest first
@@ -44,7 +56,7 @@ def main():
         mtime = os.path.getmtime(jf)
         time_str = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
         
-        print(f"  [{i+1}] {os.path.basename(jf)} | Size: {size_mb:.2f} MB | Last Modified: {time_str}")
+        print(f"  [{i+1}] {os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(jf))))} | Size: {size_mb:.2f} MB | Last Modified: {time_str}")
         
     print("  [q] Quit (Exit without recovery)")
     
@@ -60,7 +72,7 @@ def main():
             break
         print("Invalid choice. Try again.")
         
-    print(f"\n[1/4] Identified crashed session: {os.path.basename(target_json)}")
+    print(f"\n[1/4] Identified crashed session: {os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(target_json))))}")
     
     # 2. Extract signal and format to markdown
     print(f"[2/4] Purging noise and extracting signal to {LAST_SESSION_CLEAN}...")
@@ -68,7 +80,7 @@ def main():
         sys.path.insert(0, os.path.join(AIM_ROOT, ".aim_core"))
         from extract_signal import extract_signal, skeleton_to_markdown
         skeleton = extract_signal(target_json)
-        session_id = os.path.basename(target_json).replace('.jsonl', '')
+        session_id = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(target_json))))
         md_content = skeleton_to_markdown(skeleton, session_id)
         
         os.makedirs(CONTINUITY_DIR, exist_ok=True)

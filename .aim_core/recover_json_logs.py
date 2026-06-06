@@ -14,21 +14,37 @@ def main():
     args = parser.parse_args()
 
     # The hidden directory where Antigravity CLI stores session logs for isolated sub-environments
-    tmp_dir = os.path.expanduser("~/.agy/tmp")
+    tmp_dir = os.path.expanduser("~/.gemini/antigravity-cli/brain")
     dest_dir = Path(args.dest)
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"--- A.I.M. BENCHMARK RECOVERY PROTOCOL ---")
     print(f"Searching hidden Antigravity CLI temporary environment caches...")
-    print(f"Path: {tmp_dir}/**/chats/*.json\n")
+    print(f"Path: {tmp_dir}/*/.system_generated/logs/*.jsonl\n")
 
     if not os.path.exists(tmp_dir):
         print(f"Error: Could not find the global Antigravity CLI tmp directory at {tmp_dir}")
         return
 
-    # Find all json files in the chats subdirectories
-    search_pattern = os.path.join(tmp_dir, "**", "chats", "*.json")
-    files = glob.glob(search_pattern, recursive=True)
+    # Load workspace mapping from history
+    import json
+    history_file = os.path.expanduser("~/.gemini/antigravity-cli/history.jsonl")
+    workspace_map = {}
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, 'r') as f:
+                for line in f:
+                    if not line.strip(): continue
+                    data = json.loads(line)
+                    cid = data.get('conversationId')
+                    ws = data.get('workspace')
+                    if cid and ws:
+                        workspace_map[cid] = os.path.basename(ws)
+        except: pass
+
+    # Find all jsonl files in the chats subdirectories
+    search_pattern = os.path.join(tmp_dir, "*", ".system_generated", "logs", "*.jsonl")
+    files = glob.glob(search_pattern)
 
     # Filter by time
     current_time = time.time()
@@ -46,17 +62,18 @@ def main():
     for i, f in enumerate(recent_files):
         mod_time = time.ctime(os.path.getmtime(f))
         size_kb = os.path.getsize(f) / 1024
-        # Extract the environment name (e.g., 'django-matrix-pro' from '~/.agy/tmp/django-matrix-pro/chats/...')
-        env_name = Path(f).parts[-3] 
+        # Extract the environment name from history map
+        session_id = Path(f).parts[-4]
+        env_name = workspace_map.get(session_id, "unknown_env")
         print(f" [{i+1}] {env_name} | {mod_time} | {size_kb:.1f} KB")
         print(f"     Path: {f}")
 
     print("\n-------------------------------------------")
     if args.auto_copy:
         for f in recent_files:
-            env_name = Path(f).parts[-3]
-            session_id = Path(f).stem
-            new_name = f"{env_name}_{session_id}.json"
+            session_id = Path(f).parts[-4]
+            env_name = workspace_map.get(session_id, "unknown_env")
+            new_name = f"{env_name}_{session_id}.jsonl"
             dest_path = dest_dir / new_name
             shutil.copy2(f, dest_path)
             print(f"Copied to: {dest_path}")
@@ -64,9 +81,9 @@ def main():
         choice = input(f"\nDo you want to copy these {len(recent_files)} files to '{args.dest}/'? (y/n): ")
         if choice.lower() == 'y':
             for f in recent_files:
-                env_name = Path(f).parts[-3]
-                session_id = Path(f).stem
-                new_name = f"{env_name}_{session_id}.json"
+                session_id = Path(f).parts[-4]
+                env_name = workspace_map.get(session_id, "unknown_env")
+                new_name = f"{env_name}_{session_id}.jsonl"
                 dest_path = dest_dir / new_name
                 shutil.copy2(f, dest_path)
                 print(f"Copied to: {dest_path}")
