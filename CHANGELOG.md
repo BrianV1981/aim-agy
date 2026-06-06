@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.11] - 2026-06-06
+- Fix: final f-string syntax error in aim_init.py (Closes #11)
+
+
 ## [v1.69.10] - 2026-06-06
 - Fix: multiple aim_init.py syntax errors (Closes #10)
 

@@ -264,10 +264,10 @@ archive/
         print("Spawning the Onboarding Architect...")
         subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions --prompt-file BOOTSTRAP.md"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
-        print(f"
-Please attach to the session to complete your interview:")
-        print(f"    tmux attach-session -t {session_name}
-")
+        print(f"""
+Please attach to the session to complete your interview:""")
+        print(f"""    tmux attach-session -t {session_name}
+""")
     except Exception as e:
         print(f"[ERROR] Failed to spawn onboarding agent: {e}")
 
