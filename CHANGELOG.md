@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.7] - 2026-06-06
+- Fix: Isolate daemon LLM calls to prevent session leakage (Closes #6)
+
+
 ## [v1.69.6] - 2026-06-05
 - Fix: Relative imports and bundle pre-indexed FTS LanceDB (Closes #4)
 
