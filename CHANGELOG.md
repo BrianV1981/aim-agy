@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.71.2] - 2026-06-06
+- Fix: ModuleNotFoundError in session_summarizer.py (Closes #43)
+
+
 ## [v1.71.1] - 2026-06-06
 - Fix: Route 'import' command in argparse for aim_cli.py (Closes #42)
 
