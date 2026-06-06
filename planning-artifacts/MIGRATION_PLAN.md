@@ -11,7 +11,7 @@ Convert the clean A.I.M. exoskeleton (`aim-agy`) from utilizing the deprecated A
 ## Phase 2: Core Engine Code Migration
 - **Script Refactoring:** Perform bulk string replacements across `aim_core/` and `scripts/`.
   - Replace `agy login` with `agy login`.
-  - Replace `agy --yolo` with `agy --yolo`.
+  - Replace `agy --dangerously-skip-permissions` with `agy --dangerously-skip-permissions`.
   - Replace internal `subprocess.run(["agy", ...])` calls with `subprocess.run(["agy", ...])`.
 - **Configuration Defaults:** Update default tool endpoints and CLI flags mapped in `aim_config.py` to match Antigravity 2.0 specifications.
 - **Alias Updates:** Verify that the system-wide `.bashrc` aliases correctly map the exoskeleton router to intercept `agy` processes if required.

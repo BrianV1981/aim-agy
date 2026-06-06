@@ -262,7 +262,7 @@ archive/
 
     try:
         print("Spawning the Onboarding Architect...")
-        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --yolo --prompt-file BOOTSTRAP.md"], check=True)
+        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions --prompt-file BOOTSTRAP.md"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
         print(f"
 Please attach to the session to complete your interview:")

@@ -10,7 +10,7 @@ def spawn_coagent(name, project_dir, prompt):
     if result.returncode == 0:
         return {"error": f"Session '{name}' already exists."}
 
-    cmd = ["tmux", "new-session", "-d", "-s", name, "-c", project_dir, "agy", "--yolo"]
+    cmd = ["tmux", "new-session", "-d", "-s", name, "-c", project_dir, "agy", "--dangerously-skip-permissions"]
     subprocess.run(cmd, check=True)
     time.sleep(3)
 

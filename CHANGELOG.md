@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.5] - 2026-06-05
+- Fix: Replace --yolo with --dangerously-skip-permissions for Antigravity CLI compatibility (Closes #3)
+
+
 ## [v1.69.4] - 2026-06-05
 - Fix: Shallow clone install scripts to resolve GnuTLS decryption errors (Closes #2)
 

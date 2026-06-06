@@ -97,7 +97,7 @@ def main():
     try:
         # TUI Mode with native prompt-interactive flag
         subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", AIM_ROOT, "agy", "--yolo", "-i", wake_up_prompt],
+            ["tmux", "new-session", "-d", "-s", session_name, "-c", AIM_ROOT, "agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
             check=True
         )
         print(f"      [Success] New agent is awake in tmux session: {session_name}")
