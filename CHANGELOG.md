@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.10] - 2026-06-06
+- Fix: multiple aim_init.py syntax errors (Closes #10)
+
+
 ## [v1.69.9] - 2026-06-06
 - Fix: aim_init.py syntax error and core dir path (Closes #9)
 

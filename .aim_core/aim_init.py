@@ -218,18 +218,18 @@ def init_workspace(args=None):
 
     # Base settings and ignores
     files = {
-        ".agyignore": "workspace/
+        ".agyignore": """workspace/
 archive/
-",
-        ".agy/settings.json": '{
+""",
+        ".agy/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENTS.md", ".git"],
     "discoveryMaxDirs": 0,
     "fileName": ["AGENTS.md"]
   }
 }
-',
-        "memory-wiki/.agy/settings.json": '{
+""",
+        "memory-wiki/.agy/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENT.md"],
     "discoveryMaxDirs": 0,
@@ -237,7 +237,7 @@ archive/
     "ignoreGlobal": true
   }
 }
-'
+"""
     }
     
     for fp, content in files.items():
