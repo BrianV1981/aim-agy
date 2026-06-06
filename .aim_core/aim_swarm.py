@@ -19,7 +19,28 @@ def spawn_coagent(name, project_dir, prompt):
 
     return {"status": "spawned", "session": name, "cwd": project_dir}
 
+def check_idle(session_name):
+    result = subprocess.run(["tmux", "capture-pane", "-t", session_name, "-p", "-S", "-5"], capture_output=True, text=True)
+    if result.returncode != 0:
+        return False
+    lines = result.stdout.strip().split('\n')
+    if not lines:
+        return False
+    last_line = lines[-1].strip()
+    return last_line.endswith('$') or last_line.endswith('>') or last_line.endswith('#') or last_line.endswith(':')
+
 def send_message(session_name, message):
+    max_retries = 6
+    idle = False
+    for _ in range(max_retries):
+        if check_idle(session_name):
+            idle = True
+            break
+        time.sleep(5)
+        
+    if not idle:
+        return {"error": f"Session '{session_name}' is busy executing a command. Knock Protocol aborted to prevent terminal clobbering."}
+
     tmpfile = f"/tmp/coagent_{session_name}_{int(time.time())}.txt"
     with open(tmpfile, "w") as f:
         f.write(message)
