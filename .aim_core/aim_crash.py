@@ -15,7 +15,7 @@ def find_aim_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root()
-CHATS_DIR = os.path.expanduser("~/.gemini/tmp/aim/chats/")
+CHATS_DIR = os.path.expanduser("~/.agy/tmp/aim/chats/")
 ARCHIVE_HISTORY = os.path.join(AIM_ROOT, "archive", "history")
 CONTINUITY_DIR = os.path.join(AIM_ROOT, "continuity")
 LAST_SESSION_CLEAN = os.path.join(CONTINUITY_DIR, "LAST_SESSION_FLIGHT_RECORDER.md")
@@ -23,7 +23,7 @@ LAST_SESSION_CLEAN = os.path.join(CONTINUITY_DIR, "LAST_SESSION_FLIGHT_RECORDER.
 def main():
     print("--- A.I.M. CRASH RECOVERY PROTOCOL ---")
     
-    # 1. Find all JSONL files in ~/.gemini/tmp/aim/chats/
+    # 1. Find all JSONL files in ~/.agy/tmp/aim/chats/
     if not os.path.exists(CHATS_DIR):
         print(f"[ERROR] Chats directory not found: {CHATS_DIR}")
         sys.exit(1)

@@ -73,7 +73,7 @@ TASK_CONTENT="# SWE-Bench Target (Proxy)
 "
 
 # --- ARCHITECTURAL MANDATES ---
-# 1. The Universal Hook Router: A.I.M. relies on a global '~/.gemini/aim_router.py' to manage background loops (Mantra, Memory). 
+# 1. The Universal Hook Router: A.I.M. relies on a global '~/.agy/aim_router.py' to manage background loops (Mantra, Memory). 
 #    This router dynamically detects the active workspace. This allows us to run 4 concurrent benchmark arenas simultaneously 
 #    without them cross-contaminating each other's databases.
 # 2. Directory Naming: The A.I.M. clone MUST be named 'aim_os' (or similar) to prevent the agent from getting confused 

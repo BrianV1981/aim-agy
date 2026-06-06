@@ -46,7 +46,7 @@ def generate_handoff_pulse():
     (to bypass context compression logic), extracts the signal, and overwrites CURRENT_PULSE.md.
     """
     project_name = os.path.basename(AIM_ROOT)
-    native_cli_dir = os.path.expanduser(f"~/.gemini/tmp/{project_name}/chats/*.jsonl")
+    native_cli_dir = os.path.expanduser(f"~/.agy/tmp/{project_name}/chats/*.jsonl")
     raw_files = glob.glob(native_cli_dir)
     
     if not raw_files:

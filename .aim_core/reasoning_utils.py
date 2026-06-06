@@ -38,14 +38,14 @@ def generate_reasoning(prompt, system_instruction="You are a helpful assistant."
     if not model_config:
         # Emergency Fallback to default_reasoning if requested brain_type is missing
         model_config = config.get('models', {}).get('tiers', {}).get('default_reasoning', {
-            "provider": "google", "model": "gemini-3.1-flash-lite-preview", "endpoint": "", "auth_type": "API Key"
+            "provider": "google", "model": "agy-3.1-flash-lite-preview", "endpoint": "", "auth_type": "API Key"
         })
     
     provider = model_config.get('provider')
     model = model_config.get('model')
     
     # FORCE LITE MODEL TO BYPASS QUOTA LIMITS FOR DAEMON TASKS
-    model = "gemini-3.1-flash-lite-preview"
+    model = "agy-3.1-flash-lite-preview"
     
     endpoint = model_config.get('endpoint')
     auth_type = model_config.get('auth_type', 'API Key')
@@ -68,10 +68,10 @@ def generate_reasoning(prompt, system_instruction="You are a helpful assistant."
     return "Error: Unsupported Provider Configuration."
 
 def execute_google(prompt, system_instruction, model, auth_type="API Key", timeout=45, brain_type="default_reasoning"):
-    """Executes reasoning via the Gemini API (Cloud) or Native CLI bridge."""
+    """Executes reasoning via the Antigravity API (Cloud) or Native CLI bridge."""
 
     if "OAuth" in auth_type:
-        # Route 1: Native Gemini CLI Bridge (Bypasses all REST API constraints)
+        # Route 1: Native Antigravity CLI Bridge (Bypasses all REST API constraints)
         full_prompt = f"{system_instruction}\n\nCONTEXT:\n{prompt}"
         
         # PHASE 32 PROTECTION: Use separate tmp and config dirs for background tasks
@@ -90,7 +90,7 @@ def execute_google(prompt, system_instruction, model, auth_type="API Key", timeo
         # Increase timeout for Pro models
         effective_timeout = 120 if "pro" in model else timeout
 
-        cmd = ["gemini", "-p", "-", "-o", "json", "-y"]
+        cmd = ["agy", "-p", "-", "-o", "json", "-y"]
         if model and model != "default":
             cmd.extend(["-m", model])
 
@@ -132,7 +132,7 @@ def execute_google(prompt, system_instruction, model, auth_type="API Key", timeo
             if res.returncode != 0:
                 stderr_lines = res.stderr.strip().split('\n')
                 real_error = "\n".join(stderr_lines[-10:]) # Grab the last 10 lines
-                return f"Gemini CLI Error (Code {res.returncode}): ... {real_error}"
+                return f"Antigravity CLI Error (Code {res.returncode}): ... {real_error}"
                         
             return f"Error: No valid JSON payload found in CLI output. STDERR: {res.stderr.strip()[:100]}"
         except Exception as e:
@@ -140,7 +140,7 @@ def execute_google(prompt, system_instruction, model, auth_type="API Key", timeo
             
     # Route 2: Standard REST API (For pure API Key users)
     api_key = keyring.get_password("aim-system", "google-api-key")
-    if not api_key: return f"Error: No Gemini API Key found in vault. Run {os.path.basename(AIM_ROOT)} tui to configure."
+    if not api_key: return f"Error: No Antigravity API Key found in vault. Run {os.path.basename(AIM_ROOT)} tui to configure."
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}

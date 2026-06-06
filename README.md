@@ -2,7 +2,7 @@
 
 A.I.M. is an open-source engineering exoskeleton designed to solve context amnesia, token bloat, state loss, and drift in long-running autonomous AI coding sessions. 
 
-It wraps around CLI agents (primarily Google's Gemini CLI) and provides a full operating system for your AI, forcing it to act like a disciplined Principal Engineer.
+It wraps around CLI agents (primarily Google's Antigravity CLI) and provides a full operating system for your AI, forcing it to act like a disciplined Principal Engineer.
 
 ## 🚀 Quickstart & Installation
 
@@ -47,7 +47,7 @@ A.I.M. provides a massive suite of tools to control, manage, and scale your AI a
 *   **Background Markdown Generation:** A deterministic Python script strips terminal noise, reducing context weight by 85%. A background daemon then weaves this into a human-readable Markdown wiki (`memory-wiki/`).
 *   **GitOps Enforcement:** AI agents are forbidden from coding on `main`. They must create GitHub issues (`aim bug`), branch out into isolated worktrees (`aim fix`), use TDD, and deploy atomically (`aim push`).
 *   **Interactive TUI Cockpit:** A visual terminal interface (`aim tui`) to configure LLM routing, guardrails, and context limits without editing JSON files.
-*   **Cognitive Routing:** Route expensive coding tasks to flagship models (e.g., Gemini Pro) in your terminal, while offloading repetitive background tasks (like memory indexing) to free, local models (e.g., Ollama) on your GPU.
+*   **Cognitive Routing:** Route expensive coding tasks to flagship models (e.g., Antigravity Pro) in your terminal, while offloading repetitive background tasks (like memory indexing) to free, local models (e.g., Ollama) on your GPU.
 *   **P2P Knowledge Cartridges:** Package thousands of pages of documentation into pre-vectorized Native Apache Arrow `.parquet` files. Share and download them peer-to-peer via BitTorrent (`aim export` / `aim jack-in`) to give agents instant recall of entire frameworks without burning API tokens.
 *   **Universal IDE Support (MCP):** A built-in FastMCP server exposes the memory databases to any connected IDE (Cursor, VS Code, Claude Desktop) without requiring platform-specific adapters.
 *   **Crash Recovery & Handoffs:** When the context window fills up, run `aim reincarnate` to extract active context and spawn a fresh terminal session. If the CLI crashes, run `aim crash` to salvage the interrupted session.

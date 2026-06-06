@@ -58,7 +58,7 @@ def main():
             print("{}")
             return
             
-        # Ensure the stdout is actually valid JSON before piping it to the Gemini CLI
+        # Ensure the stdout is actually valid JSON before piping it to the Antigravity CLI
         if process.stdout:
             import json
             try:

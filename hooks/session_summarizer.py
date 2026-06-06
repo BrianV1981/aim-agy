@@ -69,7 +69,7 @@ def process_transcript(md_path):
         if match:
             jsonl_filename = match.group(1) + ".jsonl"
             project_name = os.path.basename(AIM_ROOT)
-            jsonl_path = os.path.expanduser(f"~/.gemini/tmp/{project_name}/chats/{jsonl_filename}")
+            jsonl_path = os.path.expanduser(f"~/.agy/tmp/{project_name}/chats/{jsonl_filename}")
             print(f"[WATCHDOG] Securing {jsonl_filename} into the Immutable Black Box...")
             vault_session(jsonl_path)
             
@@ -113,7 +113,7 @@ def process_transcript(md_path):
             print(f"[{scribe_session_name}] is already active. Skipping Scribe spawn.")
         else:
             print(f"[WATCHDOG] Spawning Scribe Agent to process {len(staged_files)} raw chunks...")
-            subprocess.run(["tmux", "new-session", "-d", "-s", scribe_session_name, "-c", wiki_dir, "gemini --yolo"], check=True)
+            subprocess.run(["tmux", "new-session", "-d", "-s", scribe_session_name, "-c", wiki_dir, "agy --yolo"], check=True)
             time.sleep(5) # Boot time
             
             scribe_prompt = f"Wake up. You are the Scribe (Hindsight Pruner). Your specific task is to read the raw log files provided in `_raw_logs/`. You are strictly forbidden from editing the main wiki files. Extract the 'Signal Skeleton' using the Eureka Protocol: If the agent thrashed, prune the intermediate failures. Extract the original Prompt, the Negative Data (failed approaches), and the Verified Fix. Output each extraction into the `_ingest/` directory as a highly structured markdown file (e.g., `synapse_1.md`), deleting each raw log file as you finish processing it. Once `_raw_logs/` is completely empty, use run_shell_command to execute: `tmux kill-session -t {scribe_session_name}` to cleanly terminate your container."

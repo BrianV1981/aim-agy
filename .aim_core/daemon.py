@@ -36,7 +36,7 @@ def audit_ghost_sessions():
     """Finds JSONL transcripts that were ungracefully closed without an .md history artifact and summarizes them."""
     log("Auditing for Ghost Sessions...")
     project_name = os.path.basename(AIM_ROOT)
-    chats_dir = os.path.expanduser(f"~/.gemini/tmp/{project_name}/chats")
+    chats_dir = os.path.expanduser(f"~/.agy/tmp/{project_name}/chats")
     if not os.path.exists(chats_dir):
         return
         
@@ -134,12 +134,12 @@ def inject_pulse(prompt):
     with open(pulse_file, "w") as f:
         f.write(f"# AUTONOMIC HEARTBEAT\n*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n\n**DIRECTIVE:**\n{prompt}\n")
 
-    # In a headless environment, we pipe the prompt directly into the Gemini CLI.
+    # In a headless environment, we pipe the prompt directly into the Antigravity CLI.
     # We append the 'y' flag mentally, or let it rely on the operator's YOLO setting.
     injection_text = f'SYSTEM OVERRIDE: {prompt} Read core/DAEMON_PULSE.md for details.\n'
     
     try:
-        p = subprocess.Popen(["gemini", "chat"], cwd=AIM_ROOT, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        p = subprocess.Popen(["agy", "chat"], cwd=AIM_ROOT, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         p.stdin.write(injection_text.encode('utf-8'))
         p.stdin.close()
     except Exception as e:

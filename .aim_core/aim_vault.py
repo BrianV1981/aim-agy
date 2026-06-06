@@ -49,7 +49,7 @@ def main():
     
     set_parser = subparsers.add_parser("set", help="Store a secret")
     set_parser.add_argument("service", help="Service name (e.g., aim-system)")
-    set_parser.add_argument("name", help="Key name (e.g., gemini-api-key)")
+    set_parser.add_argument("name", help="Key name (e.g., agy-api-key)")
     set_parser.add_argument("--value", help="Value (optional, will prompt if omitted)")
     
     get_parser = subparsers.add_parser("get", help="Retrieve a secret (for testing)")

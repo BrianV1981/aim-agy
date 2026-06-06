@@ -45,7 +45,7 @@ def extract_signal(json_path):
 
                 if m_role == "user" or m_role == "system":
                     fragment["text"] = process_content(content)
-                elif m_role in ["gemini", "model"]:
+                elif m_role in ["agy", "model"]:
                     text = process_content(content)
                     
                     # Legacy thought block extraction

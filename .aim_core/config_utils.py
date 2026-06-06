@@ -47,7 +47,7 @@ def load_config():
             "archive_raw_dir": os.path.join(AIM_ROOT, "archive/raw"),
             "continuity_dir": os.path.join(AIM_ROOT, "continuity"),
             "src_dir": os.path.join(AIM_ROOT, ".aim_core"),
-            "tmp_chats_dir": os.path.join(home, f".gemini/tmp/{os.path.basename(AIM_ROOT)}/chats")
+            "tmp_chats_dir": os.path.join(home, f".agy/tmp/{os.path.basename(AIM_ROOT)}/chats")
         },
         "models": {
             "embedding_provider": "local",
@@ -55,7 +55,7 @@ def load_config():
             "embedding_endpoint": "http://127.0.0.1:11434/api/embeddings",
             "default_reasoning": {
                 "provider": "google",
-                "model": "gemini-flash-latest",
+                "model": "agy-flash-latest",
                 "endpoint": "https://generativelanguage.googleapis.com",
                 "auth_type": "API Key"
             }
@@ -91,7 +91,7 @@ def load_config():
                 config['paths'][key] = os.path.join(AIM_ROOT, key.replace('_dir', ''))
             
             # Recalculate home-based paths
-            config['paths']['tmp_chats_dir'] = os.path.join(home, f".gemini/tmp/{os.path.basename(AIM_ROOT)}/chats")
+            config['paths']['tmp_chats_dir'] = os.path.join(home, f".agy/tmp/{os.path.basename(AIM_ROOT)}/chats")
             
             # If we have an Obsidian path, we only update it if it started with /home/
             old_vault = config['settings'].get('obsidian_vault_path', "")

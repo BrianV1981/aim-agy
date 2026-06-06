@@ -78,7 +78,7 @@ def summarize_massive_turn(text, model_name="qwen3.5:4b"):
 def get_embedding(text, task_type='RETRIEVAL_DOCUMENT'):
     """
     Unified entry point for embeddings. Supports:
-    - google: Gemini API
+    - google: Antigravity API
     - local: Ollama Native API
     - openai-compat: Standard OpenAI Embedding API (LocalAI, vLLM, OpenAI)
     """

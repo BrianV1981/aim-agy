@@ -13,17 +13,17 @@ def main():
     parser.add_argument("--auto-copy", action="store_true", help="Automatically copy found files without prompting")
     args = parser.parse_args()
 
-    # The hidden directory where Gemini CLI stores session logs for isolated sub-environments
-    tmp_dir = os.path.expanduser("~/.gemini/tmp")
+    # The hidden directory where Antigravity CLI stores session logs for isolated sub-environments
+    tmp_dir = os.path.expanduser("~/.agy/tmp")
     dest_dir = Path(args.dest)
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"--- A.I.M. BENCHMARK RECOVERY PROTOCOL ---")
-    print(f"Searching hidden Gemini CLI temporary environment caches...")
+    print(f"Searching hidden Antigravity CLI temporary environment caches...")
     print(f"Path: {tmp_dir}/**/chats/*.json\n")
 
     if not os.path.exists(tmp_dir):
-        print(f"Error: Could not find the global Gemini CLI tmp directory at {tmp_dir}")
+        print(f"Error: Could not find the global Antigravity CLI tmp directory at {tmp_dir}")
         return
 
     # Find all json files in the chats subdirectories
@@ -46,7 +46,7 @@ def main():
     for i, f in enumerate(recent_files):
         mod_time = time.ctime(os.path.getmtime(f))
         size_kb = os.path.getsize(f) / 1024
-        # Extract the environment name (e.g., 'django-matrix-pro' from '~/.gemini/tmp/django-matrix-pro/chats/...')
+        # Extract the environment name (e.g., 'django-matrix-pro' from '~/.agy/tmp/django-matrix-pro/chats/...')
         env_name = Path(f).parts[-3] 
         print(f" [{i+1}] {env_name} | {mod_time} | {size_kb:.1f} KB")
         print(f"     Path: {f}")

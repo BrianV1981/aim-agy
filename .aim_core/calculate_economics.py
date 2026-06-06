@@ -5,12 +5,12 @@ from typing import List, Dict
 
 def calculate_gemini_session_cost(
     json_path: str,
-    model: str = "gemini-3-flash-preview"
+    model: str = "agy-3-flash-preview"
 ) -> float:
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
 
-    # Some gemini logs have a 'messages' key, some might be a raw list
+    # Some agy logs have a 'messages' key, some might be a raw list
     if isinstance(data, dict) and "messages" in data:
         turns = data["messages"]
     else:
@@ -35,8 +35,8 @@ def calculate_gemini_session_cost(
     # ====================== PRICING ======================
     # Using OpenRouter Preview Pricing for benchmarks
     pricing = {
-        "gemini-3-flash-preview": {"input": 0.50, "output": 3.00},
-        "gemini-3.1-pro-preview": {"input": 2.00, "output": 12.00},
+        "agy-3-flash-preview": {"input": 0.50, "output": 3.00},
+        "agy-3.1-pro-preview": {"input": 2.00, "output": 12.00},
         "default":                {"input": 0.50, "output": 3.00},
     }
 
@@ -57,7 +57,7 @@ def calculate_gemini_session_cost(
     return total_cost
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Calculate benchmark economics from raw Gemini CLI JSON logs.")
+    parser = argparse.ArgumentParser(description="Calculate benchmark economics from raw Antigravity CLI JSON logs.")
     parser.add_argument("--logs", type=str, default="docs/benchmarks/raw_logs", help="Path to the logs directory")
     args = parser.parse_args()
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     total_cost_all = 0.0
     for json_file in logs_folder.glob("*.json"):
         # Auto-detect model based on filename for our benchmarks
-        model_type = "gemini-3.1-pro-preview" if "pro" in json_file.name else "gemini-3-flash-preview"
+        model_type = "agy-3.1-pro-preview" if "pro" in json_file.name else "agy-3-flash-preview"
         cost = calculate_gemini_session_cost(str(json_file), model=model_type)
         total_cost_all += cost
 

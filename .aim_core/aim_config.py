@@ -101,12 +101,12 @@ def load_operator_identity_defaults():
     gemini_path = os.path.join(AIM_ROOT, "AGENTS.md")
     if os.path.exists(gemini_path):
         with open(gemini_path, "r", encoding="utf-8") as f:
-            gemini = f.read()
-        defaults["name"] = _extract_md_field(gemini, "Operator", defaults["name"])
-        defaults["exec_mode"] = _extract_md_field(gemini, "Execution Mode", "Autonomous")
-        defaults["cog_level"] = _extract_md_field(gemini, "Cognitive Level", "Technical")
-        defaults["concise_mode"] = _extract_md_field(gemini, "Conciseness", "False")
-        defaults["lightweight_guardrails"] = "## ⚠️ EXPLICIT GUARDRAILS" in gemini
+            agy = f.read()
+        defaults["name"] = _extract_md_field(agy, "Operator", defaults["name"])
+        defaults["exec_mode"] = _extract_md_field(agy, "Execution Mode", "Autonomous")
+        defaults["cog_level"] = _extract_md_field(agy, "Cognitive Level", "Technical")
+        defaults["concise_mode"] = _extract_md_field(agy, "Conciseness", "False")
+        defaults["lightweight_guardrails"] = "## ⚠️ EXPLICIT GUARDRAILS" in agy
     else:
         defaults["exec_mode"] = "Autonomous"
         defaults["cog_level"] = "Technical"
@@ -259,24 +259,24 @@ def setup_cognitive_tier(tier_name):
         
         if selection_mode == "All Models (Full List)":
             model_choices = [
-                "gemini-3.1-pro-preview",
-                "gemini-3-flash-preview",
-                "gemini-2.5-pro",
-                "gemini-2.5-flash",
-                "gemini-2.5-flash-lite"
+                "agy-3.1-pro-preview",
+                "agy-3-flash-preview",
+                "agy-2.5-pro",
+                "agy-2.5-flash",
+                "agy-2.5-flash-lite"
             ]
             model = questionary.select("Select Google Model:", choices=model_choices).ask()
         else:
-            model = questionary.text("Enter Google Model ID (e.g., gemini-3.1-pro-preview):").ask()            
+            model = questionary.text("Enter Google Model ID (e.g., agy-3.1-pro-preview):").ask()            
         endpoint = "https://generativelanguage.googleapis.com"
         if "API Key" in auth_type:
             key_name = "google-api-key"
         else:
-            # REGRESSION GUARD: Do NOT trigger `subprocess.run(["gemini", "login"])` here.
-            # The Gemini CLI intercepts it and traps the user in an interactive chat session,
+            # REGRESSION GUARD: Do NOT trigger `subprocess.run(["agy", "login"])` here.
+            # The Antigravity CLI intercepts it and traps the user in an interactive chat session,
             # requiring a double Ctrl+C to escape back to the TUI. (See Issue #24)
-            rprint("[cyan]Delegating authentication natively to the Gemini CLI...[/cyan]")
-            rprint("[yellow]Please ensure you are authenticated by running 'gemini login' in a separate terminal.[/yellow]")
+            rprint("[cyan]Delegating authentication natively to the Antigravity CLI...[/cyan]")
+            rprint("[yellow]Please ensure you are authenticated by running 'agy login' in a separate terminal.[/yellow]")
             key_name = None
     elif provider == "codex-cli":
         model_choices = ["gpt-5.4", "gpt-5.4-mini", "gpt-5.3-codex", "gpt-5.3-codex-spark", "Other (Manual)"]
@@ -292,7 +292,7 @@ def setup_cognitive_tier(tier_name):
     elif provider == "openrouter":
         model_choices = [
             "anthropic/claude-3.5-sonnet", 
-            "google/gemini-2.0-flash-001",
+            "google/agy-2.0-flash-001",
             "deepseek/deepseek-r1",
             "openai/gpt-4o",
             "meta-llama/llama-3.3-70b-instruct",

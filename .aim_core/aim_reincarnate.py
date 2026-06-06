@@ -97,7 +97,7 @@ def main():
     try:
         # TUI Mode with native prompt-interactive flag
         subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", AIM_ROOT, "gemini", "--yolo", "-i", wake_up_prompt],
+            ["tmux", "new-session", "-d", "-s", session_name, "-c", AIM_ROOT, "agy", "--yolo", "-i", wake_up_prompt],
             check=True
         )
         print(f"      [Success] New agent is awake in tmux session: {session_name}")
@@ -109,7 +109,7 @@ def main():
         sys.exit(1)
         
     # 3. Native injection handles prompt
-    print("[3/4] Wake-up prompt handled natively by Gemini CLI...")
+    print("[3/4] Wake-up prompt handled natively by Antigravity CLI...")
         
     # 4. The Teleport (Self-Termination)
     print("[4/4] Executing Teleport Sequence...")

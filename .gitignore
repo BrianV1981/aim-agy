@@ -28,7 +28,7 @@ node_modules/
 *.pyc
 __pycache__/
 .DS_Store
-.gemini/
+.agy/
 *.log
 
 # 6. OS Metadata

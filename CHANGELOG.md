@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.3] - 2026-06-05
+- Fix: Migrate to Antigravity CLI (Closes #1)
+
+
 ## [v1.69.2] - 2026-06-05
 - Fix: Execute the missing Dual-Path Sovereign Installers (Closes #638)
 
@@ -145,7 +149,7 @@
 
 
 ## [v1.60.7] - 2026-05-15
-- Fix: Decoupled session_summarizer from Gemini hooks via Popen (Closes #574)
+- Fix: Decoupled session_summarizer from Antigravity hooks via Popen (Closes #574)
 
 
 ## [v1.60.6] - 2026-05-07
@@ -234,7 +238,7 @@
 
 
 ## [v1.58.10] - 2026-04-29
-- Fix: Support native Gemini CLI JSON keys in tail monitor (Closes #476)
+- Fix: Support native Antigravity CLI JSON keys in tail monitor (Closes #476)
 
 
 ## [v1.58.9] - 2026-04-29
@@ -289,7 +293,7 @@
 - Fix: Enforce 5-minute freshness check on REINCARNATION_GAMEPLAN.md to make handoff deterministic (Closes #416)
 
 ## [v1.57.33] - 2026-04-25
-- Fix: Decouple session_summarizer hook to prevent Gemini CLI timeout and crash (Closes #429)
+- Fix: Decouple session_summarizer hook to prevent Antigravity CLI timeout and crash (Closes #429)
 
 ## [v1.57.32] - 2026-04-25
 - Fix: Resolve TUI cognitive check timeout caused by recursive session-summarizer hook (Closes #426)
@@ -370,7 +374,7 @@
 - Fix: Enforce global memoryBoundaryMarkers for strict agent isolation (Closes #361)
 
 ## [v1.57.6] - 2026-04-22
-- Fix: Add memory-wiki/.gemini/settings.json to isolate daemon context (Closes #361)
+- Fix: Add memory-wiki/.agy/settings.json to isolate daemon context (Closes #361)
 
 ## [v1.57.5] - 2026-04-22
 - Fix: Update Subconscious Wiki Daemon to properly prompt and parse multi-file outputs (Closes #356)
@@ -401,7 +405,7 @@
 - Feature: Stateful Memory (Scratchpad) and JSON Output for aim-calc (Closes #323)
 
 ## [v1.54.0] - 2026-04-09
-- Feature: Integrate Gemini CLI Native Skills for Scientific Calculator Benchmark (Closes #321)
+- Feature: Integrate Antigravity CLI Native Skills for Scientific Calculator Benchmark (Closes #321)
 
 ## [v1.53.0] - 2026-04-09
 - Feature: Execute Aerospace Benchmark (Closes #316)

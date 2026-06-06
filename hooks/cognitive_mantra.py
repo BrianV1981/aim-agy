@@ -35,7 +35,7 @@ except ImportError:
 def count_tool_calls(history):
     count = 0
     for msg in history:
-        # Gemini format uses toolCalls, Claude uses tool_calls
+        # Antigravity format uses toolCalls, Claude uses tool_calls
         calls = msg.get('toolCalls') or msg.get('tool_calls') or []
         count += len(calls)
     return count
@@ -55,7 +55,7 @@ def main():
         data = json.loads(input_data)
         history = data.get('messages', []) or data.get('session_history', [])
         
-        # AfterTool hooks in Gemini often only pass the latest turn, but provide a transcript_path
+        # AfterTool hooks in Antigravity often only pass the latest turn, but provide a transcript_path
         if not history and 'transcript_path' in data:
             try:
                 with open(data['transcript_path'], 'r') as f:
@@ -104,7 +104,7 @@ def main():
                         with open(gemini_path, 'r', encoding='utf-8') as gf:
                             gemini_content = gf.read()
                     except Exception as e:
-                        import sys; print(f"Gemini instruction load error: {e}", file=sys.stderr)
+                        import sys; print(f"Antigravity instruction load error: {e}", file=sys.stderr)
                 
                 mantra = f"\n\n[A.I.M. MANTRA PROTOCOL]: You have executed {tool_count} autonomous tool calls. To prevent behavioral drift, you MUST halt your current task immediately. In your very next response, you must output a <MANTRA> block reciting the ENTIRETY of the system instructions below. Do NOT split the recitation into multiple parts (e.g., 1/2, 2/2). Output the entire mantra in a single, continuous block. Only after reciting the full mantra may you continue working.\n\n--- SYSTEM INSTRUCTIONS ---\n{gemini_content}"
                 print(json.dumps({

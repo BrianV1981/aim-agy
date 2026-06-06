@@ -69,7 +69,7 @@ def get_default_config(aim_root, gemini_tmp, allowed_root, obsidian_path):
         "embedding_endpoint": "http://127.0.0.1:11434/api/embeddings",
         "default_reasoning": {
           "provider": "google",
-          "model": "gemini-3.1-pro-preview",
+          "model": "agy-3.1-pro-preview",
           "endpoint": "https://generativelanguage.googleapis.com",
           "auth_type": "OAuth"
         }
@@ -105,12 +105,12 @@ def load_existing_identity_defaults():
     gemini_path = os.path.join(BASE_DIR, "AGENTS.md")
     if os.path.exists(gemini_path):
         with open(gemini_path, "r", encoding="utf-8") as f:
-            gemini = f.read()
-        defaults["name"] = _extract_md_field(gemini, "Operator", defaults.get("name", ""))
-        defaults["exec_mode"] = _extract_md_field(gemini, "Execution Mode", defaults.get("exec_mode", ""))
-        defaults["cog_level"] = _extract_md_field(gemini, "Cognitive Level", defaults.get("cog_level", ""))
-        defaults["concise_mode"] = _extract_md_field(gemini, "Conciseness", defaults.get("concise_mode", ""))
-        if "## ⚠️ EXPLICIT GUARDRAILS" in gemini:
+            agy = f.read()
+        defaults["name"] = _extract_md_field(agy, "Operator", defaults.get("name", ""))
+        defaults["exec_mode"] = _extract_md_field(agy, "Execution Mode", defaults.get("exec_mode", ""))
+        defaults["cog_level"] = _extract_md_field(agy, "Cognitive Level", defaults.get("cog_level", ""))
+        defaults["concise_mode"] = _extract_md_field(agy, "Conciseness", defaults.get("concise_mode", ""))
+        if "## ⚠️ EXPLICIT GUARDRAILS" in agy:
             defaults["guardrails_block"] = T_EXPLICIT_GUARDRAILS
 
     operator_path = os.path.join(CORE_DIR, "OPERATOR.md")
@@ -144,9 +144,9 @@ def load_existing_identity_defaults():
 
     return defaults
 def register_hooks(is_light_mode=False):
-    settings_path = os.path.expanduser("~/.gemini/settings.json")
+    settings_path = os.path.expanduser("~/.agy/settings.json")
     router_src = os.path.join(BASE_DIR, ".aim_core/aim_router.py")
-    router_dest = os.path.expanduser("~/.gemini/aim_router.py")
+    router_dest = os.path.expanduser("~/.agy/aim_router.py")
 
     if os.path.exists(router_src):
         import shutil
@@ -210,7 +210,7 @@ def init_workspace(args=None):
     
     # 1. Mechanical Provisioning (Folders & Settings)
     dirs = ["archive/raw", "archive/history", "archive/sync", "archive/cartridges",
-            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", "core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".gemini"]
+            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", "core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".agy"]
     for d in dirs: os.makedirs(os.path.join(BASE_DIR, d), exist_ok=True)
 
     is_light_mode = "--light" in args
@@ -218,10 +218,10 @@ def init_workspace(args=None):
 
     # Base settings and ignores
     files = {
-        ".geminiignore": "workspace/
+        ".agyignore": "workspace/
 archive/
 ",
-        ".gemini/settings.json": '{
+        ".agy/settings.json": '{
   "context": {
     "memoryBoundaryMarkers": ["AGENTS.md", ".git"],
     "discoveryMaxDirs": 0,
@@ -229,7 +229,7 @@ archive/
   }
 }
 ',
-        "memory-wiki/.gemini/settings.json": '{
+        "memory-wiki/.agy/settings.json": '{
   "context": {
     "memoryBoundaryMarkers": ["AGENT.md"],
     "discoveryMaxDirs": 0,
@@ -262,7 +262,7 @@ archive/
 
     try:
         print("Spawning the Onboarding Architect...")
-        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "gemini --yolo --prompt-file BOOTSTRAP.md"], check=True)
+        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --yolo --prompt-file BOOTSTRAP.md"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
         print(f"
 Please attach to the session to complete your interview:")

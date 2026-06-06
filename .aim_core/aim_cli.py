@@ -787,8 +787,8 @@ def cmd_import(args):
 
 
 def ensure_hooks_mapped():
-    """Silently self-heals stale hook paths in the global Gemini CLI settings when the workspace is moved or cloned."""
-    settings_path = os.path.expanduser("~/.gemini/settings.json")
+    """Silently self-heals stale hook paths in the global Antigravity CLI settings when the workspace is moved or cloned."""
+    settings_path = os.path.expanduser("~/.agy/settings.json")
     if not os.path.exists(settings_path): return
     try:
         import json

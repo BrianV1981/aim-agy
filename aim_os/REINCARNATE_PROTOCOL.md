@@ -12,7 +12,7 @@ Before reincarnation is ever triggered, the outgoing agent **must** execute its 
 - **Enforcement:** The native `aim_core/aim_reincarnate.py` script enforces a 5-minute staleness check. If the Gameplan has not been written or updated recently, the script will mechanically block the handoff to prevent amnesia.
 
 ### Phase 2: The Signal Skeleton Extraction (`extract_signal.py` & `handoff_pulse_generator.py`)
-Once the Reincarnate script is fired, the system bypasses the active context window and directly reads the raw `.jsonl` flight recorder from the Gemini CLI's hidden cache.
+Once the Reincarnate script is fired, the system bypasses the active context window and directly reads the raw `.jsonl` flight recorder from the Antigravity CLI's hidden cache.
 - **The Scrub (`aim_core/extract_signal.py`):** It surgically strips out massive, multi-megabyte JSON payloads, raw search results, and tool responses. It preserves only the pure conversational text, the agent's internal `<thoughts>`, and the names/intents of the tools executed.
 - **The Routing (`aim_core/handoff_pulse_generator.py`):** This script takes the noise-reduced "Signal Skeleton" and routes it. It saves the full transcript permanently to `archive/history/[TIMESTAMP]_[SESSION_ID].md` and writes a rolling 5-turn delta to `continuity/CURRENT_PULSE.md` for instant, token-cheap awareness.
 

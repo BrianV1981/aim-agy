@@ -19,7 +19,7 @@ This protocol defines the standard architecture and workflow for processing, chu
 
 4.  **Embedding & Native Ingestion (PyArrow Integration):**
     The SQLite intermediate step is entirely removed.
-    *   **Embeddings:** Raw text chunks are passed to the embedding engine (e.g., Ollama `nomic-embed-text` or Gemini Embedding 2) to generate 768-dimensional mathematical tensors.
+    *   **Embeddings:** Raw text chunks are passed to the embedding engine (e.g., Ollama `nomic-embed-text` or Antigravity Embedding 2) to generate 768-dimensional mathematical tensors.
     *   **Ingestion:** Vectors and metadata are structured in a Python list and written directly into LanceDB using native PyArrow columnar schemas. Active session data is routed to the `memory_lance` (RAM) pool, while baked documentation is compiled into highly-compressed `.parquet` (ROM) cartridges.
 
 5.  **Full-Text Search (Tantivy FTS) Indexing:**
