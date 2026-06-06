@@ -8,14 +8,14 @@ from datetime import datetime
 def find_aim_root(start_dir):
     current = os.path.abspath(start_dir)
     while current != '/':
-        config_path = os.path.join(current, ".aim_.aim_core/CONFIG.json")
+        config_path = os.path.join(current, ".aim_core/CONFIG.json")
         if os.path.exists(config_path):
             return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root(os.getcwd())
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 
 def load_vault_path():
     if not os.path.exists(CONFIG_PATH): return None

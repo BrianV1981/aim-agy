@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.8] - 2026-06-06
+- Fix: Correct malformed .aim_.aim_core paths to .aim_core (Closes #8)
+
+
 ## [v1.69.7] - 2026-06-06
 - Fix: Replace hardcoded core/CONFIG.json with .aim_core/CONFIG.json (Closes #7)
 

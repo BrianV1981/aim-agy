@@ -10,12 +10,12 @@ import keyring
 def find_aim_root():
     current = os.path.dirname(os.path.abspath(__file__))
     while current != '/':
-        if os.path.exists(os.path.join(current, ".aim_.aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
+        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root()
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 
 def load_config():
     if not os.path.exists(CONFIG_PATH): return {}

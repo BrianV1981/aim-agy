@@ -13,7 +13,7 @@ except ImportError:
     from extract_signal import extract_signal, skeleton_to_markdown
 
 # --- CONFIGURATION (Load from .aim_core/CONFIG.json) ---
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_.aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
 with open(CONFIG_PATH, 'r') as f:
     CONFIG = json.load(f)
 
