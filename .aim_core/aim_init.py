@@ -288,7 +288,12 @@ engrams/
 
     try:
         print("Spawning the Onboarding Architect...")
-        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions --prompt-file BOOTSTRAP.md"], check=True)
+        with open(bootstrap_file, "r") as f:
+            bootstrap_content = f.read()
+        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
+        subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
+        subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
         print(f"""
 Please attach to the session to complete your interview:""")

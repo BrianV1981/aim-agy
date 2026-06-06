@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.14] - 2026-06-06
+- Fix: Spawning architect uses tmux buffers instead of removed flag (Closes #15)
+
+
 ## [v1.69.13] - 2026-06-06
 - Fix: Ensure AGENT.md is generated and add Stop and Ask mandate to agent templates (Closes #14)
 
