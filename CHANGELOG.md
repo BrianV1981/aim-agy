@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.16] - 2026-06-06
+- Fix: Deprecate obsolete crash recovery protocol and remove aim_crash.py (Closes #18)
+
+
 ## [v1.69.15] - 2026-06-06
 - Fix: Overhaul paths in aim_core scripts to support antigravity-cli brain directory (Closes #16)
 
