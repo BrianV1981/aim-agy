@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.7] - 2026-06-06
+- Fix: Correct memory/lance typo and ensure all ghost folders are created (Closes #5)
+
+
 ## [v1.69.6] - 2026-06-05
 - Fix: Relative imports and bundle pre-indexed FTS LanceDB (Closes #4)
 

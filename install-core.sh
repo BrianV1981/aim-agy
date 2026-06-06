@@ -26,7 +26,7 @@ rm -rf .aim_temp_clone
 shopt -u dotglob
 
 # Base OS Provisioning (Moving the pre-baked DB to the active layer)
-mkdir -p memory/lance
+mkdir -p memory/lance foundry planning-artifacts workspace
 cp -r assets/default_lance/* memory/lance/
 
 echo "    [*] Linking Local Alias ($CLI_NAME)..."
