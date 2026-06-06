@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.6] - 2026-06-05
+- Fix: Relative imports and bundle pre-indexed FTS LanceDB (Closes #4)
+
+
 ## [v1.69.5] - 2026-06-05
 - Fix: Replace --yolo with --dangerously-skip-permissions for Antigravity CLI compatibility (Closes #3)
 

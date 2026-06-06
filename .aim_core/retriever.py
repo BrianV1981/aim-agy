@@ -35,7 +35,7 @@ src_dir = os.path.join(AIM_ROOT, ".aim_core")
 if src_dir not in sys.path: sys.path.append(src_dir)
 
 from config_utils import CONFIG
-from .aim_core.plugins.datajack.forensic_utils import get_embedding
+from plugins.datajack.forensic_utils import get_embedding
 
 def get_fragment_hash(res):
     content = res.get('content', '')
@@ -50,7 +50,7 @@ def get_aggregated_knowledge_map():
         "session_history": []
     }
     
-    from .aim_core.lance_backend import VectorBackend
+    from lance_backend import VectorBackend
     import pandas as pd
     
     # 1. Query RAM (memory_lance)
@@ -116,7 +116,7 @@ def expand_sandwich_context(results):
     expanded_results = []
     seen_ids = set()
     
-    from .aim_core.lance_backend import VectorBackend
+    from lance_backend import VectorBackend
     backend = VectorBackend()
     try:
         table = backend.get_table()
@@ -227,7 +227,7 @@ def expand_sandwich_context(results):
     return expanded_results
 
 def perform_search_internal(query, top_k=10, session_filter=None):
-    from .aim_core.lance_backend import VectorBackend
+    from lance_backend import VectorBackend
     mandate_keywords = ["POLICY", "MANDATE", "SOUL", "TDD", "SENTINEL", "GUARDRAIL", "HANDBOOK"]
     
     try:

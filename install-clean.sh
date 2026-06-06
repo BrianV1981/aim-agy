@@ -35,8 +35,8 @@ rm -rf skills/
 git init
 
 # Base OS Provisioning (Moving the pre-baked DB to the active layer)
-mkdir -p memory/lance
-cp -r assets/default_lance/* memory/lance/
+mkdir -p memory_lance
+cp -r assets/default_lance/* memory_lance/
 
 # Generate Ghost Folder Explainers
 mkdir -p foundry planning-artifacts workspace
