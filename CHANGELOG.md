@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.19] - 2026-06-06
+- Fix: Add AGENTS_AMENDMENT_PROTOCOL.md and re-compile Parquet ROM (Closes #13)
+
+
 ## [v1.69.18] - 2026-06-06
 - Fix: Rename aim_os to aim-agy_os across architecture (Closes #27)
 
