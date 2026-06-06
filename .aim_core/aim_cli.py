@@ -376,9 +376,7 @@ def cmd_sync_issues(args):
     """Synchronizes remote GitHub issues to the local ISSUE_TRACKER.md file."""
     run_script(os.path.join(AIM_CORE_DIR, "sync_issue_tracker.py"), [])
 
-def cmd_crash(args):
-    """Executes the crash recovery protocol to salvage interrupted sessions."""
-    run_script(os.path.join(AIM_CORE_DIR, "aim_crash.py"), [])
+
 
 def cmd_reincarnate(args):
     """Triggers the automated reincarnate handoff loop."""
@@ -798,7 +796,7 @@ def main():
     subparsers.add_parser("handoff", aliases=["pulse"])
     subparsers.add_parser("sync")
     subparsers.add_parser("sync-issues", help="Synchronize remote GitHub issues to local ledger")
-    subparsers.add_parser("crash", help="Trigger the Crash Recovery Protocol (Extracts signal from crashed session, generates handoff, and syncs issues)")
+
     subparsers.add_parser("reincarnate", help="Trigger the Reincarnation Protocol (Automated context handoff and terminal swap)")
     
     delegate_parser = subparsers.add_parser("delegate", help="Spawn parallel sub-agents to analyze multiple files (The RLM Pattern)")
@@ -924,7 +922,7 @@ def main():
     elif args.command == "push": cmd_push(args)
     elif args.command == "sync": cmd_sync(args)
     elif args.command == "sync-issues": cmd_sync_issues(args)
-    elif args.command == "crash": cmd_crash(args)
+
     elif args.command == "reincarnate": cmd_reincarnate(args)
     elif args.command == "clean": cmd_clean(args)
     elif args.command == "bake": cmd_bake(args)
