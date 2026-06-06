@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.70.0] - 2026-06-06
+- Feature: Add install-agent.sh for True Sovereign Co-Agents (Closes #34)
+
+
 ## [v1.69.19] - 2026-06-06
 - Fix: Add AGENTS_AMENDMENT_PROTOCOL.md and re-compile Parquet ROM (Closes #13)
 
