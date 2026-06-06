@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.69.17] - 2026-06-06
+- Fix: Restore native Workspace boundaries via memory-wiki/AGENTS.md to isolate Daemon LLM calls (Closes #6)
+
+
 ## [v1.69.16] - 2026-06-06
 - Fix: Remove dead scrape_github_issues.py execution to unblock aim pulse (Closes #22)
 - Fix: Deprecate custom daemon.py in favor of native Antigravity schedule tooling (Closes #23)
