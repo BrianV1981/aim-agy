@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.70.1] - 2026-06-06
+- Fix: Route 'import' command in argparse for aim_cli.py (Closes #42)
+
+
 ## [v1.70.0] - 2026-06-06
 - Feature: Add install-agent.sh for True Sovereign Co-Agents (Closes #34)
 
