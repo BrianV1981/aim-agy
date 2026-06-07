@@ -693,43 +693,17 @@ def cmd_update(args):
     print("\\n[SUCCESS] Sovereign Engine Update Complete. You are running the latest A.I.M. OS.")
 
 def cmd_import(args):
-    """Manually ingests files into the LLM Wiki (JSONL -> Scribe, MD -> Weaver)."""
+    """Manually ingests raw JSONL, JSON, or MD files into the Subconscious Swarm."""
     filepath = getattr(args, 'file', None)
     if not filepath:
         print("Usage: aim import <path/to/file.jsonl | file.md>")
         sys.exit(1)
         
-    filepath = args.file
     if not os.path.exists(filepath):
         print(f"[ERROR] File not found: {filepath}")
         sys.exit(1)
         
-    print(f"\n--- A.I.M. SESSION IMPORTER ---")
-    print(f"[*] Analyzing target: {filepath}")
-    
-    # Path A: Raw Flight Recorder (.jsonl)
-    if filepath.endswith(".jsonl"):
-        print(f"[*] Detected Raw JSONL. Routing to Watchdog (Scribe)...")
-        # Reuse the session_summarizer logic by calling it mechanically
-        subprocess.run([sys.executable, os.path.join(BASE_DIR, ".aim_core", "session_summarizer.py"), "--reincarnate", filepath], check=True)
-        print(f"\n[SUCCESS] Scribe extraction initiated. Watchdog is monitoring.")
-        
-    # Path B: Pre-Cleaned Notes (.md)
-    elif filepath.endswith(".md"):
-        print(f"[*] Detected Clean Markdown. Bypassing Scribe. Routing directly to Weaver...")
-        import shutil
-        ingest_dir = os.path.join(BASE_DIR, "memory", "wiki", "_ingest")
-        os.makedirs(ingest_dir, exist_ok=True)
-        shutil.copy2(filepath, os.path.join(ingest_dir, os.path.basename(filepath)))
-        
-        print(f"[*] File staged in _ingest queue. Waking Weaver...")
-        from wiki_tools import process_wiki
-        process_wiki()
-        print(f"\n[SUCCESS] Weaver awakened in background tmux session.")
-        
-    else:
-        print("[ERROR] Unsupported file format. Please import .jsonl or .md files.")
-        sys.exit(1)
+    subprocess.run([sys.executable, os.path.join(BASE_DIR, ".aim_core", "memory_salvage.py"), filepath], check=False)
 
 
 def ensure_hooks_mapped():
