@@ -81,7 +81,6 @@ def process_transcript(md_path):
             transcript = f.read()
             
         turns = transcript.split('\n---\n\n')
-        chunk_size = 1000
         
         raw_logs_dir = os.path.join(AIM_ROOT, "memory-wiki", "_raw_logs")
         os.makedirs(raw_logs_dir, exist_ok=True)
@@ -89,19 +88,40 @@ def process_transcript(md_path):
         # Clear out any old raw logs
         for old_file in glob.glob(os.path.join(raw_logs_dir, "*.md")):
             os.remove(old_file)
-        
-        print(f"[WATCHDOG] Transcript has {len(turns)} turns. Staging chunks in _raw_logs/...")
+            
+        print(f"[WATCHDOG] Transcript has {len(turns)} turns. Beginning intelligent 100k-character chunking...")
         
         staged_files = []
-        for i in range(0, len(turns), chunk_size):
-            chunk_turns = turns[i:i + chunk_size]
-            chunk_transcript = '\n---\n\n'.join(chunk_turns)
-            part_suffix = f"_part{i//chunk_size + 1}" if len(turns) > chunk_size else ""
-            
+        MAX_CHARS = 100000
+        current_chunk_turns = []
+        current_char_count = 0
+        part_index = 1
+        
+        def save_chunk(turns_to_save, idx):
+            chunk_transcript = '\n---\n\n'.join(turns_to_save)
+            part_suffix = f"_part{idx}"
             raw_path = os.path.join(raw_logs_dir, f"{session_id}{part_suffix}_raw.md")
             with open(raw_path, "w", encoding="utf-8") as f_out:
                 f_out.write(chunk_transcript)
             staged_files.append(raw_path)
+            
+        for turn in turns:
+            turn_len = len(turn) + 5 # +5 for the delimiter
+            if current_char_count + turn_len > MAX_CHARS and current_chunk_turns:
+                # Limit reached, save current chunk and start fresh
+                save_chunk(current_chunk_turns, part_index)
+                part_index += 1
+                current_chunk_turns = [turn]
+                current_char_count = turn_len
+            else:
+                current_chunk_turns.append(turn)
+                current_char_count += turn_len
+                
+        # Save any remaining turns
+        if current_chunk_turns:
+            save_chunk(current_chunk_turns, part_index)
+            
+        print(f"[WATCHDOG] Staged {len(staged_files)} safe, digestible chunks in _raw_logs/.")
             
         if not staged_files:
             print("[WATCHDOG] No data to process.")
@@ -119,7 +139,7 @@ def process_transcript(md_path):
             subprocess.run(["tmux", "new-session", "-d", "-s", scribe_session_name, "-c", wiki_dir, "agy --dangerously-skip-permissions"], check=True)
             time.sleep(5) # Boot time
             
-            scribe_prompt = f"Wake up. You are the Scribe (Hindsight Pruner). Your specific task is to read the raw log files provided in `_raw_logs/`. You are strictly forbidden from editing the main wiki files. Extract the 'Signal Skeleton' using the Eureka Protocol: If the agent thrashed, prune the intermediate failures. Extract the original Prompt, the Negative Data (failed approaches), and the Verified Fix. Output each extraction into the `_ingest/` directory as a highly structured markdown file (e.g., `synapse_1.md`), deleting each raw log file as you finish processing it. Once `_raw_logs/` is completely empty, use run_shell_command to execute: `tmux kill-session -t {scribe_session_name}` to cleanly terminate your container."
+            scribe_prompt = f"Wake up. You are the Subconscious Scribe. Your task is to process raw session chunks in `_raw_logs/` and prepare them for the LLM Wiki. You are forbidden from editing the main wiki files. 1. Read a chunk. 2. Extract the factual, high-signal information (e.g., architectural decisions made, bugs fixed, concepts learned, tools used). DO NOT force a 'Eureka' or 'Negative Data' format. Just write a clear, objective markdown summary of what happened in that chunk. 3. Save the summary into the `_ingest/` directory (e.g., `summary_{session_id}_part1.md`). 4. Delete the raw chunk you just read. 5. Repeat until `_raw_logs/` is empty. 6. Execute `tmux kill-session -t {scribe_session_name}`."
             
             subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
             subprocess.run(["tmux", "paste-buffer", "-t", scribe_session_name], check=True)
