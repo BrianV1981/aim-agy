@@ -290,7 +290,9 @@ engrams/
         print("Spawning the Onboarding Architect...")
         with open(bootstrap_file, "r") as f:
             bootstrap_content = f.read()
+        import time
         subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
+        time.sleep(3)
         subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
         subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
         subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)

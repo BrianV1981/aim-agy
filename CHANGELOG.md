@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.71.3] - 2026-06-18
+- Fix: Kickstart tmux and preserve AGENTS.md (Closes #50)
+
+
 ## [v1.71.2] - 2026-06-06
 - Fix: ModuleNotFoundError in session_summarizer.py (Closes #43)
 
