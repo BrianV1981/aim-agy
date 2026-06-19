@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.71.4] - 2026-06-19
+- Fix: correctly propagate PROJECT_ROOT to auxiliary scripts
+
+
 ## [v1.71.3] - 2026-06-18
 - Fix: Kickstart tmux and preserve AGENTS.md (Closes #50)
 
