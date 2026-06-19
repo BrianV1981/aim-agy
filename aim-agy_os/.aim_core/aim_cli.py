@@ -22,9 +22,9 @@ if os.path.exists(venv_python) and sys.executable != venv_python:
 src_dir = os.path.join(aim_root, ".aim_core")
 if src_dir not in sys.path: sys.path.append(src_dir)
 
-from config_utils import CONFIG, AIM_ROOT, OS_ROOT
+from config_utils import CONFIG, PROJECT_ROOT, OS_ROOT
 
-BASE_DIR = AIM_ROOT
+BASE_DIR = PROJECT_ROOT
 OS_DIR = OS_ROOT
 CLI_NAME = os.path.basename(BASE_DIR)
 VENV_PYTHON = os.path.join(OS_DIR, "venv/bin/python3")
@@ -228,7 +228,7 @@ def cmd_fix(args):
         
         # Copy the gitignored local CONFIG.json so the worktree can run tests natively
         import shutil
-        config_src = os.path.join(BASE_DIR, ".aim_core", "CONFIG.json")
+        config_src = os.path.join(PROJECT_ROOT, ".aim_core", "CONFIG.json")
         config_dest_dir = os.path.join(worktree_path, ".aim_core")
         if os.path.exists(config_src):
             os.makedirs(config_dest_dir, exist_ok=True)

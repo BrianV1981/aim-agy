@@ -1,3 +1,4 @@
+from config_utils import PROJECT_ROOT
 #!/usr/bin/env python3
 import os
 import json
@@ -28,7 +29,7 @@ if src_dir not in sys.path: sys.path.append(src_dir)
 from reasoning_utils import generate_reasoning
 from aim_vault import get_key, set_key
 
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 
 def load_config():
     if os.path.exists(CONFIG_PATH):
@@ -98,7 +99,7 @@ def load_operator_identity_defaults():
         "grok_profile": "No profile provided."
     }
 
-    gemini_path = os.path.join(AIM_ROOT, "AGENTS.md")
+    gemini_path = os.path.join(PROJECT_ROOT, "AGENTS.md")
     if os.path.exists(gemini_path):
         with open(gemini_path, "r", encoding="utf-8") as f:
             agy = f.read()
@@ -470,7 +471,7 @@ def update_operator_profile():
 4. **PATH STRICTNESS:** Do not guess file paths. Use the exact absolute paths provided in your environment.
 """
     
-    gemini_path = os.path.join(AIM_ROOT, "AGENTS.md")
+    gemini_path = os.path.join(PROJECT_ROOT, "AGENTS.md")
     operator_path = os.path.join(AIM_ROOT, "core", "OPERATOR.md")
     operator_profile_path = os.path.join(AIM_ROOT, "core", "OPERATOR_PROFILE.md")
 
@@ -522,7 +523,7 @@ def update_agent_persona():
         mandate = questionary.text("Enter custom mandate (e.g., 'You are a Python Data Scientist...'):").ask()
         if not mandate: return
 
-    gemini_path = os.path.join(AIM_ROOT, "AGENTS.md")
+    gemini_path = os.path.join(PROJECT_ROOT, "AGENTS.md")
     if os.path.exists(gemini_path):
         with open(gemini_path, 'r') as f: content = f.read()
         import re

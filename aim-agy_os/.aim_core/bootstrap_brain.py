@@ -11,7 +11,7 @@ aim_root = os.path.dirname(current_dir)
 if current_dir not in sys.path: sys.path.append(current_dir)
 if aim_root not in sys.path: sys.path.append(aim_root)
 
-from config_utils import CONFIG, AIM_ROOT
+from config_utils import CONFIG, AIM_ROOT, PROJECT_ROOT
 from plugins.datajack.forensic_utils import get_embedding, chunk_text
 from lance_backend import VectorBackend
 
@@ -30,7 +30,7 @@ def bootstrap_foundation():
     print("\n--- A.I.M. BRAIN BOOTSTRAP ---")
     
     foundation_targets = [
-        os.path.join(AIM_ROOT, "AGENTS.md"),
+        os.path.join(PROJECT_ROOT, "AGENTS.md"),
         os.path.join(AIM_ROOT, "aim-agy_os_docs/*.md"),
         os.path.join(AIM_ROOT, "memory-wiki/*.md"),
         os.path.join(AIM_ROOT, "memory-wiki/_ingest/*.md")

@@ -1,3 +1,4 @@
+from config_utils import PROJECT_ROOT
 #!/usr/bin/env python3
 import os
 import shutil
@@ -15,7 +16,7 @@ def find_aim_root(start_dir):
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root(os.getcwd())
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 
 def load_vault_path():
     if not os.path.exists(CONFIG_PATH): return None

@@ -9,8 +9,8 @@ import math
 from google import genai
 
 # --- CONFIGURATION (Dynamic Load) ---
-from config_utils import CONFIG, AIM_ROOT
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
+from config_utils import CONFIG, AIM_ROOT, PROJECT_ROOT
+CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 
 # --- PROVIDER LOGIC ---
 PROVIDER_TYPE = CONFIG['models'].get('embedding_provider', 'local') # google, local (ollama), openai-compat
@@ -24,7 +24,7 @@ def summarize_massive_turn(text, model_name="qwen3.5:4b"):
     import json
     import os
     import requests
-    from config_utils import AIM_ROOT
+    from config_utils import AIM_ROOT, PROJECT_ROOT
     CACHE_FILE = os.path.join(AIM_ROOT, "archive", "massive_turn_cache.json")
     text_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
     

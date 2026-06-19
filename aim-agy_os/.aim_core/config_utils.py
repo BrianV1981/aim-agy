@@ -35,7 +35,7 @@ def find_project_root():
 
 PROJECT_ROOT = find_project_root()
 OS_ROOT = os.path.join(PROJECT_ROOT, "aim-agy_os")
-AIM_ROOT = PROJECT_ROOT
+AIM_ROOT = OS_ROOT  # Default for most scripts
 CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 
 def load_config():
@@ -92,7 +92,7 @@ def load_config():
         if config.get('paths', {}).get('aim_root') != AIM_ROOT:
             sys.stderr.write(f"[PORTABILITY] System shift detected. Re-mapping paths for this machine...\n")
             
-            config['paths']['aim_root'] = AIM_ROOT
+            config['paths']['aim_root'] = PROJECT_ROOT
             config['paths']['os_root'] = OS_ROOT
             for key in ['core_dir', 'docs_dir', 'hooks_dir', 'memory_dir', 'archive_raw_dir', 'archive_index_dir', 'continuity_dir', 'src_dir']:
                 if key == 'src_dir':

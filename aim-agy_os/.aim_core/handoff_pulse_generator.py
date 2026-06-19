@@ -1,3 +1,4 @@
+from config_utils import PROJECT_ROOT
 #!/usr/bin/env python3
 import os
 import json
@@ -13,7 +14,7 @@ except ImportError:
     from extract_signal import extract_signal, skeleton_to_markdown
 
 # --- CONFIGURATION (Load from .aim_core/CONFIG.json) ---
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 with open(CONFIG_PATH, 'r') as f:
     CONFIG = json.load(f)
 
