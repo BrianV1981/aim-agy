@@ -8,21 +8,21 @@ import re
 from datetime import datetime
 
 # --- CONFIG BOOTSTRAP ---
-def find_aim_root(start_dir):
+def find_project_root(start_dir):
     current = os.path.abspath(start_dir)
     while current != '/':
         if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
-        if os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-BASE_DIR = find_aim_root(os.getcwd())
-CORE_DIR = os.path.join(BASE_DIR, "core")
-DOCS_DIR = os.path.join(BASE_DIR, "docs")
-ARCHIVE_DIR = os.path.join(BASE_DIR, "archive")
-HOOKS_DIR = os.path.join(BASE_DIR, "hooks")
-AIM_CORE_DIR = os.path.join(BASE_DIR, ".aim_core")
-VENV_PYTHON = os.path.join(BASE_DIR, "venv/bin/python3")
+BASE_DIR = find_project_root(os.getcwd())
+OS_DIR = os.path.join(BASE_DIR, "aim-agy_os")
+CORE_DIR = os.path.join(OS_DIR, "core")
+DOCS_DIR = os.path.join(OS_DIR, "docs")
+ARCHIVE_DIR = os.path.join(OS_DIR, "archive")
+HOOKS_DIR = os.path.join(OS_DIR, "hooks")
+AIM_CORE_DIR = os.path.join(OS_DIR, ".aim_core")
+VENV_PYTHON = os.path.join(OS_DIR, "venv/bin/python3")
 
 # --- INTERNAL TEMPLATES ---
 
@@ -148,7 +148,7 @@ def load_existing_identity_defaults():
     return defaults
 def register_hooks(is_light_mode=False):
     settings_path = os.path.expanduser("~/.gemini/antigravity-cli/settings.json")
-    router_src = os.path.join(BASE_DIR, ".aim_core/aim_router.py")
+    router_src = os.path.join(OS_DIR, ".aim_core/aim_router.py")
     router_dest = os.path.expanduser("~/.gemini/antigravity-cli/aim_router.py")
 
     if os.path.exists(router_src):
@@ -213,8 +213,10 @@ def init_workspace(args=None):
     
     # 1. Mechanical Provisioning (Folders & Settings)
     dirs = ["archive/raw", "archive/history", "archive/sync", "archive/cartridges",
-            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", ".gemini"]
-    for d in dirs: os.makedirs(os.path.join(BASE_DIR, d), exist_ok=True)
+            "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", "workspace"]
+    for d in dirs: os.makedirs(os.path.join(OS_DIR, d), exist_ok=True)
+    os.makedirs(os.path.join(BASE_DIR, ".gemini"), exist_ok=True)
+    os.makedirs(os.path.join(BASE_DIR, ".aim_core"), exist_ok=True)
 
     is_light_mode = "--light" in args
     register_hooks(is_light_mode)
@@ -237,7 +239,7 @@ engrams/
   }
 }
 """,
-        "memory-wiki/.gemini/settings.json": """{
+        f"aim-agy_os/memory-wiki/.gemini/settings.json": """{
   "context": {
     "memoryBoundaryMarkers": ["AGENT.md"],
     "discoveryMaxDirs": 0,
@@ -246,7 +248,7 @@ engrams/
   }
 }
 """,
-        "memory-wiki/AGENTS.md": T_WIKI_AGENT,
+        f"aim-agy_os/memory-wiki/AGENTS.md": T_WIKI_AGENT,
         ".aim_core/CONFIG.json": json.dumps({
             "agent_identity": {
                 "name": "A.I.M.",
@@ -254,13 +256,13 @@ engrams/
                 "version": "1.0.0"
             },
             "paths": {
-                "continuity_dir": os.path.join(BASE_DIR, "continuity"),
-                "archive_dir": os.path.join(BASE_DIR, "archive"),
-                "memory_dir": os.path.join(BASE_DIR, "memory_lance"),
-                "wiki_dir": os.path.join(BASE_DIR, "memory-wiki")
+                "continuity_dir": os.path.join(OS_DIR, "continuity"),
+                "archive_dir": os.path.join(OS_DIR, "archive"),
+                "memory_dir": os.path.join(OS_DIR, "memory_lance"),
+                "wiki_dir": os.path.join(OS_DIR, "memory-wiki")
             },
             "settings": {
-                "obsidian_vault_path": os.path.join(BASE_DIR, "memory-wiki"),
+                "obsidian_vault_path": os.path.join(OS_DIR, "memory-wiki"),
                 "allowed_root": BASE_DIR
             }
         }, indent=2) + "\n"
@@ -273,7 +275,7 @@ engrams/
             with open(full_path, "w") as f: f.write(content)
 
     # 2. Spawn the Agentic Interview
-    bootstrap_file = os.path.join(BASE_DIR, "BOOTSTRAP.md")
+    bootstrap_file = os.path.join(OS_DIR, "BOOTSTRAP.md")
     if not os.path.exists(bootstrap_file):
         print(f"[ERROR] {bootstrap_file} not found. Please run the curl installer.")
         sys.exit(1)

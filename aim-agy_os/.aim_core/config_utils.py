@@ -14,24 +14,29 @@ def _merge_defaults(target, defaults):
                 changed = True
     return changed
 
-def find_aim_root():
+def find_project_root():
     """
-    Dynamically discovers the A.I.M. root directory.
+    Dynamically discovers the A.I.M. project root directory.
     First checks the current working directory to support isolated workspaces.
     Falls back to the physical installation directory.
     """
     # 1. Check current directory and parents (Dynamic Workspace Isolation)
     current = os.path.abspath(os.getcwd())
     while current != '/':
-        if os.path.exists(os.path.join(current, "core", "CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")):
+        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")):
             return current
         current = os.path.dirname(current)
         
     # 2. Fallback to physical installation path (Global Execution)
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # Note: If this file is at aim-agy_os/.aim_core/config_utils.py, 
+    # dirname(dirname(abspath)) points to aim-agy_os. 
+    # So we go up one more directory to get the project root.
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-AIM_ROOT = find_aim_root()
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
+PROJECT_ROOT = find_project_root()
+OS_ROOT = os.path.join(PROJECT_ROOT, "aim-agy_os")
+AIM_ROOT = PROJECT_ROOT
+CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 
 def load_config():
     """Loads, validates, and auto-repairs paths for the current machine."""
@@ -41,12 +46,13 @@ def load_config():
     default_config = {
         "paths": {
             "aim_root": AIM_ROOT,
-            "core_dir": os.path.join(AIM_ROOT, "core"),
-            "docs_dir": os.path.join(AIM_ROOT, "docs"),
-            "hooks_dir": os.path.join(AIM_ROOT, "hooks"),
-            "archive_raw_dir": os.path.join(AIM_ROOT, "archive/raw"),
-            "continuity_dir": os.path.join(AIM_ROOT, "continuity"),
-            "src_dir": os.path.join(AIM_ROOT, ".aim_core"),
+            "os_root": OS_ROOT,
+            "core_dir": os.path.join(OS_ROOT, "core"),
+            "docs_dir": os.path.join(OS_ROOT, "docs"),
+            "hooks_dir": os.path.join(OS_ROOT, "hooks"),
+            "archive_raw_dir": os.path.join(OS_ROOT, "archive/raw"),
+            "continuity_dir": os.path.join(OS_ROOT, "continuity"),
+            "src_dir": os.path.join(OS_ROOT, ".aim_core"),
             "tmp_chats_dir": os.path.expanduser("~/.gemini/antigravity-cli/brain")
         },
         "models": {
@@ -87,8 +93,12 @@ def load_config():
             sys.stderr.write(f"[PORTABILITY] System shift detected. Re-mapping paths for this machine...\n")
             
             config['paths']['aim_root'] = AIM_ROOT
+            config['paths']['os_root'] = OS_ROOT
             for key in ['core_dir', 'docs_dir', 'hooks_dir', 'memory_dir', 'archive_raw_dir', 'archive_index_dir', 'continuity_dir', 'src_dir']:
-                config['paths'][key] = os.path.join(AIM_ROOT, key.replace('_dir', ''))
+                if key == 'src_dir':
+                    config['paths'][key] = os.path.join(OS_ROOT, ".aim_core")
+                else:
+                    config['paths'][key] = os.path.join(OS_ROOT, key.replace('_dir', ''))
             
             # Recalculate home-based paths
             config['paths']['tmp_chats_dir'] = os.path.expanduser("~/.gemini/antigravity-cli/brain")

@@ -22,19 +22,20 @@ if os.path.exists(venv_python) and sys.executable != venv_python:
 src_dir = os.path.join(aim_root, ".aim_core")
 if src_dir not in sys.path: sys.path.append(src_dir)
 
-from config_utils import CONFIG, AIM_ROOT
+from config_utils import CONFIG, AIM_ROOT, OS_ROOT
 
 BASE_DIR = AIM_ROOT
+OS_DIR = OS_ROOT
 CLI_NAME = os.path.basename(BASE_DIR)
-VENV_PYTHON = os.path.join(BASE_DIR, "venv/bin/python3")
+VENV_PYTHON = os.path.join(OS_DIR, "venv/bin/python3")
 if not os.path.exists(VENV_PYTHON):
     # Support for worktrees
-    parent_venv = os.path.join(BASE_DIR, "../../venv/bin/python3")
+    parent_venv = os.path.join(OS_DIR, "../../venv/bin/python3")
     if os.path.exists(parent_venv):
         VENV_PYTHON = parent_venv
     else:
         VENV_PYTHON = sys.executable
-AIM_CORE_DIR = os.path.join(BASE_DIR, ".aim_core")
+AIM_CORE_DIR = os.path.join(OS_DIR, ".aim_core")
 
 def run_script(script_path, args):
     """Executes an A.I.M. script with the provided arguments."""
@@ -56,9 +57,9 @@ def run_bash_script(script_path, args):
 
 def cmd_core_memory(args):
     """Opens the CORE_MEMORY.md file in the user's default editor."""
-    core_mem_file = os.path.join(BASE_DIR, "continuity/CORE_MEMORY.md")
+    core_mem_file = os.path.join(OS_DIR, "continuity/CORE_MEMORY.md")
     if not os.path.exists(core_mem_file):
-        os.makedirs(os.path.join(BASE_DIR, "continuity"), exist_ok=True)
+        os.makedirs(os.path.join(OS_DIR, "continuity"), exist_ok=True)
         with open(core_mem_file, 'w') as f:
             f.write("# A.I.M. Core Memory (RAM)\n\n*This file acts as the Agent's writable RAM. The agent can use the `aim core-memory` command to save critical facts, state, or observations here that must survive across context windows and cannot wait for the background summarizer.*\n\n- [Empty]\n")
     
@@ -67,7 +68,7 @@ def cmd_core_memory(args):
 
 def cmd_status(args):
     """Displays the current A.I.M. operational pulse."""
-    status_file = os.path.join(BASE_DIR, "continuity/CURRENT_PULSE.md")
+    status_file = os.path.join(OS_DIR, "continuity/CURRENT_PULSE.md")
     if os.path.exists(status_file):
         with open(status_file, 'r') as f:
             print(f.read())
@@ -202,7 +203,7 @@ def cmd_swarm(args):
     from .aim_core.aim_swarm import spawn_coagent, send_message, capture_output, check_coagent, kill_coagent, list_sessions
     
     if args.swarm_command == "spawn":
-        print(json.dumps(spawn_coagent(args.name, BASE_DIR, args.prompt), indent=2))
+        print(json.dumps(spawn_coagent(args.name, OS_DIR, args.prompt), indent=2))
     elif args.swarm_command == "send":
         print(json.dumps(send_message(args.name, args.message), indent=2))
     elif args.swarm_command == "capture":
@@ -220,15 +221,15 @@ def cmd_fix(args):
     """Spawns a Git Worktree for a specific GitHub Issue ID."""
     issue_id = args.id
     branch_name = f"fix/issue-{issue_id}"
-    worktree_path = os.path.join(BASE_DIR, "workspace", f"issue-{issue_id}")
+    worktree_path = os.path.join(OS_DIR, "workspace", f"issue-{issue_id}")
     print(f"--- A.I.M. FACTORY FLOOR (Issue #{issue_id}) ---")
     try:
         subprocess.run(["git", "worktree", "add", worktree_path, "-b", branch_name], cwd=BASE_DIR, check=True)
         
         # Copy the gitignored local CONFIG.json so the worktree can run tests natively
         import shutil
-        config_src = os.path.join(BASE_DIR, "core", "CONFIG.json")
-        config_dest_dir = os.path.join(worktree_path, "core")
+        config_src = os.path.join(BASE_DIR, ".aim_core", "CONFIG.json")
+        config_dest_dir = os.path.join(worktree_path, ".aim_core")
         if os.path.exists(config_src):
             os.makedirs(config_dest_dir, exist_ok=True)
             shutil.copy2(config_src, os.path.join(config_dest_dir, "CONFIG.json"))
@@ -393,15 +394,15 @@ def cmd_sync(args):
     try:
         from .aim_core.sovereign_sync import export_to_parquet, import_from_parquet
         
-        sync_dir = os.path.join(BASE_DIR, "archive/sync")
+        sync_dir = os.path.join(OS_DIR, "archive/sync")
         os.makedirs(sync_dir, exist_ok=True)
         
-        export_to_parquet(BASE_DIR, sync_dir)
+        export_to_parquet(OS_DIR, sync_dir)
         
         print("[2/3] Executing network sync...")
         run_script(os.path.join(AIM_CORE_DIR, "back-populator.py"), [])
         
-        imported = import_from_parquet(BASE_DIR, sync_dir)
+        imported = import_from_parquet(OS_DIR, sync_dir)
         print(f"      Imported {imported} new/updated cartridges.")
         print("[SUCCESS] Workspace synchronized.")
     except Exception as e:
@@ -431,7 +432,7 @@ def cmd_mail(args):
 def cmd_sessions(args):
     """Lists recent cleaned historical sessions."""
     run_script(os.path.join(AIM_CORE_DIR, "handoff_pulse_generator.py"), [])
-    history_db = os.path.join(BASE_DIR, "archive/history.db")
+    history_db = os.path.join(OS_DIR, "archive/history.db")
     if not os.path.exists(history_db):
         print("No historical sessions found.")
         return
@@ -448,7 +449,7 @@ def cmd_sessions(args):
 def cmd_search_sessions(args):
     """Searches the full session history database."""
     query = " ".join(args.query)
-    history_db = os.path.join(BASE_DIR, "archive/history.db")
+    history_db = os.path.join(OS_DIR, "archive/history.db")
     if not os.path.exists(history_db):
         run_script(os.path.join(AIM_CORE_DIR, "handoff_pulse_generator.py"), [])
         if not os.path.exists(history_db):
@@ -547,7 +548,7 @@ def cmd_jack_in(args):
         print(f"  Target: Magnet Link Detected")
         
         # We need to route the torrent payload directly into the Quarantine for scanning
-        temp_dir = os.path.join(BASE_DIR, "archive/quarantine")
+        temp_dir = os.path.join(OS_DIR, "archive/quarantine")
         os.makedirs(temp_dir, exist_ok=True)
         
         try:
@@ -609,13 +610,13 @@ def cmd_purge(args):
             shutil.rmtree(path)
             os.makedirs(path, exist_ok=True)
             
-    db_paths = [os.path.join(BASE_DIR, "archive/project_core.db"), os.path.join(BASE_DIR, "archive/history.db")]
+    db_paths = [os.path.join(OS_DIR, "archive/project_core.db"), os.path.join(OS_DIR, "archive/history.db")]
     for db_path in db_paths:
         if os.path.exists(db_path): os.remove(db_path)
         
     docs = ["ROADMAP.md", "CURRENT_STATE.md", "DECISIONS.md"]
     for doc in docs:
-        doc_path = os.path.join(BASE_DIR, "docs", doc)
+        doc_path = os.path.join(OS_DIR, "docs", doc)
         if os.path.exists(doc_path):
             with open(doc_path, 'w') as f:
                 f.write(f"# {doc.replace('.md', '').title()}\n\n[PURGED: {datetime.now().strftime('%Y-%m-%d %H:%M')}]\n")
@@ -653,7 +654,7 @@ def cmd_update(args):
     print("[*] Contacting remote Swarm network...")
     
     # 1. Clone fresh payload to temp directory
-    temp_dir = os.path.join(BASE_DIR, ".aim_temp_update")
+    temp_dir = os.path.join(OS_DIR, ".aim_temp_update")
     if os.path.exists(temp_dir):
         import shutil
         shutil.rmtree(temp_dir)
@@ -670,23 +671,23 @@ def cmd_update(args):
     import shutil
     
     # Overwrite .aim_core
-    local_core = os.path.join(BASE_DIR, ".aim_core")
+    local_core = os.path.join(OS_DIR, ".aim_core")
     if os.path.exists(local_core): shutil.rmtree(local_core)
     # Note: the downloaded repo has "aim_core", we rename it to ".aim_core" locally
     shutil.copytree(os.path.join(temp_dir, ".aim_core"), local_core)
     
     # Overwrite aim-agy_os_docs protocols
-    local_os = os.path.join(BASE_DIR, "aim-agy_os_docs")
+    local_os = os.path.join(OS_DIR, "aim-agy_os_docs")
     if os.path.exists(local_os): shutil.rmtree(local_os)
     shutil.copytree(os.path.join(temp_dir, "aim-agy_os_docs"), local_os)
     
     # Overwrite setup scripts
-    shutil.copy2(os.path.join(temp_dir, "setup.sh"), os.path.join(BASE_DIR, "setup.sh"))
-    shutil.copy2(os.path.join(temp_dir, "requirements.txt"), os.path.join(BASE_DIR, "requirements.txt"))
+    shutil.copy2(os.path.join(temp_dir, "setup.sh"), os.path.join(OS_DIR, "setup.sh"))
+    shutil.copy2(os.path.join(temp_dir, "requirements.txt"), os.path.join(OS_DIR, "requirements.txt"))
 
     # 3. Rebuild dependencies
     print("[*] Rebuilding dependencies...")
-    subprocess.run([os.path.join(BASE_DIR, "setup.sh")], check=True, cwd=BASE_DIR, stdout=subprocess.DEVNULL)
+    subprocess.run([os.path.join(OS_DIR, "setup.sh")], check=True, cwd=BASE_DIR, stdout=subprocess.DEVNULL)
     
     # 4. Clean up
     shutil.rmtree(temp_dir)
@@ -703,7 +704,7 @@ def cmd_import(args):
         print(f"[ERROR] File not found: {filepath}")
         sys.exit(1)
         
-    subprocess.run([sys.executable, os.path.join(BASE_DIR, ".aim_core", "memory_salvage.py"), filepath], check=False)
+    subprocess.run([sys.executable, os.path.join(OS_DIR, ".aim_core", "memory_salvage.py"), filepath], check=False)
 
 
 def ensure_hooks_mapped():
