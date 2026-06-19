@@ -31,7 +31,7 @@ def bootstrap_foundation():
     
     foundation_targets = [
         os.path.join(AIM_ROOT, "AGENTS.md"),
-        os.path.join(AIM_ROOT, "aim-agy_os/*.md"),
+        os.path.join(AIM_ROOT, "aim-agy_os_docs/*.md"),
         os.path.join(AIM_ROOT, "memory-wiki/*.md"),
         os.path.join(AIM_ROOT, "memory-wiki/_ingest/*.md")
     ]

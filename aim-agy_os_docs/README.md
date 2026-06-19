@@ -1,4 +1,4 @@
-# A.I.M. Operating System Protocols (`aim-agy_os/`)
+# A.I.M. Operating System Protocols (`aim-agy_os_docs/`)
 
 This directory contains the highly distilled, operational markdown files that define the A.I.M. architecture and behavioral guardrails. These files are extracted and summarized from the deep philosophical lore of the `aim-wiki` repository.
 
@@ -8,10 +8,10 @@ The files in this directory are **not** read natively by the Conscious Agent dur
 **If you modify, add, or delete ANY file in this directory, you MUST execute the following command to re-compile the Parquet cartridge:**
 
 ```bash
-aim bake aim-agy_os aim-agy_os.parquet
+aim bake aim-agy_os_docs aim-agy_os_docs.parquet
 ```
 
-Once baked, you MUST move the resulting `aim-agy_os.parquet` file into `assets/default_engrams/aim-agy_os.parquet` and deploy the changes via GitOps. If you fail to do this, newly initialized agents will be provisioned with an outdated OS handbook and will hallucinate legacy architecture.
+Once baked, you MUST move the resulting `aim-agy_os_docs.parquet` file into `assets/default_engrams/aim-agy_os_docs.parquet` and deploy the changes via GitOps. If you fail to do this, newly initialized agents will be provisioned with an outdated OS handbook and will hallucinate legacy architecture.
 
 ---
 
