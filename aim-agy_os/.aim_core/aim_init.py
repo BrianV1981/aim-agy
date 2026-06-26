@@ -297,7 +297,7 @@ engrams/
         time.sleep(3)
         subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
         subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
-        subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
         print(f"""
 Please attach to the session to complete your interview:""")
