@@ -82,8 +82,9 @@ You must respect the operational boundaries of this specific project directory.
 2. **Containment:** If you are testing experimental code, spinning up standalone prototypes, or generating massive amounts of artifacts, you MUST place those files in a dedicated sub-directory or temporary folder. Never dump them loosely into the project root.
 3. **Worktree Hygiene:** A.I.M. creates isolated Git Worktrees in the `workspace/` directory for each issue (`python3 .aim_core/aim_cli.py fix <id>`). To prevent the Gemini CLI from recursively scanning hundreds of redundant files across multiple branches, you MUST ensure that `workspace/` is listed in your `.geminiignore` file. When an issue is complete, actively clean up the worktree using `python3 .aim_core/aim_cli.py promote` or `git worktree remove` to prevent context bloat.
 
-
-
+## Gemini Added Memories
+- When messaging other agents in a tmux session (e.g., Gemini CLI), you MUST send the message text first, then execute a separate shell command to send the 'Escape' then 'Enter' keys (e.g., `tmux send-keys -t <session> Escape Enter`). Sending the text and Enter simultaneously in the same command causes the interactive CLI prompt to swallow the Enter key, leaving the message sitting in the prompt unsubmitted.
+- When sending long messages or prompts to other agents in a tmux session, DO NOT use `tmux send-keys` with the raw text, as it can cause keystroke dropouts or swallow the Enter key. Instead, you MUST use the tmux clipboard buffer system: 1. Load the message into the buffer (`tmux set-buffer "your long message"`), 2. Paste the buffer into the target session using bracketed paste (`tmux paste-buffer -p -t <session>`), and 3. Send the Escape and Enter keys separately (`tmux send-keys -t <session> Escape Enter`).
 
 ## 9. DETACHED EXECUTION PROTOCOL (BACKGROUND ORCHESTRATION)
 A Sovereign OS agent should never paralyze its own primary execution loop by waiting synchronously for long-running tasks. 
