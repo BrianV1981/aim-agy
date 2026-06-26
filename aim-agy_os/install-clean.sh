@@ -1,6 +1,6 @@
 #!/bin/bash
 # A.I.M. Exoskeleton Installer (Clean Project Wrapper)
-# curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-clean.sh | bash
+# curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/aim-agy_os/install-clean.sh | bash
 
 set -e
 echo "--- A.I.M. CLEAN INSTALLER ---"
@@ -11,11 +11,12 @@ CLI_NAME=$(basename "$CURRENT_DIR")
 echo "[*] Step 1: Provisioning Local Operating System..."
 
 # Clone the engine directly into a temporary hidden folder to avoid empty directory conflicts
-git clone --depth 1 https://github.com/BrianV1981/aim-agy.git .aim_temp_clone
+# Hardcoded to fix/issue-52 for testing. Will revert to main later.
+git clone -b fix/issue-52 --depth 1 https://github.com/BrianV1981/aim-agy.git .aim_temp_clone
 cd .aim_temp_clone
 
 echo "    [*] Building Engine Virtual Environment..."
-./setup.sh
+./aim-agy_os/setup.sh
 
 # Move everything out of the temp folder into the current directory
 echo "[*] Step 2: Scaffolding Sovereign Environment..."
@@ -27,40 +28,42 @@ shopt -u dotglob
 
 # Clean Sweep (Severing identity and cleaning out developer artifacts)
 rm -rf .git/
-rm -rf tests/
-rm -rf benchmarks/
-rm -rf docs/
-rm -rf scripts/
-rm -rf skills/
+rm -rf aim-agy_os/tests/
+rm -rf aim-agy_os/benchmarks/
+rm -rf aim-agy_os/docs/
+rm -rf aim-agy_os/scripts/
+rm -rf aim-agy_os/skills/
 git init
 
 # Base OS Provisioning (Moving the pre-baked DB to the active layer)
-mkdir -p memory_lance
-cp -r assets/default_lance/* memory_lance/
+mkdir -p aim-agy_os/memory_lance
+cp -r aim-agy_os/assets/default_lance/* aim-agy_os/memory_lance/
 
 # Generate Ghost Folder Explainers
-mkdir -p foundry planning-artifacts workspace
+mkdir -p aim-agy_os/foundry aim-agy_os/planning-artifacts aim-agy_os/workspace
 echo "# A.I.M. Foundry
-Drop external raw PDFs, documents, or foreign repositories here before compiling them into \`.parquet\` cartridges via the \`aim bake\` command." > foundry/README.md
+Drop external raw PDFs, documents, or foreign repositories here before compiling them into \`.parquet\` cartridges via the \`aim bake\` command." > aim-agy_os/foundry/README.md
 
 echo "# A.I.M. Planning Artifacts
-Use this directory as a scratchpad for agents to generate architectural roadmaps, design documents, or task breakdowns before committing to code." > planning-artifacts/README.md
+Use this directory as a scratchpad for agents to generate architectural roadmaps, design documents, or task breakdowns before committing to code." > aim-agy_os/planning-artifacts/README.md
 
 echo "# A.I.M. Workspace
-This directory contains isolated Git Worktrees. When you type \`aim fix <id>\`, A.I.M. checks out a clean sandbox here to prevent you from working directly on the \`main\` branch." > workspace/README.md
+This directory contains isolated Git Worktrees. When you type \`aim fix <id>\`, A.I.M. checks out a clean sandbox here to prevent you from working directly on the \`main\` branch." > aim-agy_os/workspace/README.md
 
 echo "    [*] Linking Local Alias ($CLI_NAME)..."
 RC_FILE="$HOME/.bashrc"
 if [ -f "$HOME/.zshrc" ]; then RC_FILE="$HOME/.zshrc"; fi
 
-SED_ALIAS="alias $CLI_NAME='NODE_OPTIONS=\"--max-old-space-size=16384\" $CURRENT_DIR/venv/bin/python3 $CURRENT_DIR/.aim_core/aim_cli.py'"
+SED_ALIAS="alias $CLI_NAME='NODE_OPTIONS=\"--max-old-space-size=16384\" $CURRENT_DIR/aim-agy_os/venv/bin/python3 $CURRENT_DIR/aim-agy_os/.aim_core/aim_cli.py'"
 
 if ! grep -q "alias $CLI_NAME=" "$RC_FILE"; then
     echo "" >> "$RC_FILE"
     echo "$SED_ALIAS" >> "$RC_FILE"
     echo "    [SUCCESS] Alias added to $RC_FILE"
 else
-    echo "    [OK] Alias already exists."
+    # Update existing alias to point to the new aim-agy_os path just in case
+    sed -i "s|alias $CLI_NAME=.*|$SED_ALIAS|g" "$RC_FILE"
+    echo "    [OK] Alias already exists (updated to new path)."
 fi
 
 echo ""

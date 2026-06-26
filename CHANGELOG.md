@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.71.5] - 2026-06-25
+- Fix: update clean installer for portable architecture
+
+
 ## [v1.71.4] - 2026-06-19
 - Fix: correctly propagate PROJECT_ROOT to auxiliary scripts
 
