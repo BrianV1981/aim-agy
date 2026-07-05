@@ -18,7 +18,7 @@ CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
 with open(CONFIG_PATH, 'r') as f:
     CONFIG = json.load(f)
 
-CONTINUITY_DIR = CONFIG['paths']['continuity_dir']
+CONTINUITY_DIR = os.path.join(AIM_ROOT, ".aim_core", "temp")
 ARCHIVE_RAW_DIR = os.path.join(AIM_ROOT, "archive/raw")
 
 def atomic_write(file_path, content):

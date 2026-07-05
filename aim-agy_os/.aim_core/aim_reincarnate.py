@@ -19,9 +19,11 @@ def main():
     print("--- A.I.M. REINCARNATION PROTOCOL ---")
     print("\n[!] CONTEXT FADE DETECTED: We are initiating Reincarnation.")
 
-    print("Assuming the live agent has already written REINCARNATION_GAMEPLAN.md...")
+    print("Assuming the live agent has already written REINCARNATION_GAMEPLAN.md to .aim_core/temp...")
     
-    gameplan_path = os.path.join(AIM_ROOT, "continuity", "REINCARNATION_GAMEPLAN.md")
+    temp_dir = os.path.join(AIM_ROOT, ".aim_core", "temp")
+    os.makedirs(temp_dir, exist_ok=True)
+    gameplan_path = os.path.join(temp_dir, "REINCARNATION_GAMEPLAN.md")
     if not os.path.exists(gameplan_path):
         print(f"\n[FATAL] Missing {gameplan_path}!")
         print("You MUST write a Reincarnation Gameplan before triggering a handoff.")
@@ -32,6 +34,9 @@ def main():
         print(f"\n[FATAL] The REINCARNATION_GAMEPLAN.md is stale (last updated over 5 minutes ago)!")
         print("You MUST update the Gameplan to reflect the current state before triggering a handoff.")
         sys.exit(1)
+
+    with open(gameplan_path, 'r', encoding='utf-8') as f:
+        gameplan_content = f.read()
 
     print("Verified live agent has recently updated REINCARNATION_GAMEPLAN.md...")
 
@@ -49,13 +54,13 @@ def main():
     try:
         subprocess.run(
             [venv_python, os.path.join(AIM_ROOT, ".aim_core", "handoff_pulse_generator.py")],
-            cwd=PROJECT_ROOT, check=True, timeout=120
+            cwd=AIM_ROOT, check=True, timeout=120
         )
         
         print("      Triggering Subconscious Scribe (Session Summarizer)...")
         subprocess.Popen(
             [venv_python, os.path.join(AIM_ROOT, "hooks", "session_summarizer.py"), "--reincarnate", "--bg"],
-            cwd=PROJECT_ROOT,
+            cwd=AIM_ROOT,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             stdin=subprocess.DEVNULL,
@@ -63,15 +68,22 @@ def main():
         )
         
         print("      Syncing remote issues and harvesting closed bugs...")
-        subprocess.run(
-            [venv_python, os.path.join(AIM_ROOT, ".aim_core", "sync_issue_tracker.py")],
-            cwd=PROJECT_ROOT, check=True, timeout=30
-        )
         
+        # We capture the issue tracker markdown dynamically instead of writing a physical file
+        issues_content = ""
+        try:
+            sys.path.append(os.path.join(AIM_ROOT, ".aim_core"))
+            import sync_issue_tracker
+            open_issues = sync_issue_tracker.fetch_issues(state="open")
+            issues_content = sync_issue_tracker.generate_markdown(open_issues)
+        except Exception as e:
+            print(f"      [WARNING] Could not fetch live issues: {e}")
+            issues_content = "*Error fetching live issues from GitHub.*\n"
+            
         # Harvest recently completed bugs into foundry/scraped_docs
         subprocess.run(
             [venv_python, os.path.join(AIM_ROOT, ".aim_core", "aim_scraper.py"), "github", "closed", "--limit", "5"],
-            cwd=PROJECT_ROOT, check=False, timeout=30
+            cwd=AIM_ROOT, check=False, timeout=30
         )
         
     except subprocess.TimeoutExpired as e:
@@ -90,14 +102,28 @@ def main():
             pass
 
     # 2. Spawn Detached Tmux Session
-    print("[2/4] Spawning new host vessel (tmux session)...")
+    print("[2/4] Spawning new host vessel (tmux session) with Ephemeral Context Injection...")
     session_name = f"aim_reincarnation_{int(time.time())}"
-    wake_up_prompt = "Wake up. MANDATE: 1. Read AGENTS.md and acknowledge your core constraints. 2. Read continuity/REINCARNATION_GAMEPLAN.md and continuity/ISSUE_TRACKER.md before taking any action or responding. (NOTE: Use run_shell_command with 'cat' to read the continuity files, as they are gitignored and your read_file tool will fail)."
+    
+    # Inject Gameplan and Issues directly, then delete the Gameplan
+    wake_up_prompt = (
+        "Wake up. MANDATE: Read AGENTS.md and acknowledge your core constraints. "
+        "Review your injected Gameplan and Issue Tracker below before taking any action.\n\n"
+        "--- REINCARNATION GAMEPLAN ---\n"
+        f"{gameplan_content}\n\n"
+        "--- LIVE ISSUE TRACKER ---\n"
+        f"{issues_content}"
+    )
+    
+    try:
+        os.remove(gameplan_path)
+    except FileNotFoundError:
+        pass
     
     try:
         # TUI Mode with native prompt-interactive flag
         subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", PROJECT_ROOT, "agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
+            ["tmux", "new-session", "-d", "-s", session_name, "-c", AIM_ROOT, "agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
             check=True
         )
         print(f"      [Success] New agent is awake in tmux session: {session_name}")
