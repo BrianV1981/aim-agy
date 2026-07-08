@@ -49,13 +49,13 @@ def main():
     try:
         subprocess.run(
             [venv_python, os.path.join(AIM_ROOT, ".aim_core", "handoff_pulse_generator.py")],
-            cwd=PROJECT_ROOT, check=True, timeout=120
+            cwd=os.environ.get("AIM_WORKSPACE", "."), check=True, timeout=120
         )
         
         print("      Triggering Subconscious Scribe (Session Summarizer)...")
         subprocess.Popen(
             [venv_python, os.path.join(AIM_ROOT, "hooks", "session_summarizer.py"), "--reincarnate", "--bg"],
-            cwd=PROJECT_ROOT,
+            cwd=os.environ.get("AIM_WORKSPACE", "."),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             stdin=subprocess.DEVNULL,
@@ -65,13 +65,13 @@ def main():
         print("      Syncing remote issues and harvesting closed bugs...")
         subprocess.run(
             [venv_python, os.path.join(AIM_ROOT, ".aim_core", "sync_issue_tracker.py")],
-            cwd=PROJECT_ROOT, check=True, timeout=30
+            cwd=os.environ.get("AIM_WORKSPACE", "."), check=True, timeout=30
         )
         
         # Harvest recently completed bugs into foundry/scraped_docs
         subprocess.run(
             [venv_python, os.path.join(AIM_ROOT, ".aim_core", "aim_scraper.py"), "github", "closed", "--limit", "5"],
-            cwd=PROJECT_ROOT, check=False, timeout=30
+            cwd=os.environ.get("AIM_WORKSPACE", "."), check=False, timeout=30
         )
         
     except subprocess.TimeoutExpired as e:
@@ -97,7 +97,7 @@ def main():
     try:
         # TUI Mode with native prompt-interactive flag
         subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", PROJECT_ROOT, "agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
+            ["tmux", "new-session", "-d", "-s", session_name, "-c", os.environ.get("AIM_WORKSPACE", "."), "/home/kingb/.local/bin/agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
             check=True
         )
         print(f"      [Success] New agent is awake in tmux session: {session_name}")
