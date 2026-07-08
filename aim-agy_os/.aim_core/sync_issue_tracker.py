@@ -14,8 +14,6 @@ def find_aim_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 AIM_ROOT = find_aim_root()
-CONTINUITY_DIR = os.path.join(AIM_ROOT, "continuity")
-TRACKER_PATH = os.path.join(CONTINUITY_DIR, "ISSUE_TRACKER.md")
 
 def fetch_issues(state="open", limit=100):
     try:
@@ -52,19 +50,16 @@ def generate_markdown(open_issues):
 
 def main():
     print("--- A.I.M. ISSUE SYNCHRONIZER ---")
-    os.makedirs(CONTINUITY_DIR, exist_ok=True)
     
     print("[1/2] Fetching OPEN issues from GitHub...")
     open_issues = fetch_issues(state="open")
     
-    print(f"[2/2] Writing local ledger to {TRACKER_PATH}...")
+    print("[2/2] Generating local ledger...")
     markdown_content = generate_markdown(open_issues)
     
-    with open(TRACKER_PATH, "w", encoding="utf-8") as f:
-        f.write(markdown_content)
+    print(markdown_content)
         
-    print("\n[SUCCESS] Local Issue Ledger is up to date.")
-    print("You can view or print the file directly: `cat continuity/ISSUE_TRACKER.md`")
+    print("\n[SUCCESS] Local Issue Ledger fetched.")
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 # A.I.M. Reincarnation Gameplan SOP
 
-This document defines the strict, high-fidelity structure required for all `continuity/REINCARNATION_GAMEPLAN.md` files generated before an agent executes a `/reincarnate` command. 
+This document defines the strict, high-fidelity structure required for all `.aim_core/temp/REINCARNATION_GAMEPLAN.md` files generated before an agent executes a `/reincarnate` command. 
 
 ## 1. The Rule of Epistemic Certainty
 The outgoing agent must act as a precise tactician. The incoming agent will wake up with a blank context window. The Gameplan is their only link to the current mission state. It must provide immediate, actionable, and localized context.

@@ -44,7 +44,7 @@ You must write tests before or alongside your implementation. Prove the code wor
 ## 4. THE INDEX (DO NOT GUESS)
 If you need information about this project, the codebase, or your own rules, execute `python3 .aim_core/aim_cli.py search` for the specific files below:
 - **My Operating Rules:** `python3 .aim_core/aim_cli.py search "A_I_M_HANDBOOK.md"` (This is an Index Card. Read it to find the specific `POLICY_*.md` file you need, then run a second search to read that specific policy).
-- **My Current Tasks:** Read `continuity/ISSUE_TRACKER.md` via `cat`
+- **My Current Tasks:** Read the live Issue Tracker injected into your wake-up prompt, or manually query GitHub using the `gh issue list` command.
 - **The Project State:** Read `memory-wiki/index.md`
 - **The Operator Profile:** `python3 .aim_core/aim_cli.py search "OPERATOR_PROFILE.md"`
 
@@ -69,12 +69,9 @@ When you run into ANY type of question, architectural issue, or test failure, yo
 ## 7. THE REINCARNATION PIPELINE & PREVIOUS SESSION CONTEXT
 You are part of a continuous, multi-agent relay race. When your context window fills up (the "Amnesia Problem"), you must undergo **Reincarnation**.
 1. **The Architecture:** Read `python3 .aim_core/aim_cli.py search "Reincarnation-Map.md"` to understand how your "Will" is passed to the next vessel.
-2. **The Handoff:** Before beginning any new tactical work or writing any code, **you must read the following files** to inherit the epistemic certainty of the previous session:
-1. `continuity/ISSUE_TRACKER.md` (The local zero-latency index of all active project tasks).
-
-*(NOTE: You MUST use `run_shell_command` with `cat` to read files inside the `continuity/` folder, as they are gitignored and the standard `read_file` tool will fail).*
-
-**CRITICAL PROTOCOL:** You MUST read `continuity/REINCARNATION_GAMEPLAN.md` BEFORE executing any tool calls to read other files in the `continuity/` folder. NEVER batch-read the Flight Recorder preemptively.
+2. **The Handoff (Ephemeral Context Injection):** Before beginning any new tactical work or writing any code, **you must carefully read your injected wake-up prompt** to inherit the epistemic certainty of the previous session. 
+Your wake-up prompt will dynamically contain the `REINCARNATION_GAMEPLAN.md` and the live `ISSUE_TRACKER`.
+There is no continuity folder for you to read; all context is injected directly into your brain on Turn 1.
 
 ## 8. ABSOLUTE WORKSPACE ISOLATION (THE SANDBOX)
 You must respect the operational boundaries of this specific project directory.
@@ -82,8 +79,9 @@ You must respect the operational boundaries of this specific project directory.
 2. **Containment:** If you are testing experimental code, spinning up standalone prototypes, or generating massive amounts of artifacts, you MUST place those files in a dedicated sub-directory or temporary folder. Never dump them loosely into the project root.
 3. **Worktree Hygiene:** A.I.M. creates isolated Git Worktrees in the `workspace/` directory for each issue (`python3 .aim_core/aim_cli.py fix <id>`). To prevent the Gemini CLI from recursively scanning hundreds of redundant files across multiple branches, you MUST ensure that `workspace/` is listed in your `.geminiignore` file. When an issue is complete, actively clean up the worktree using `python3 .aim_core/aim_cli.py promote` or `git worktree remove` to prevent context bloat.
 
-
-
+## Gemini Added Memories
+- When messaging other agents in a tmux session (e.g., Gemini CLI), you MUST send the message text first, then execute a separate shell command to send the 'Escape' then 'Enter' keys (e.g., `tmux send-keys -t <session> Escape Enter`). Sending the text and Enter simultaneously in the same command causes the interactive CLI prompt to swallow the Enter key, leaving the message sitting in the prompt unsubmitted.
+- When sending long messages or prompts to other agents in a tmux session, DO NOT use `tmux send-keys` with the raw text, as it can cause keystroke dropouts or swallow the Enter key. Instead, you MUST use the tmux clipboard buffer system: 1. Load the message into the buffer (`tmux set-buffer "your long message"`), 2. Paste the buffer into the target session using bracketed paste (`tmux paste-buffer -p -t <session>`), and 3. Send the Escape and Enter keys separately (`tmux send-keys -t <session> Escape Enter`).
 
 ## 9. DETACHED EXECUTION PROTOCOL (BACKGROUND ORCHESTRATION)
 A Sovereign OS agent should never paralyze its own primary execution loop by waiting synchronously for long-running tasks. 
@@ -96,8 +94,8 @@ If you need instructions on how to use specific, complex tools, do not guess. Yo
 **When Context Gets Heavy:** Do not wait for a fatal memory crash. If you feel you are losing context or getting confused:
 1. Run `python3 .aim_core/aim_cli.py pulse` to manually generate a handoff document.
 2. **Agentic Reincarnation Protocol:** When the Operator types `/reincarnate` or `/python3 .aim_core/aim_cli.py reincarnate`, you MUST manually execute the handoff. Use the `run_shell_command` tool to:
-   a. Write a highly structured handover message to `continuity/REINCARNATION_GAMEPLAN.md` explicitly following the 5-section format mandated in `aim-agy_os_docs/GAMEPLAN_SOP.md` (Commander's Summary, Tactical State, Localized Directory Map, Epistemic Warnings, and Immediate Next Action).
-   b. Execute `venv/bin/python .aim_core/aim_reincarnate.py` to seamlessly teleport your context, spawn the new agent vessel using the correct tmux buffer injection, and safely self-terminate without triggering the suicide bug.
+   a. Write a highly structured handover message to `.aim_core/temp/REINCARNATION_GAMEPLAN.md` explicitly following the 5-section format mandated in `aim-agy_os_docs/GAMEPLAN_SOP.md` (Commander's Summary, Tactical State, Localized Directory Map, Epistemic Warnings, and Immediate Next Action).
+   b. Execute `venv/bin/python .aim_core/aim_reincarnate.py` to seamlessly teleport your context. The system will inject your gameplan directly into the new agent's wake-up prompt, instantly delete your `.md` file to prevent file permanence bias, and safely self-terminate.
 
 ## 11. THE PROJECT WIKI (LONG-TERM MEMORY)
 - **To Read:** The project's synthesized lore and architecture live in the `memory-wiki/` folder. Always start by reading `memory-wiki/index.md`.

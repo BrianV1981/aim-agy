@@ -14,14 +14,14 @@ A.I.M. provides two completely self-contained, isolated installation paths depen
 Use this if you want to wrap A.I.M. around your own unique coding project. It installs the engine, severs the Git connection, and deletes the developer artifacts (like tests and benchmarks) to give you a clean, lightweight shell.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-clean.sh | bash
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/aim-agy_os/install-clean.sh | bash
 ```
 
 ### Option B: The Core Contributor
 Use this if you intend to hack on the core A.I.M. framework itself. It preserves the GitHub connection and all internal testing folders.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-core.sh | bash
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/aim-agy_os/install-core.sh | bash
 ```
 
 ### Option C: The Sovereign Co-Agent
@@ -29,7 +29,7 @@ Use this to spin up a completely independent, headless A.I.M. Co-Agent. It creat
 
 ```bash
 # Example: Spawns a sovereign Python Developer node
-curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-agent.sh | bash -s python-developer
+curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/aim-agy_os/install-agent.sh | bash -s python-developer
 ```
 
 ### 2. The Agentic Interview

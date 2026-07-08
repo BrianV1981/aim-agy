@@ -670,20 +670,23 @@ def cmd_update(args):
     print("[*] Hot-swapping local execution engine...")
     import shutil
     
+    # Source directory in the cloned repository
+    source_os_dir = os.path.join(temp_dir, "aim-agy_os")
+    
     # Overwrite .aim_core
     local_core = os.path.join(OS_DIR, ".aim_core")
     if os.path.exists(local_core): shutil.rmtree(local_core)
     # Note: the downloaded repo has "aim_core", we rename it to ".aim_core" locally
-    shutil.copytree(os.path.join(temp_dir, ".aim_core"), local_core)
+    shutil.copytree(os.path.join(source_os_dir, ".aim_core"), local_core)
     
     # Overwrite aim-agy_os_docs protocols
     local_os = os.path.join(OS_DIR, "aim-agy_os_docs")
     if os.path.exists(local_os): shutil.rmtree(local_os)
-    shutil.copytree(os.path.join(temp_dir, "aim-agy_os_docs"), local_os)
+    shutil.copytree(os.path.join(source_os_dir, "aim-agy_os_docs"), local_os)
     
     # Overwrite setup scripts
-    shutil.copy2(os.path.join(temp_dir, "setup.sh"), os.path.join(OS_DIR, "setup.sh"))
-    shutil.copy2(os.path.join(temp_dir, "requirements.txt"), os.path.join(OS_DIR, "requirements.txt"))
+    shutil.copy2(os.path.join(source_os_dir, "setup.sh"), os.path.join(OS_DIR, "setup.sh"))
+    shutil.copy2(os.path.join(source_os_dir, "requirements.txt"), os.path.join(OS_DIR, "requirements.txt"))
 
     # 3. Rebuild dependencies
     print("[*] Rebuilding dependencies...")
