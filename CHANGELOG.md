@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.3] - 2026-07-08
+- Fix: bypass trust prompt with automated keystrokes (Closes #58)
+
+
 ## [v1.71.5] - 2026-06-25
 - Fix: update clean installer for portable architecture
 

@@ -294,7 +294,13 @@ engrams/
             bootstrap_content = f.read()
         import time
         subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
-        time.sleep(3)
+        time.sleep(4)
+        
+        # Blindly accept the workspace trust prompt ("are you sure that you trust this directory")
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "y", "Enter"], check=True)
+        
+        # Wait a moment for the CLI to finish loading the model context before injecting the payload
+        time.sleep(2)
         subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
         subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
         subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
