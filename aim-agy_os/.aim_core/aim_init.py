@@ -297,7 +297,8 @@ engrams/
         time.sleep(4)
         
         # Blindly accept the workspace trust prompt ("are you sure that you trust this directory")
-        subprocess.run(["tmux", "send-keys", "-t", session_name, "y", "Enter"], check=True)
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
+        subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
         
         # Wait a moment for the CLI to finish loading the model context before injecting the payload
         time.sleep(2)

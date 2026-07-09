@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.4] - 2026-07-08
+- Fix: separate tmux send-keys commands to prevent swallowed Enter key
+
+
 ## [v1.0.3] - 2026-07-08
 - Fix: bypass trust prompt with automated keystrokes (Closes #58)
 
