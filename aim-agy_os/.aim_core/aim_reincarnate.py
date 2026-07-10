@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-import subprocess
 import time
-import signal
 
 def find_aim_root():
     current = os.path.abspath(os.getcwd())
@@ -15,159 +13,38 @@ def find_aim_root():
 
 AIM_ROOT = find_aim_root()
 
+# Ensure .aim_core is in python path to load our new package
+sys.path.append(os.path.join(AIM_ROOT, ".aim_core"))
+
+from reincarnation.gameplan_manager import load_and_validate_gameplan, cleanup_gameplan
+from reincarnation.background_tasks import trigger_background_pipelines
+from reincarnation.context_builder import fetch_issue_context, build_wakeup_prompt
+from reincarnation.teleport_engine import get_current_tmux_session, spawn_new_agent, execute_teleport
+
 def main():
     print("--- A.I.M. REINCARNATION PROTOCOL ---")
     print("\n[!] CONTEXT FADE DETECTED: We are initiating Reincarnation.")
-
-    print("Assuming the live agent has already written REINCARNATION_GAMEPLAN.md to .aim_core/temp...")
     
-    temp_dir = os.path.join(AIM_ROOT, ".aim_core", "temp")
-    os.makedirs(temp_dir, exist_ok=True)
-    gameplan_path = os.path.join(temp_dir, "REINCARNATION_GAMEPLAN.md")
-    if not os.path.exists(gameplan_path):
-        print(f"\n[FATAL] Missing {gameplan_path}!")
-        print("You MUST write a Reincarnation Gameplan before triggering a handoff.")
-        sys.exit(1)
-        
-    mtime = os.path.getmtime(gameplan_path)
-    if time.time() - mtime > 300: # 5 minutes
-        print(f"\n[FATAL] The REINCARNATION_GAMEPLAN.md is stale (last updated over 5 minutes ago)!")
-        print("You MUST update the Gameplan to reflect the current state before triggering a handoff.")
-        sys.exit(1)
+    workspace = os.environ.get("AIM_WORKSPACE", ".")
 
-    with open(gameplan_path, 'r', encoding='utf-8') as f:
-        gameplan_content = f.read()
-
-    print("Verified live agent has recently updated REINCARNATION_GAMEPLAN.md...")
-
+    # 1. Verification
+    gameplan = load_and_validate_gameplan(AIM_ROOT)
     
-    # Give the CLI time to sync the final agent turn
     print("[0/4] Giving the CLI filesystem time to sync the final agent turn...")
     time.sleep(3)
     
-    venv_python = os.path.join(AIM_ROOT, "venv", "bin", "python3")
-    if not os.path.exists(venv_python):
-        venv_python = sys.executable
-
-    # 1. Trigger Pulse & Sync Issues
-    print("[1/4] Mechanically extracting session signal & routing to pipelines...")
-    try:
-        subprocess.run(
-            [venv_python, os.path.join(AIM_ROOT, ".aim_core", "handoff_pulse_generator.py")],
-            cwd=os.environ.get("AIM_WORKSPACE", "."), check=True, timeout=120
-        )
-        
-        print("      Triggering Subconscious Scribe (Session Summarizer)...")
-        subprocess.Popen(
-            [venv_python, os.path.join(AIM_ROOT, "hooks", "session_summarizer.py"), "--reincarnate", "--bg"],
-            cwd=os.environ.get("AIM_WORKSPACE", "."),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            stdin=subprocess.DEVNULL,
-            start_new_session=True
-        )
-        
-        print("      Syncing remote issues and harvesting closed bugs...")
-        
-        # We capture the issue tracker markdown dynamically instead of writing a physical file
-        issues_content = ""
-        try:
-            sys.path.append(os.path.join(AIM_ROOT, ".aim_core"))
-            import sync_issue_tracker
-            open_issues = sync_issue_tracker.fetch_issues(state="open")
-            issues_content = sync_issue_tracker.generate_markdown(open_issues)
-        except Exception as e:
-            print(f"      [WARNING] Could not fetch live issues: {e}")
-            issues_content = "*Error fetching live issues from GitHub.*\n"
-            
-        # Harvest recently completed bugs into foundry/scraped_docs
-        subprocess.run(
-            [venv_python, os.path.join(AIM_ROOT, ".aim_core", "aim_scraper.py"), "github", "closed", "--limit", "5"],
-            cwd=os.environ.get("AIM_WORKSPACE", "."), check=False, timeout=30
-        )
-        
-    except subprocess.TimeoutExpired as e:
-        print(f"\n[WARNING] A reincarnation subprocess timed out: {e}\nContinuing reincarnation protocol anyway to preserve context...")
-    except subprocess.CalledProcessError as e:
-        print(f"[ERROR] Failed to generate handoff: {e}")
-        sys.exit(1)
-        
-    # Pre-capture current session before we spawn a new one, avoiding the tmux default to newest session
-    current_session = None
-    if os.environ.get("TMUX"):
-        try:
-            result = subprocess.run(["tmux", "display-message", "-p", "#S"], capture_output=True, text=True)
-            current_session = result.stdout.strip()
-        except Exception:
-            pass
-
-    # 2. Spawn Detached Tmux Session
-    print("[2/4] Spawning new host vessel (tmux session) with Ephemeral Context Injection...")
+    current_tmux = get_current_tmux_session()
+    
+    # 2. Background Dispatch & Context Building
+    trigger_background_pipelines(AIM_ROOT, workspace)
+    issues = fetch_issue_context(AIM_ROOT)
+    prompt = build_wakeup_prompt(gameplan, issues)
+    
+    # 3. Spawn & Teleport
     session_name = f"aim_reincarnation_{int(time.time())}"
-    
-    # Inject Gameplan and Issues directly, then delete the Gameplan
-    wake_up_prompt = (
-        "Wake up. MANDATE: Read AGENTS.md and acknowledge your core constraints. "
-        "Review your injected Gameplan and Issue Tracker below before taking any action.\n\n"
-        "--- REINCARNATION GAMEPLAN ---\n"
-        f"{gameplan_content}\n\n"
-        "--- LIVE ISSUE TRACKER ---\n"
-        f"{issues_content}"
-    )
-    
-    try:
-        os.remove(gameplan_path)
-    except FileNotFoundError:
-        pass
-    
-    try:
-        # TUI Mode with native prompt-interactive flag
-        subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", os.environ.get("AIM_WORKSPACE", "."), "/home/kingb/.local/bin/agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
-            check=True
-        )
-        print(f"      [Success] New agent is awake in tmux session: {session_name}")
-    except FileNotFoundError:
-        print("[ERROR] 'tmux' is not installed. The Reincarnation Protocol requires tmux.")
-        sys.exit(1)
-    except subprocess.CalledProcessError as e:
-        print(f"[ERROR] Failed to spawn tmux session: {e}")
-        sys.exit(1)
-        
-    # 3. Native injection handles prompt
-    print("[3/4] Wake-up prompt handled natively by Antigravity CLI...")
-        
-    # 4. The Teleport (Self-Termination)
-    print("[4/4] Executing Teleport Sequence...")
-    
-    time.sleep(2)
-    
-    if os.environ.get("TMUX") and current_session:
-        print(f"      [Teleport] TMUX detected. Switching clients from {current_session} to {session_name}...")
-        try:
-            clients_result = subprocess.run(["tmux", "list-clients", "-t", current_session, "-F", "#{client_name}"], capture_output=True, text=True)
-            clients = clients_result.stdout.strip().split("\n")
-            
-            for client in clients:
-                client = client.strip()
-                if client:
-                    subprocess.run(["tmux", "switch-client", "-c", client, "-t", session_name], check=True)
-            
-            subprocess.run(["tmux", "kill-session", "-t", current_session])
-        except Exception as e:
-            print(f"[ERROR] Teleport failed: {e}")
-            sys.exit(1)
-    else:
-        print(f"\n[!] You are not in tmux. To view the new agent, run:\n    tmux attach-session -t {session_name}")
-        try:
-            input("\nPress Enter to safely exit this session and kill the current agent...")
-        except (EOFError, KeyboardInterrupt):
-            pass
-        parent_pid = os.getppid()
-        try:
-            os.kill(parent_pid, signal.SIGTERM)
-        except Exception as e:
-            print(f"[ERROR] Could not self-terminate: {e}")
+    spawn_new_agent(workspace, session_name, prompt)
+    cleanup_gameplan(AIM_ROOT)
+    execute_teleport(current_tmux, session_name)
 
 if __name__ == "__main__":
     main()
