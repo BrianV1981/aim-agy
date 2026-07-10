@@ -137,14 +137,40 @@ def process_transcript(md_path):
         else:
             print(f"[WATCHDOG] Spawning Scribe Agent to process {len(staged_files)} raw chunks...")
             subprocess.run(["tmux", "new-session", "-d", "-s", scribe_session_name, "-c", wiki_dir, "agy --dangerously-skip-permissions"], check=True)
-            time.sleep(5) # Boot time
+            # Deterministic polling for trust prompt and ready state
+            max_retries = 30
+            trusted = False
+            injected = False
             
             scribe_prompt = f"Wake up. You are the Subconscious Scribe. Your task is to process raw session chunks in `_raw_logs/` and prepare them for the LLM Wiki. You are forbidden from editing the main wiki files. 1. Read a chunk. 2. Extract the factual, high-signal information (e.g., architectural decisions made, bugs fixed, concepts learned, tools used). DO NOT force a 'Eureka' or 'Negative Data' format. Just write a clear, objective markdown summary of what happened in that chunk. 3. Save the summary into the `_ingest/` directory (e.g., `summary_{session_id}_part1.md`). 4. Delete the raw chunk you just read. 5. Repeat until `_raw_logs/` is empty. 6. Execute `tmux kill-session -t {scribe_session_name}`."
             
-            subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
-            subprocess.run(["tmux", "paste-buffer", "-t", scribe_session_name], check=True)
-            time.sleep(1)
-            subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Enter"], check=True)
+            for _ in range(max_retries):
+                result = subprocess.run(["tmux", "capture-pane", "-p", "-t", scribe_session_name], capture_output=True, text=True)
+                out = result.stdout
+                
+                if "trust this directory" in out and not trusted:
+                    subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "y"], check=True)
+                    subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Enter"], check=True)
+                    trusted = True
+                    time.sleep(1)
+                    continue
+                    
+                if "Antigravity" in out or "Enter your" in out:
+                    subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
+                    subprocess.run(["tmux", "paste-buffer", "-t", scribe_session_name], check=True)
+                    time.sleep(1)
+                    subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Escape", "Enter"], check=True)
+                    injected = True
+                    break
+                    
+                time.sleep(0.5)
+                
+            if not injected:
+                print("[WARNING] Could not confirm Scribe readiness. Injecting blindly.")
+                subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
+                subprocess.run(["tmux", "paste-buffer", "-t", scribe_session_name], check=True)
+                time.sleep(1)
+                subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Escape", "Enter"], check=True)
 
         # 3. The Polling Loop (Wait for Scribe to finish)
         print("[WATCHDOG] Waiting for Scribe to complete extraction...")

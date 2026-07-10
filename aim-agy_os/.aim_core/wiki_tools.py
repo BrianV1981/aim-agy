@@ -2,6 +2,7 @@ import os
 import glob
 import sqlite3
 import requests
+import time
 try:
     from .aim_core.reasoning_utils import generate_reasoning
 except ImportError:
@@ -100,18 +101,43 @@ def process_wiki():
         
     print(f"Starting fresh '{session_name}' tmux session in YOLO mode...")
     subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", wiki_dir, "bash", "-c", "cd {} && source ~/.bashrc 2>/dev/null; agy --dangerously-skip-permissions".format(wiki_dir)])
-    import time
-    time.sleep(5) # Give it time to boot
-
     print(f"Handing off {len(files)} file(s) to {session_name} for processing...")
 
     prompt = f"Wake up. You are the disciplined LLM Wiki Maintainer. Your job is to read the factual summaries waiting in the `_ingest/` directory ONE BY ONE. For each file: 1. Read the summary. 2. If it contains valuable information (architectural changes, workflows, concepts), update the main `index.md` catalog, append a chronological entry to `log.md`, and create/update any relevant concept pages. Keep everything interlinked. 3. Once its knowledge is absorbed (or if the summary is useless noise), DELETE the summary file from `_ingest/`. 4. Repeat until `_ingest/` is completely empty. 5. Execute `tmux kill-session -t {session_name}`."
 
     try:
-        subprocess.run(["tmux", "set-buffer", prompt], check=True)
-        subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
-        import time; time.sleep(1)
-        subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+        max_retries = 30
+        trusted = False
+        injected = False
+        
+        for _ in range(max_retries):
+            result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
+            out = result.stdout
+            
+            if "trust this directory" in out and not trusted:
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+                trusted = True
+                time.sleep(1)
+                continue
+                
+            if "Antigravity" in out or "Enter your" in out:
+                subprocess.run(["tmux", "set-buffer", prompt], check=True)
+                subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
+                time.sleep(1)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
+                injected = True
+                break
+                
+            time.sleep(0.5)
+            
+        if not injected:
+            print("[WARNING] Could not confirm Wiki Agent readiness. Injecting blindly.")
+            subprocess.run(["tmux", "set-buffer", prompt], check=True)
+            subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
+            time.sleep(1)
+            subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
+            
         print(f"[SUCCESS] Directives dispatched to {session_name}.")
     except Exception as e:
         print(f"[ERROR] Failed to hand off to {session_name}: {e}")

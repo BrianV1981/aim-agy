@@ -294,17 +294,38 @@ engrams/
             bootstrap_content = f.read()
         import time
         subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
-        time.sleep(4)
         
-        # Blindly accept the workspace trust prompt ("are you sure that you trust this directory")
-        subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
-        subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+        # Deterministic polling for trust prompt and ready state
+        max_retries = 20
+        trusted = False
+        injected = False
         
-        # Wait a moment for the CLI to finish loading the model context before injecting the payload
-        time.sleep(2)
-        subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
-        subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
-        subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
+        for _ in range(max_retries):
+            result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
+            out = result.stdout
+            
+            if "trust this directory" in out and not trusted:
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+                trusted = True
+                time.sleep(1)
+                continue
+                
+            # Wait for the CLI to fully load (it usually prints "Antigravity" or an agent prompt)
+            if "Antigravity" in out or "Enter your" in out:
+                subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
+                subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
+                injected = True
+                break
+                
+            time.sleep(0.5)
+            
+        if not injected:
+            print("[WARNING] Could not deterministically confirm CLI ready state. Falling back to blind injection.")
+            subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
+            subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
+            subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
         print(f"[SUCCESS] The A.I.M. Architect has awakened in the background.")
         print(f"""
 Please attach to the session to complete your interview:""")

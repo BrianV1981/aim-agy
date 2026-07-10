@@ -17,11 +17,20 @@ def get_current_tmux_session():
 def spawn_new_agent(workspace, session_name, wake_up_prompt):
     print("[2/4] Spawning new host vessel (tmux session) with Ephemeral Context Injection...")
     try:
-        # TUI Mode with native prompt-interactive flag
         subprocess.run(
             ["tmux", "new-session", "-d", "-s", session_name, "-c", workspace, "/home/kingb/.local/bin/agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
             check=True
         )
+        
+        # Deterministically handle trust prompt if it appears
+        for _ in range(15):
+            result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
+            if "trust this directory" in result.stdout:
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+                break
+            time.sleep(0.5)
+            
         print(f"      [Success] New agent is awake in tmux session: {session_name}")
     except FileNotFoundError:
         print("[ERROR] 'tmux' is not installed. The Reincarnation Protocol requires tmux.")
