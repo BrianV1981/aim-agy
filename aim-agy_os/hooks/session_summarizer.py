@@ -11,8 +11,8 @@ import subprocess
 def find_aim_root():
     current = os.path.abspath(os.getcwd())
     while current != '/':
-        if os.path.exists(os.path.join(current, "core", "CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")):
-            return current
+        if os.path.exists(os.path.join(current, "aim-agy_os", "setup.sh")): return os.path.join(current, "aim-agy_os")
+        if os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,6 +25,8 @@ from wiki_tools import process_wiki
 from blackbox_vault import vault_session
 
 CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
+if not os.path.exists(CONFIG_PATH):
+    CONFIG_PATH = os.path.join(os.path.dirname(AIM_ROOT), ".aim_core/CONFIG.json")
 if not os.path.exists(CONFIG_PATH):
     sys.exit(0)
 
