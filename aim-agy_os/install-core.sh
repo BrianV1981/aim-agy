@@ -17,10 +17,11 @@ cd .aim_temp_clone
 echo "    [*] Building Engine Virtual Environment..."
 ./setup.sh
 
-# Move everything out of the temp folder into the current directory
+# Safely merge the Engine components into the host project
 echo "[*] Step 2: Scaffolding Sovereign Environment..."
+
 shopt -s dotglob
-mv * ../
+cp -a * ../
 cd ..
 rm -rf .aim_temp_clone
 shopt -u dotglob

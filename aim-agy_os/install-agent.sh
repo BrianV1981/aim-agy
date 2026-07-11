@@ -20,22 +20,28 @@ cd .aim_temp_clone
 echo "    [*] Building Engine Virtual Environment..."
 ./aim-agy_os/setup.sh
 
-# Move everything out of the temp folder into the current directory
+# Safely merge the Engine components into the host project
 echo "[*] Step 2: Scaffolding Sovereign Environment..."
-shopt -s dotglob
-mv * ../
+
+# Clean Sweep (Severing identity and cleaning out developer artifacts BEFORE moving)
+rm -rf .git/ .github/ .vscode/
+rm -rf aim-agy_os/tests/ aim-agy_os/benchmarks/ aim-agy_os/docs/ aim-agy_os/scripts/ aim-agy_os/skills/
+
+cp -a aim-agy_os ../
+cp -a aim-agy_os_docs ../ 2>/dev/null || true
+
+cp -n AGENTS.md ../ 2>/dev/null || true
+cp -n README.md ../ 2>/dev/null || true
+cp -n TOOLS.md ../ 2>/dev/null || true
+cp -n CHANGELOG.md ../ 2>/dev/null || true
+cp -n VERSION ../ 2>/dev/null || true
+
 cd ..
 rm -rf .aim_temp_clone
-shopt -u dotglob
 
-# Clean Sweep (Severing identity and cleaning out developer artifacts)
-rm -rf .git/
-rm -rf aim-agy_os/tests/
-rm -rf aim-agy_os/benchmarks/
-rm -rf aim-agy_os/docs/
-rm -rf aim-agy_os/scripts/
-rm -rf aim-agy_os/skills/
-git init
+if [ ! -d ".git" ]; then
+    git init
+fi
 
 # Base OS Provisioning (Moving the pre-baked DB to the active layer)
 mkdir -p aim-agy_os/memory_lance

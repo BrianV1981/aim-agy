@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.6] - 2026-07-11
+- Fix: Safely replace dotglob mv with cp -a in installer scripts to prevent crashes in existing git repos (closes #64)
+
+
 ## [v1.0.5] - 2026-07-11
 - Fix: Make onboarding tmux session names dynamic and auto-kill (closes #63)
 
