@@ -11,7 +11,8 @@ import keyring
 def find_aim_root():
     current = os.path.dirname(os.path.abspath(__file__))
     while current != '/':
-        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
+        if os.path.exists(os.path.join(current, "aim-agy_os", "setup.sh")): return os.path.join(current, "aim-agy_os")
+        if os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
