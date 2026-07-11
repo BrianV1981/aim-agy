@@ -59,3 +59,11 @@ aim.wiki/
 # LanceDB Storage
 memory_lance/
 memory_lance.bak/
+
+# --- A.I.M. OS Exoskeleton ---
+.aim_core/
+.gemini/
+AGENTS.md
+aim-agy_os/
+memory-wiki/
+workspace/

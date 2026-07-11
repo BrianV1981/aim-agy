@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.5] - 2026-07-11
+- Fix: Make onboarding tmux session names dynamic and auto-kill (closes #63)
+
+
 ## [v1.0.4] - 2026-07-08
 - Fix: separate tmux send-keys commands to prevent swallowed Enter key
 

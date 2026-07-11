@@ -312,19 +312,22 @@ engrams/
         print(f"[ERROR] {bootstrap_file} not found. Please run the curl installer.")
         sys.exit(1)
         
-    session_name = "aim_onboarding"
+    import time
+    session_id = str(int(time.time()))
+    session_name = f"aim_onboarding_{session_id}"
     
     check_cmd = subprocess.run(["tmux", "has-session", "-t", session_name], capture_output=True)
     if check_cmd.returncode == 0:
-        print(f"[!] Onboarding session is already running.")
+        print(f"[!] Onboarding session {session_name} is already running.")
         print(f"Attach with: tmux attach-session -t {session_name}")
         return
 
     try:
-        print("Spawning the Onboarding Architect...")
+        print(f"Spawning the Onboarding Architect in {session_name}...")
         with open(bootstrap_file, "r") as f:
             bootstrap_content = f.read()
-        import time
+            bootstrap_content = bootstrap_content.replace("aim_onboarding", session_name)
+            
         subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
         
         # Deterministic polling for trust prompt and ready state
