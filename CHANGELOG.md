@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.7] - 2026-07-11
+- Fix: Correct Antigravity CLI trust prompt substring match and bypass keystrokes (closes #65)
+
+
 ## [v1.0.6] - 2026-07-11
 - Fix: Safely replace dotglob mv with cp -a in installer scripts to prevent crashes in existing git repos (closes #64)
 

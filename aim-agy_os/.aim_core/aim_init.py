@@ -339,12 +339,12 @@ engrams/
             result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
             out = result.stdout
             
-            if "trust this directory" in out and not trusted:
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
-                trusted = True
-                time.sleep(1)
-                continue
+            if "trust the contents" in out or "trust this folder" in out:
+                if not trusted:
+                    subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+                    trusted = True
+                    time.sleep(1)
+                    continue
                 
             # Wait for the CLI to fully load (it usually prints "Antigravity" or an agent prompt)
             if "Antigravity" in out or "Enter your" in out:
