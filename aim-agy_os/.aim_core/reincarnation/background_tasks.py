@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 
-def trigger_background_pipelines(aim_root, workspace):
+def trigger_background_pipelines(aim_root, workspace, session_id=None):
     print("[1/4] Mechanically extracting session signal & routing to pipelines...")
     
     venv_python = os.path.join(aim_root, "venv", "bin", "python3")
@@ -10,10 +10,11 @@ def trigger_background_pipelines(aim_root, workspace):
         venv_python = sys.executable
 
     try:
-        subprocess.run(
-            [venv_python, os.path.join(aim_root, ".aim_core", "handoff_pulse_generator.py")],
-            cwd=workspace, check=True, timeout=120
-        )
+        pulse_args = [venv_python, os.path.join(aim_root, ".aim_core", "handoff_pulse_generator.py")]
+        if session_id:
+            pulse_args.extend(["--session-id", session_id])
+            
+        subprocess.run(pulse_args, cwd=workspace, check=True, timeout=120)
         
         print("      Triggering Subconscious Scribe (Session Summarizer)...")
         subprocess.Popen(

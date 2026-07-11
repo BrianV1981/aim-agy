@@ -2,6 +2,7 @@
 import os
 import sys
 import time
+import argparse
 
 def find_aim_root():
     current = os.path.abspath(os.getcwd())
@@ -22,6 +23,10 @@ from reincarnation.context_builder import fetch_issue_context, build_wakeup_prom
 from reincarnation.teleport_engine import get_current_tmux_session, spawn_new_agent, execute_teleport
 
 def main():
+    parser = argparse.ArgumentParser(description="A.I.M. Reincarnation Protocol")
+    parser.add_argument("--session-id", type=str, default=None, help="The explicit conversation UUID of the active agent.")
+    args = parser.parse_args()
+
     print("--- A.I.M. REINCARNATION PROTOCOL ---")
     print("\n[!] CONTEXT FADE DETECTED: We are initiating Reincarnation.")
     
@@ -36,7 +41,7 @@ def main():
     current_tmux = get_current_tmux_session()
     
     # 2. Background Dispatch & Context Building
-    trigger_background_pipelines(AIM_ROOT, workspace)
+    trigger_background_pipelines(AIM_ROOT, workspace, args.session_id)
     issues = fetch_issue_context(AIM_ROOT)
     prompt = build_wakeup_prompt(gameplan, issues)
     

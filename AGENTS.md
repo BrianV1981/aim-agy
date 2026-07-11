@@ -95,7 +95,7 @@ If you need instructions on how to use specific, complex tools, do not guess. Yo
 1. Run `python3 .aim_core/aim_cli.py pulse` to manually generate a handoff document.
 2. **Agentic Reincarnation Protocol:** When the Operator types `/reincarnate` or `/python3 .aim_core/aim_cli.py reincarnate`, you MUST manually execute the handoff. Use the `run_shell_command` tool to:
    a. Write a highly structured handover message to `.aim_core/temp/REINCARNATION_GAMEPLAN.md` explicitly following the 5-section format mandated in `aim-agy_os_docs/GAMEPLAN_SOP.md` (Commander's Summary, Tactical State, Localized Directory Map, Epistemic Warnings, and Immediate Next Action).
-   b. Execute `venv/bin/python .aim_core/aim_reincarnate.py` to seamlessly teleport your context. The system will inject your gameplan directly into the new agent's wake-up prompt, instantly delete your `.md` file to prevent file permanence bias, and safely self-terminate.
+   b. Execute `venv/bin/python .aim_core/aim_reincarnate.py --session-id <your_conversation_id>` (explicitly pass your Conversation ID from your system prompt) to seamlessly teleport your context. The system will inject your gameplan directly into the new agent's wake-up prompt, instantly delete your `.md` file to prevent file permanence bias, and safely self-terminate.
 
 ## 11. THE PROJECT WIKI (LONG-TERM MEMORY)
 - **To Read:** The project's synthesized lore and architecture live in the `memory-wiki/` folder. Always start by reading `memory-wiki/index.md`.
