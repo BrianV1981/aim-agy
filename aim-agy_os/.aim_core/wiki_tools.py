@@ -9,17 +9,12 @@ except ImportError:
     from reasoning_utils import generate_reasoning
 
 def get_base_dir():
-    # First, try to resolve from the current working directory (crucial for decoupled child projects)
     current = os.path.abspath(os.getcwd())
-    while current != '/' and not (os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh"))):
+    while current != '/':
+        if os.path.exists(os.path.join(current, "aim-agy_os", "setup.sh")): return os.path.join(current, "aim-agy_os")
+        if os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
-    if current != '/': return current
-    
-    # Fallback to the global engine path
-    current = os.path.dirname(os.path.abspath(__file__))
-    while current != '/' and not (os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh"))):
-        current = os.path.dirname(current)
-    return current if current != '/' else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def search_wiki(query):
     """
@@ -114,7 +109,7 @@ def process_wiki():
             result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
             out = result.stdout
             
-            if "trust this directory" in out and not trusted:
+            if ("trust this directory" in out.lower() or "trust the contents" in out.lower() or "trust" in out.lower()) and not trusted:
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
                 trusted = True
@@ -123,7 +118,7 @@ def process_wiki():
                 
             if "Antigravity" in out or "Enter your" in out:
                 subprocess.run(["tmux", "set-buffer", prompt], check=True)
-                subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
+                subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
                 time.sleep(1)
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
                 injected = True
@@ -134,7 +129,7 @@ def process_wiki():
         if not injected:
             print("[WARNING] Could not confirm Wiki Agent readiness. Injecting blindly.")
             subprocess.run(["tmux", "set-buffer", prompt], check=True)
-            subprocess.run(["tmux", "paste-buffer", "-t", session_name], check=True)
+            subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
             time.sleep(1)
             subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
             
