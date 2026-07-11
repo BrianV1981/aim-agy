@@ -223,6 +223,7 @@ def init_workspace(args=None):
 
     # Base settings and ignores
     files = {
+        "README.md": "# Project Documentation\n\nUse this file to document your project. (A.I.M. Exoskeleton operates invisibly in the background).\n",
         ".geminiignore": """workspace/
 archive/
 memory_lance/
@@ -273,6 +274,19 @@ engrams/
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
         if not os.path.exists(full_path):
             with open(full_path, "w") as f: f.write(content)
+
+    # 1.5. Make A.I.M. OS Invisible (Append to .gitignore)
+    gitignore_path = os.path.join(BASE_DIR, ".gitignore")
+    ignore_entries = "\n# --- A.I.M. OS Exoskeleton ---\n.aim_core/\n.gemini/\nAGENTS.md\naim-agy_os/\nmemory-wiki/\nworkspace/\n"
+    if os.path.exists(gitignore_path):
+        with open(gitignore_path, "r") as f:
+            existing_ignore = f.read()
+        if "--- A.I.M. OS Exoskeleton ---" not in existing_ignore:
+            with open(gitignore_path, "a") as f:
+                f.write(ignore_entries)
+    else:
+        with open(gitignore_path, "w") as f:
+            f.write(ignore_entries.strip() + "\n")
 
     # 2. Spawn the Agentic Interview
     bootstrap_file = os.path.join(OS_DIR, "BOOTSTRAP.md")
