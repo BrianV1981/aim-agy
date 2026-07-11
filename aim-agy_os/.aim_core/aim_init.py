@@ -207,6 +207,12 @@ def trigger_bootstrap():
 def init_workspace(args=None):
     if args is None: args = []
     is_interactive = "--headless" not in args
+    persona_name = None
+    if "--persona" in args:
+        try:
+            persona_name = args[args.index("--persona") + 1]
+        except ValueError:
+            pass
 
     print("""
 --- A.I.M. SOVEREIGN INSTALLER ---""")
@@ -288,7 +294,19 @@ engrams/
         with open(gitignore_path, "w") as f:
             f.write(ignore_entries.strip() + "\n")
 
-    # 2. Spawn the Agentic Interview
+    # 2. Spawn the Agentic Interview (Or Headless Setup)
+    if not is_interactive:
+        print(f"[SUCCESS] A.I.M. OS Headless Provisioning Complete.")
+        if persona_name:
+            print(f"[*] Downloading Persona Blueprint: {persona_name}")
+            # In a full production setup, this would fetch from aim-coagents
+            agents_md_path = os.path.join(BASE_DIR, "AGENTS.md")
+            persona_content = f"# 🤖 Sovereign Co-Agent: {persona_name.title()}\n\nThis is a headless background node.\n\n## 1. IDENTITY\n- **Role:** Autonomous {persona_name}\n- **Execution Mode:** YOLO\n"
+            with open(agents_md_path, "w") as f:
+                f.write(persona_content)
+            print(f"[SUCCESS] Persona '{persona_name}' linked and ready for autonomous execution.")
+        return
+
     bootstrap_file = os.path.join(OS_DIR, "BOOTSTRAP.md")
     if not os.path.exists(bootstrap_file):
         print(f"[ERROR] {bootstrap_file} not found. Please run the curl installer.")

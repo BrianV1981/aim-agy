@@ -480,6 +480,7 @@ def cmd_init(args):
     if args.uninstall: init_args.append("--uninstall")
     if args.light: init_args.append("--light")
     if getattr(args, "headless", False): init_args.append("--headless")
+    if getattr(args, "persona", None): init_args.extend(["--persona", args.persona])
     if getattr(args, "clean", False): init_args.append("--clean")
     try:
         subprocess.run([VENV_PYTHON, os.path.join(AIM_CORE_DIR, "aim_init.py")] + init_args, check=True)
@@ -749,6 +750,7 @@ def main():
     init_parser.add_argument("--uninstall", action="store_true", help="Show uninstallation instructions")
     init_parser.add_argument('--light', action='store_true', help='Install the Lightweight AOS Mode (Zero-RAG, continuity only)')
     init_parser.add_argument('--headless', action='store_true', help='Run the installer silently without interactive prompts')
+    init_parser.add_argument('--persona', type=str, help='Persona blueprint name for headless co-agent deployment')
     init_parser.add_argument('--clean', action='store_true', help='Force a clean sweep during headless mode (wipes docs, resets brain, provides OS engram)')
 
     subparsers.add_parser("status", help="Show current project momentum")
