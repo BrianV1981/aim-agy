@@ -14,7 +14,7 @@ CLI_NAME=$(basename "$CURRENT_DIR")
 echo "[*] Step 1: Provisioning Local Operating System..."
 
 # Clone the engine directly into a temporary hidden folder to avoid empty directory conflicts
-git clone --depth 1 file:///home/kingb/aim-agy .aim_temp_clone
+git clone --depth 1 https://github.com/BrianV1981/aim-agy.git .aim_temp_clone
 cd .aim_temp_clone
 
 echo "    [*] Building Engine Virtual Environment..."
