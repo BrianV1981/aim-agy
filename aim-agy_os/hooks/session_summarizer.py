@@ -150,7 +150,7 @@ def process_transcript(md_path):
                 result = subprocess.run(["tmux", "capture-pane", "-p", "-t", scribe_session_name], capture_output=True, text=True)
                 out = result.stdout
                 
-                if "trust this directory" in out and not trusted:
+                if ("trust this directory" in out.lower() or "trust the contents" in out.lower() or "trust" in out.lower()) and not trusted:
                     subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "y"], check=True)
                     subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Enter"], check=True)
                     trusted = True
