@@ -159,7 +159,7 @@ def process_transcript(md_path):
                     
                 if "Antigravity" in out or "Enter your" in out:
                     subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
-                    subprocess.run(["tmux", "paste-buffer", "-t", scribe_session_name], check=True)
+                    subprocess.run(["tmux", "paste-buffer", "-p", "-t", scribe_session_name], check=True)
                     time.sleep(1)
                     subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Escape", "Enter"], check=True)
                     injected = True
@@ -170,7 +170,7 @@ def process_transcript(md_path):
             if not injected:
                 print("[WARNING] Could not confirm Scribe readiness. Injecting blindly.")
                 subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
-                subprocess.run(["tmux", "paste-buffer", "-t", scribe_session_name], check=True)
+                subprocess.run(["tmux", "paste-buffer", "-p", "-t", scribe_session_name], check=True)
                 time.sleep(1)
                 subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Escape", "Enter"], check=True)
 
