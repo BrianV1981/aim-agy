@@ -247,17 +247,39 @@ def cmd_prune_remote(args):
         result = subprocess.run(["git", "branch", "-r"], cwd=BASE_DIR, capture_output=True, text=True, check=True)
         branches = [b.strip() for b in result.stdout.split('\n') if b.strip()]
         
+        # Get open PR heads to protect them
+        open_prs = set()
+        pr_result = subprocess.run(["gh", "pr", "list", "--state", "open", "--json", "headRefName"], cwd=BASE_DIR, capture_output=True, text=True)
+        if pr_result.returncode == 0:
+            import json
+            try:
+                pr_data = json.loads(pr_result.stdout)
+                open_prs = {pr["headRefName"] for pr in pr_data}
+            except Exception:
+                pass
+        else:
+            print("[WARNING] Could not fetch open PRs from GitHub. Proceeding with caution.")
+            
         to_delete = []
+        skipped = []
         for b in branches:
             if b.startswith("origin/archive-fix/") or b.startswith("origin/fix/issue-"):
                 branch_name = b.replace("origin/", "", 1)
-                to_delete.append(branch_name)
+                if branch_name in open_prs:
+                    skipped.append(branch_name)
+                else:
+                    to_delete.append(branch_name)
         
+        if skipped:
+            print(f"[INFO] Skipping {len(skipped)} branches that have open PRs:")
+            for b in skipped:
+                print(f"  - [PROTECTED] {b}")
+                
         if not to_delete:
-            print("[INFO] No stale remote branches found.")
+            print("[INFO] No stale remote branches found to delete.")
             return
             
-        print(f"[INFO] Found {len(to_delete)} stale remote branches:")
+        print(f"\n[INFO] Found {len(to_delete)} stale remote branches:")
         for b in to_delete:
             print(f"  - {b}")
             
