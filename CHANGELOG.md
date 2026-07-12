@@ -19,6 +19,9 @@
 ## [v1.0.3] - 2026-07-08
 - Fix: bypass trust prompt with automated keystrokes (Closes #58)
 
+## [v1.0.0] - 2026-07-01
+- **Notice**: Semver reset to `v1.0.x` following the major repository restructuring. All future releases will continue from the `v1.0` line. The previous `v1.71.x` line is considered legacy.
+
 
 ## [v1.71.5] - 2026-06-25
 - Fix: update clean installer for portable architecture
