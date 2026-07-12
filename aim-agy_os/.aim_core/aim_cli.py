@@ -240,6 +240,43 @@ def cmd_fix(args):
     except Exception as e:
         print(f"[ERROR] Failed to create worktree: {e}")
 
+def cmd_prune_remote(args):
+    """Prunes remote tracking branches like archive-fix/* and fix/issue-* that are no longer needed."""
+    print("--- A.I.M. REMOTE BRANCH PRUNE ---")
+    try:
+        result = subprocess.run(["git", "branch", "-r"], cwd=BASE_DIR, capture_output=True, text=True, check=True)
+        branches = [b.strip() for b in result.stdout.split('\n') if b.strip()]
+        
+        to_delete = []
+        for b in branches:
+            if b.startswith("origin/archive-fix/") or b.startswith("origin/fix/issue-"):
+                branch_name = b.replace("origin/", "", 1)
+                to_delete.append(branch_name)
+        
+        if not to_delete:
+            print("[INFO] No stale remote branches found.")
+            return
+            
+        print(f"[INFO] Found {len(to_delete)} stale remote branches:")
+        for b in to_delete:
+            print(f"  - {b}")
+            
+        if not getattr(args, 'confirm', False):
+            print("\n[DRY RUN] This was a dry run. To actually delete these branches from the remote, run with --confirm")
+            return
+            
+        print("\n[ACTION] Deleting branches from origin...")
+        for branch in to_delete:
+            try:
+                subprocess.run(["git", "push", "origin", "--delete", branch], cwd=BASE_DIR, capture_output=True, text=True, check=True)
+                print(f"  [DELETED] {branch}")
+            except subprocess.CalledProcessError as e:
+                print(f"  [ERROR] Failed to delete {branch}: {e.stderr.strip()}")
+                
+        print("\n[SUCCESS] Remote cleanup complete.")
+    except Exception as e:
+        print(f"\n[ERROR] Failed to prune remote branches: {e}")
+
 def cmd_promote(args):
     """Automates the Phase Protocol: Archives main, merges current dev branch, and cleans up the worktree."""
     print("--- A.I.M. PHASE PROMOTION ---")
@@ -760,6 +797,10 @@ def main():
     update_parser.add_argument("target", choices=["engine", "project"], nargs="?", default="engine", help="Which component to update")
     subparsers.add_parser("doctor", help="Run a diagnostic check on system dependencies")
     subparsers.add_parser("health")
+    
+    prune_remote_parser = subparsers.add_parser("prune-remote", help="Garbage collect stale remote branches (fix/issue-* and archive-fix/*)")
+    prune_remote_parser.add_argument("--confirm", action="store_true", help="Execute the deletions instead of dry-run")
+    
     subparsers.add_parser("purge")
     subparsers.add_parser("uninstall")
     subparsers.add_parser("index")
@@ -927,6 +968,7 @@ def main():
     elif args.command == "promote": cmd_promote(args)
     elif args.command == "merge-batch": cmd_merge_batch(args)
     elif args.command == "purge": cmd_purge(args)
+    elif args.command == "prune-remote": cmd_prune_remote(args)
     elif args.command == "uninstall": cmd_uninstall(args)
     else: parser.print_help()
 
