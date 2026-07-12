@@ -28,3 +28,4 @@ Once baked, you MUST move the resulting `aim-agy_os_docs.parquet` file into `ass
 *   **`REINCARNATE_PROTOCOL.md`**: Formalizes the 5-Phase teleportation sequence that defeats the "Amnesia Problem," detailing the Direct Python Handoff and the background summarization daemon.
 *   **`SCRIPT_MAP.md`**: A literal, file-by-file directory map of every Python engine, CLI router, and maintenance script operating in the `aim_core/` folder.
 *   **`TESTING_AND_VALIDATION.md`**: Enforces the "TDD Reflex" and forbids "Vibe Coding." Mandates that all architectural changes must be empirically proven by automated tests before deployment.
+*   **`PROJECT_AUDIT.md`**: Full project health audit (2026-07-11): packaging, CI, repo hygiene, dual memory paths, remediation backlog, and graded assessment.
