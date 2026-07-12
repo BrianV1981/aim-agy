@@ -32,3 +32,15 @@ jobs:
         PYTHONPATH: ${{ github.workspace }}/aim-agy_os:${{ github.workspace }}/aim-agy_os/.aim_core
       run: |
         pytest aim-agy_os/tests/ -v
+        
+    - name: Installer Syntax and Dry-Run Checks
+      run: |
+        echo "Checking syntax of installer scripts..."
+        bash -n aim-agy_os/setup.sh
+        bash -n aim-agy_os/install-core.sh
+        bash -n aim-agy_os/install-agent.sh
+        bash -n aim-agy_os/install-clean.sh
+        
+        echo "Validating path sanity inside installer scripts..."
+        grep -q 'aim-agy_os/setup.sh' aim-agy_os/install-core.sh || { echo "missing aim-agy_os/setup.sh"; exit 1; }
+        grep -q 'memory_lance' aim-agy_os/install-core.sh || { echo "missing memory_lance seed path"; exit 1; }
