@@ -42,4 +42,5 @@ jobs:
         bash -n aim-agy_os/install-clean.sh
         
         echo "Validating path sanity inside installer scripts..."
-        grep -q "\./setup.sh" aim-agy_os/install-core.sh || { echo "install-core.sh is missing ./setup.sh reference"; exit 1; }
+        grep -q 'aim-agy_os/setup.sh' aim-agy_os/install-core.sh || { echo "missing aim-agy_os/setup.sh"; exit 1; }
+        grep -q 'memory_lance' aim-agy_os/install-core.sh || { echo "missing memory_lance seed path"; exit 1; }
