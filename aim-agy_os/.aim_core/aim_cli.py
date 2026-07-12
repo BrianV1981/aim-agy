@@ -206,7 +206,9 @@ def cmd_swarm(args):
     from .aim_core.aim_swarm import spawn_coagent, send_message, capture_output, check_coagent, kill_coagent, list_sessions
     
     if args.swarm_command == "spawn":
-        print(json.dumps(spawn_coagent(args.name, OS_DIR, args.prompt), indent=2))
+        from session_naming import build_agent_session_name
+        session_name = build_agent_session_name(args.name, OS_DIR)
+        print(json.dumps(spawn_coagent(session_name, OS_DIR, args.prompt), indent=2))
     elif args.swarm_command == "send":
         print(json.dumps(send_message(args.name, args.message), indent=2))
     elif args.swarm_command == "capture":

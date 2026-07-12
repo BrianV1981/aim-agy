@@ -46,7 +46,8 @@ def main():
     prompt = build_wakeup_prompt(gameplan, issues)
     
     # 3. Spawn & Teleport
-    session_name = f"aim_reincarnation_{int(time.time())}"
+    from session_naming import reincarnation_session_name
+    session_name = reincarnation_session_name(workspace_dir=workspace)
     spawn_new_agent(workspace, session_name, prompt)
     cleanup_gameplan(AIM_ROOT)
     execute_teleport(current_tmux, session_name)

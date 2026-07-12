@@ -85,7 +85,8 @@ def process_wiki():
         return
 
     # Enforce a single static Subconscious Scribe to prevent file collisions
-    session_name = f"wiki_agent_{os.path.basename(base_dir)}"
+    from session_naming import build_agent_session_name
+    session_name = build_agent_session_name("wiki", base_dir)
     wiki_dir = os.path.join(base_dir, "memory-wiki")
     
     # Check if the agent is already running and processing the queue

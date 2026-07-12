@@ -1,6 +1,8 @@
 # Changelog
 
 ## [v1.0.8] - 2026-07-12
+- Feature: Namespace all spawned agent tmux sessions (Closes #95)
+- Feature: Prefix reincarnation tmux sessions as agy_reincarnation_* (Closes #93)
 - Fix: Create LanceDB INVERTED index on table initialization to fix FTS on empty tables (Closes #94)
 - Fix: Make prune-remote fail-closed on gh api errors (Closes #92)
 

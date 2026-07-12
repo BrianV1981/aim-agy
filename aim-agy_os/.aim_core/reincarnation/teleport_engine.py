@@ -23,9 +23,12 @@ def spawn_new_agent(workspace, session_name, wake_up_prompt):
         )
         
         # Deterministically handle trust prompt if it appears
+        # Note: The agy --dangerously-skip-permissions flag is intended to bypass this, 
+        # but its reliability is inconsistent across different OS environments and CLI updates.
+        # This fallback polling ensures the agent doesn't hang forever waiting for user input.
         for _ in range(15):
             result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
-            if "trust this directory" in result.stdout:
+            if "trust" in result.stdout.lower():
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
                 break
