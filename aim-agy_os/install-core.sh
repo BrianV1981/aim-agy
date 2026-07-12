@@ -1,6 +1,6 @@
 #!/bin/bash
 # A.I.M. Core Contributor Installer
-# curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/install-core.sh | bash
+# curl -fsSL https://raw.githubusercontent.com/BrianV1981/aim-agy/main/aim-agy_os/install-core.sh | bash
 
 set -e
 echo "--- A.I.M. CORE CONTRIBUTOR INSTALLER ---"
@@ -15,7 +15,7 @@ git clone --depth 1 https://github.com/BrianV1981/aim-agy.git .aim_temp_clone
 cd .aim_temp_clone
 
 echo "    [*] Building Engine Virtual Environment..."
-./setup.sh
+./aim-agy_os/setup.sh
 
 # Safely merge the Engine components into the host project
 echo "[*] Step 2: Scaffolding Sovereign Environment..."
@@ -27,8 +27,8 @@ rm -rf .aim_temp_clone
 shopt -u dotglob
 
 # Base OS Provisioning (Moving the pre-baked DB to the active layer)
-mkdir -p memory/lance
-cp -r assets/default_lance/* memory/lance/
+mkdir -p aim-agy_os/memory_lance
+cp -r aim-agy_os/assets/default_lance/* aim-agy_os/memory_lance/
 
 echo "    [*] Linking Local Alias ($CLI_NAME)..."
 RC_FILE="$HOME/.bashrc"
