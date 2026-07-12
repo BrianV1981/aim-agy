@@ -25,7 +25,8 @@ This document is the literal map of every internal script running the A.I.M. OS.
 *   **`aim_batch_merge.py`**: Utility for merging multiple open `fix/issue-*` branches into main.
 *   **`aim_delegate.py`**: A.I.M. Dynamic Sub-Agent Delegation protocol for distributed processing.
 *   **`aim_init.py`**: The setup wizard executed upon first repository installation to build the databases, wiki, and hooks.
-*   **`aim_crash.py`**: Recovery script to safely extract the signal from a corrupted V8 heap crash.
+*   **`memory_salvage.py`**: Recovery script to safely extract the signal from a corrupted V8 heap crash.
+*   **`aim_doctor.py`**: Validates system dependencies and environment integrity (Node versions, LanceDB, API keys).
 
 ---
 
