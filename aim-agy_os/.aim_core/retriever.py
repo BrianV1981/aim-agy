@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import traceback
 import sys
 import os
 import json
@@ -243,6 +244,7 @@ def perform_search_internal(query, top_k=10, session_filter=None):
         backend = VectorBackend()
         results = backend.search(query_vec, query, top_k=top_k, session_filter=session_filter)
     except Exception as e:
+        traceback.print_exc()
         print(f"\\n[!] LanceDB Search Error: {e}")
         results = []
 
