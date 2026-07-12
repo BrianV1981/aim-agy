@@ -221,7 +221,7 @@ def cmd_fix(args):
     """Spawns a Git Worktree for a specific GitHub Issue ID."""
     issue_id = args.id
     branch_name = f"fix/issue-{issue_id}"
-    worktree_path = os.path.join(OS_DIR, "workspace", f"issue-{issue_id}")
+    worktree_path = os.path.join(PROJECT_ROOT, "workspace", f"issue-{issue_id}")
     print(f"--- A.I.M. FACTORY FLOOR (Issue #{issue_id}) ---")
     try:
         subprocess.run(["git", "worktree", "add", worktree_path, "-b", branch_name], cwd=BASE_DIR, check=True)

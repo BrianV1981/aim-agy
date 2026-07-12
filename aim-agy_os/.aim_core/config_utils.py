@@ -23,7 +23,7 @@ def find_project_root():
     # 1. Check current directory and parents (Dynamic Workspace Isolation)
     current = os.path.abspath(os.getcwd())
     while current != '/':
-        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")):
+        if os.path.exists(os.path.join(current, "aim-agy_os", ".aim_core")):
             return current
         current = os.path.dirname(current)
         
