@@ -4,6 +4,6 @@ This directory contains the internal Python engine that powers the A.I.M. exoske
 
 ## Key Components
 *   **`reasoning_utils.py`**: The API Bridge. Handles routing payloads to Google Antigravity, Anthropic, OpenRouter, Codex, or Local Ollama. It manages subprocess execution and parses stdout/stderr to protect the agent from brittle CLI outputs.
-*   **`forensic_utils.py`**: The SQLite ORM. Manages the connection to the `engram.db`, handles the calculation of dense vectors (via Nomic), and executes the FTS5 Hybrid RAG searches.
+*   **`plugins/datajack/forensic_utils.py`**: Contains the RAG 5.21 Length-Constrained Accumulator chunking algorithm, embedding functions, and ingestion utilities.
 *   **`mcp_server.py`**: The Universal IDE interface. Runs a FastMCP server that exposes the A.I.M. database and skills directly to Cursor, Claude Code, or VS Code.
-*   **The Summarizers**: `tier2_daily_summarizer.py`, `tier3_weekly_summarizer.py`, etc. The logic for the Cascading Memory Sieve.
+*   **`retriever.py` & `lance_backend.py`**: The core Hybrid RAG memory engine powered by LanceDB.
