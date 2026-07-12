@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.8] - 2026-07-12
+- Fix: Create LanceDB INVERTED index on table initialization to fix FTS on empty tables (Closes #94)
+
+
 ## [v1.0.7] - 2026-07-11
 - Fix: Correct Antigravity CLI trust prompt substring match and bypass keystrokes (closes #65)
 
