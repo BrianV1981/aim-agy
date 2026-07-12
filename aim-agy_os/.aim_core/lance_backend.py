@@ -200,7 +200,6 @@ class VectorBackend:
                     rom_results = execute_query(t)
                     results.extend(rom_results)
                 except Exception as e:
-                    import traceback
                     traceback.print_exc()
                     print(f"[WARNING] Failed to search ROM {parquet_file}: {e}")
                     

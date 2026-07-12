@@ -1,5 +1,5 @@
-import traceback
 #!/usr/bin/env python3
+import traceback
 import argparse
 import subprocess
 import sys
@@ -152,7 +152,6 @@ def cmd_bug(args):
     except FileNotFoundError:
         print(f"[ERROR] GitHub CLI ('gh') is not installed. Please install it to use '{CLI_NAME} bug'.")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[ERROR] Failed to create issue: {e}")
 
@@ -197,7 +196,6 @@ def cmd_bug_operator(args):
     except FileNotFoundError:
         print(f"[ERROR] GitHub CLI ('gh') is not installed. Please install it to use '{CLI_NAME} bug'.")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[ERROR] Failed to create issue: {e}")
 
@@ -243,7 +241,6 @@ def cmd_fix(args):
         print(f"[ACTION] To start working, run: cd workspace/issue-{issue_id}")
         print(f"[ACTION] When the bug is resolved, run: {CLI_NAME} push \"Fix: <description> (Closes #{issue_id})\"")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[ERROR] Failed to create worktree: {e}")
 
@@ -302,7 +299,6 @@ def cmd_promote(args):
         print(f"Output: {e.stdout}")
         print(f"Error: {e.stderr}")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"\\n[ERROR] Failed to promote: {e}")
 
@@ -365,7 +361,6 @@ def cmd_push(args):
         else:
             print(f"[1/3] No semantic prefix found (Feature/Fix/BREAKING CHANGE). Version remains {new_version}.")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[WARNING] Semantic Release failed: {e}")
 
@@ -379,7 +374,6 @@ def cmd_push(args):
             stderr=subprocess.DEVNULL
         )
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[WARNING] Background Sovereign Sync spawn failed: {e}")
         
@@ -419,7 +413,6 @@ def cmd_sync(args):
         print(f"      Imported {imported} new/updated cartridges.")
         print("[SUCCESS] Workspace synchronized.")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[ERROR] Sync failed: {e}")
 
@@ -485,7 +478,6 @@ def cmd_search_sessions(args):
             print(f"\nSession: {r[0][:8]} ({r[1]})")
             print(f"Match: {r[2]}")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"Search failed: {e}")
     conn.close()
@@ -681,7 +673,6 @@ def cmd_update(args):
         subprocess.run(["git", "clone", "--depth", "1", "https://github.com/BrianV1981/aim-agy.git", temp_dir], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print("    [SUCCESS] Remote payload secured.")
     except Exception as e:
-        import traceback
         traceback.print_exc()
         print(f"[ERROR] Failed to connect to Swarm network: {e}")
         return

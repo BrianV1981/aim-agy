@@ -1,5 +1,5 @@
-import traceback
 #!/usr/bin/env python3
+import traceback
 import os
 import sys
 import json
@@ -46,7 +46,6 @@ def search_engram(query: str) -> str:
         
         return output
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return f"Retrieval Error: {str(e)}"
 
@@ -128,7 +127,6 @@ def _sandboxed_run(script_path: Path, args_dict: dict) -> str:
     except subprocess.TimeoutExpired:
         return json.dumps({"error": "Skill timed out (60s limit)"})
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return json.dumps({"error": f"Sandbox error: {str(e)}"})
 
@@ -148,7 +146,6 @@ def run_skill(skill_name: str, args_json: str = "{}") -> str:
         args_dict = json.loads(args_json) if args_json and args_json != "{}" else {}
         return _sandboxed_run(script_path, args_dict)
     except Exception as e:
-        import traceback
         traceback.print_exc()
         return json.dumps({"error": str(e)})
 # ====================================================================================
