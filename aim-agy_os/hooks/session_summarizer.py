@@ -130,7 +130,8 @@ def process_transcript(md_path):
             return True
 
         # 2. Spawn the Scribe Agent
-        scribe_session_name = "scribe_agent_aim"
+        from session_naming import build_agent_session_name
+        scribe_session_name = build_agent_session_name("scribe", AIM_ROOT)
         wiki_dir = os.path.join(AIM_ROOT, "memory-wiki")
         
         check_cmd = subprocess.run(["tmux", "has-session", "-t", scribe_session_name], capture_output=True)

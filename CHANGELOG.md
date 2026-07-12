@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.2.0] - 2026-07-12
+- Feature: Namespace all spawned agent tmux sessions (Closes #95)
+
+
 ## [v1.1.0] - 2026-07-12
 - Feature: Prefix reincarnation tmux sessions as agy_reincarnation_* (Closes #93)
 

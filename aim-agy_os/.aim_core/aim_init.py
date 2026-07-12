@@ -313,8 +313,8 @@ engrams/
         sys.exit(1)
         
     import time
-    session_id = str(int(time.time()))
-    session_name = f"aim_onboarding_{session_id}"
+    from session_naming import build_agent_session_name
+    session_name = build_agent_session_name("onboarding", BASE_DIR)
     
     check_cmd = subprocess.run(["tmux", "has-session", "-t", session_name], capture_output=True)
     if check_cmd.returncode == 0:
