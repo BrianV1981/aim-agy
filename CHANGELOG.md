@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.0.8] - 2026-07-12
+- Fix: Make prune-remote fail-closed on gh api errors (Closes #92)
+
+
 ## [v1.0.7] - 2026-07-11
 - Fix: Correct Antigravity CLI trust prompt substring match and bypass keystrokes (closes #65)
 

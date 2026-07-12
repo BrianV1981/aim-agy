@@ -262,7 +262,11 @@ def cmd_prune_remote(args):
             except Exception:
                 pass
         else:
-            print("[WARNING] Could not fetch open PRs from GitHub. Proceeding with caution.")
+            if getattr(args, 'confirm', False):
+                print("[ERROR] Could not fetch open PRs from GitHub. Aborting unsafe remote prune.")
+                return
+            else:
+                print("[WARNING] Could not fetch open PRs from GitHub. Proceeding with dry-run caution.")
             
         to_delete = []
         skipped = []
