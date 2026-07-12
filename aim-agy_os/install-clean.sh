@@ -60,7 +60,8 @@ echo "    [*] Linking Local Alias ($CLI_NAME)..."
 RC_FILE="$HOME/.bashrc"
 if [ -f "$HOME/.zshrc" ]; then RC_FILE="$HOME/.zshrc"; fi
 
-SED_ALIAS="alias $CLI_NAME='NODE_OPTIONS=\"--max-old-space-size=16384\" $CURRENT_DIR/aim-agy_os/venv/bin/python3 $CURRENT_DIR/aim-agy_os/.aim_core/aim_cli.py'"
+# We set NODE_OPTIONS to 8GB (8192) to support heavy embedding processes and massive workspaces
+SED_ALIAS="alias $CLI_NAME='NODE_OPTIONS=\"--max-old-space-size=8192\" $CURRENT_DIR/aim-agy_os/venv/bin/python3 $CURRENT_DIR/aim-agy_os/.aim_core/aim_cli.py'"
 
 if ! grep -q "alias $CLI_NAME=" "$RC_FILE"; then
     echo "" >> "$RC_FILE"
