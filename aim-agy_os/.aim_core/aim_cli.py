@@ -327,6 +327,16 @@ def cmd_promote(args):
             
         print(f"[1/5] Preparing to promote '{current_branch}' to main...")
         
+        print('\n[CRITICAL INTERVENTION REQUIRED]')
+        print('[WARNING TO AGENT] You are strictly forbidden from guessing this answer.')
+        print('[WARNING TO AGENT] You MUST use your ask_question / UI modal tool to prompt the Operator.')
+        print('[WARNING TO AGENT] Once the Operator confirms, stream their answer to stdin (yes/no).')
+
+        confirm = input(f"\nMerge branch '{current_branch}' to main? (yes/no): ").strip().lower()
+        if confirm not in ['yes', 'y']:
+            print('\n[ABORTED] Promotion cancelled. Branch remains isolated.')
+            return
+        
         repo_root = os.path.dirname(os.path.dirname(BASE_DIR)) if in_worktree else BASE_DIR
         
         # 1. Fetch latest (run in repo_root)
@@ -369,6 +379,16 @@ def cmd_promote(args):
 
 def cmd_merge_batch(args):
     """Executes the aim_batch_merge.py script to cleanly merge an entire Phase of tickets."""
+    print('\n[CRITICAL INTERVENTION REQUIRED]')
+    print('[WARNING TO AGENT] You are strictly forbidden from guessing this answer.')
+    print('[WARNING TO AGENT] You MUST use your ask_question / UI modal tool to prompt the Operator.')
+    print('[WARNING TO AGENT] Once the Operator confirms, stream their answer to stdin (yes/no).')
+
+    confirm = input("\nExecute batch merge to main? (yes/no): ").strip().lower()
+    if confirm not in ['yes', 'y']:
+        print('\n[ABORTED] Batch merge cancelled. Main remains isolated.')
+        return
+
     merge_args = []
     if args.push:
         merge_args.append("--push")
