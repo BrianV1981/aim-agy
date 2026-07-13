@@ -912,6 +912,12 @@ def main():
     wiki_search = wiki_subparsers.add_parser("search", help="Search the Wiki using local lookup")
     wiki_search.add_argument("query", nargs="+", help="The search query")
     wiki_process = wiki_subparsers.add_parser("process", help="Process the memory-wiki/_ingest folder")
+    wiki_alias = subparsers.add_parser("wiki", help="Alias for memory-wiki")
+    wiki_alias_sub = wiki_alias.add_subparsers(dest="wiki_command")
+    _ws = wiki_alias_sub.add_parser("search", help="Search the Wiki using local lookup")
+    _ws.add_argument("query", nargs="+", help="The search query")
+    wiki_alias_sub.add_parser("process", help="Process the memory-wiki/_ingest folder")
+
 
     subparsers.add_parser("map", help="Print the Index of Keys (Knowledge Map)")
 
@@ -971,7 +977,7 @@ def main():
     elif args.command == "status": cmd_status(args)
     elif args.command == "core-memory": cmd_core_memory(args)
     elif args.command == "search": cmd_search(args)
-    elif args.command == "memory-wiki": cmd_wiki(args)
+    elif args.command in ("memory-wiki", "wiki"): cmd_wiki(args)
     elif args.command == "map": cmd_map(args)
     elif args.command == "update": cmd_update(args)
     elif args.command in ["config", "tui"]: cmd_config(args)

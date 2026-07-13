@@ -34,7 +34,7 @@ def search_wiki(query):
     c.execute('''CREATE VIRTUAL TABLE wiki_fts USING fts5(filepath, content)''')
 
     # Load markdown files
-    md_files = glob.glob(os.path.join(wiki_dir, "*.md"))
+    md_files = glob.glob(os.path.join(wiki_dir, "**", "*.md"), recursive=True)
     for file_path in md_files:
         if os.path.basename(file_path) == "GEMINI.md": continue
         try:
@@ -65,75 +65,100 @@ def search_wiki(query):
     print("-----------------------------------")
 
 
-def process_wiki():
-    """
-    Hands off the ingest processing to a dedicated 'wiki_agent' tmux session
-    running the agy CLI in YOLO mode, allowing it to natively read and write 
-    the markdown files.
-    """
+
+def process_wiki_agent():
+    """Legacy: hand off ingest to a tmux wiki agent (agy). Prefer deterministic."""
     import subprocess
     base_dir = get_base_dir()
     ingest_dir = os.path.join(base_dir, "memory-wiki/_ingest")
-    
     if not os.path.exists(ingest_dir):
         print("Error: memory-wiki/_ingest/ directory not found.")
         return
-
-    files = glob.glob(os.path.join(ingest_dir, "*.*"))
+    files = [
+        f for f in glob.glob(os.path.join(ingest_dir, "*.*"))
+        if os.path.basename(f) not in (".gitkeep", ".keep")
+    ]
     if not files:
         print("No files found in memory-wiki/_ingest/ to process.")
         return
-
-    # Enforce a single static Subconscious Scribe to prevent file collisions
     from session_naming import build_agent_session_name
     session_name = build_agent_session_name("wiki", base_dir)
     wiki_dir = os.path.join(base_dir, "memory-wiki")
-    
-    # Check if the agent is already running and processing the queue
     check_cmd = subprocess.run(["tmux", "has-session", "-t", session_name], capture_output=True)
     if check_cmd.returncode == 0:
         print(f"[{session_name}] is already active and processing the queue. Skipping new spawn.")
         return
-        
-    print(f"Starting fresh '{session_name}' tmux session in YOLO mode...")
-    subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", wiki_dir, "bash", "-c", "cd {} && source ~/.bashrc 2>/dev/null; agy --dangerously-skip-permissions".format(wiki_dir)])
+    print(f"Starting fresh '{session_name}' tmux session (agy)...")
+    subprocess.run([
+        "tmux", "new-session", "-d", "-s", session_name, "-c", wiki_dir,
+        "bash", "-c", f"cd {wiki_dir} && source ~/.bashrc 2>/dev/null; agy --dangerously-skip-permissions",
+    ])
     print(f"Handing off {len(files)} file(s) to {session_name} for processing...")
-
-    prompt = f"Wake up. You are the disciplined LLM Wiki Maintainer. Your job is to read the factual summaries waiting in the `_ingest/` directory ONE BY ONE. For each file: 1. Read the summary. 2. If it contains valuable information (architectural changes, workflows, concepts), update the main `index.md` catalog, append a chronological entry to `log.md`, and create/update any relevant concept pages. Keep everything interlinked. 3. Once its knowledge is absorbed (or if the summary is useless noise), DELETE the summary file from `_ingest/`. 4. Repeat until `_ingest/` is completely empty. 5. Execute `tmux kill-session -t {session_name}`."
-
+    prompt = (
+        "Wake up. You are the disciplined LLM Wiki Maintainer. Process `_ingest/` "
+        "into index.md, log.md, and pages/; delete absorbed files; then "
+        f"`tmux kill-session -t {session_name}`."
+    )
     try:
-        max_retries = 30
         trusted = False
         injected = False
-        
-        for _ in range(max_retries):
-            result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
-            out = result.stdout
-            
-            if ("trust this directory" in out.lower() or "trust the contents" in out.lower() or "trust" in out.lower()) and not trusted:
+        for _ in range(30):
+            result = subprocess.run(
+                ["tmux", "capture-pane", "-p", "-t", session_name],
+                capture_output=True, text=True,
+            )
+            out = result.stdout or ""
+            if "trust" in out.lower() and not trusted:
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
                 trusted = True
                 time.sleep(1)
                 continue
-                
-            if "Antigravity" in out or "Enter your" in out:
+            if "Antigravity" in out or "Enter your" in out or "❯" in out:
                 subprocess.run(["tmux", "set-buffer", prompt], check=True)
                 subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
                 time.sleep(1)
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape"], check=True)
+                time.sleep(0.3)
+                subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
                 injected = True
                 break
-                
             time.sleep(0.5)
-            
         if not injected:
-            print("[WARNING] Could not confirm Wiki Agent readiness. Injecting blindly.")
+            print("[WARNING] Wiki agent readiness unclear; injecting blindly.")
             subprocess.run(["tmux", "set-buffer", prompt], check=True)
             subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
             time.sleep(1)
-            subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
-            
+            subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape"], check=True)
+            time.sleep(0.3)
+            subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
         print(f"[SUCCESS] Directives dispatched to {session_name}.")
     except Exception as e:
         print(f"[ERROR] Failed to hand off to {session_name}: {e}")
+
+
+def process_wiki_deterministic():
+    """Compile _ingest/ (and optional raw logs) without a second agent."""
+    print("--- WIKI PROCESS (deterministic) ---")
+    try:
+        from wiki_compiler import process_raw_logs_to_ingest, process_ingest
+    except ImportError:
+        print("[ERROR] wiki_compiler.py missing — cannot run deterministic wiki.")
+        return []
+    for line in process_raw_logs_to_ingest():
+        print(" ", line)
+    results = process_ingest()
+    for line in results:
+        print(" ", line)
+    return results
+
+
+def process_wiki():
+    """
+    Default: deterministic compiler (fleet-safe, no second agent).
+    Set AIM_WIKI_MODE=agent for tmux + agy maintainer.
+    """
+    mode = os.environ.get("AIM_WIKI_MODE", "deterministic").lower()
+    if mode in ("agent", "agy", "llm"):
+        return process_wiki_agent()
+    return process_wiki_deterministic()
