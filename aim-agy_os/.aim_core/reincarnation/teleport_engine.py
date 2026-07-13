@@ -49,6 +49,14 @@ def execute_teleport(current_session, session_name):
     print("[4/4] Executing Teleport Sequence...")
     
     time.sleep(2)
+
+    # Production/test guard: leave parent session alive (life-run, multi-vessel hosts).
+    if os.environ.get("AIM_REINCARNATE_NO_TELEPORT") == "1":
+        print(
+            f"      [NO_TELEPORT] Leaving current session intact. "
+            f"New vessel: tmux attach -t {session_name}"
+        )
+        return
     
     if os.environ.get("TMUX") and current_session:
         print(f"      [Teleport] TMUX detected. Switching clients from {current_session} to {session_name}...")
