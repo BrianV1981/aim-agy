@@ -85,14 +85,38 @@ A.I.M. separates fast onboarding documentation from deep philosophical essays an
 
 ---
 
+<!-- AIM_ECOSYSTEM_START -->
 ### 🧬 The A.I.M. Ecosystem
 
-> ⚠️ **ARCHITECTURAL SHIFT NOTICE**
-> Google is sunsetting the original `gemini-cli` for standard subscribers, restricting it to Enterprise environments. As a result, **this repository (`aim-agy`) is now the primary "Soul" of the project.** The core architectural decisions, the memory logic, and the central integrations will happen here (and in `aim-opencode`) first. 
+Modular A.I.M. (Actual Intelligent Memory) repositories. **Flagship engine: [aim-agy](https://github.com/BrianV1981/aim-agy).**
 
-- **[aim-agy](https://github.com/BrianV1981/aim-agy):** The Core Engine (Built for Antigravity CLI). *This is the flagship repository.*
-- **[aim-opencode](https://github.com/BrianV1981/aim-opencode):** Core adaptation for the OpenCode ecosystem.
-- **[aim](https://github.com/BrianV1981/aim):** The original framework built for Google's Gemini CLI. It will continue to receive updates for Enterprise use cases, but is no longer the primary development focus.
+**Active vessels (CLI hosts):**
+- **[aim-agy](https://github.com/BrianV1981/aim-agy)** — Core engine (Antigravity / post–Gemini-CLI line). *Flagship.*
+- **[aim-grok](https://github.com/BrianV1981/aim-grok)** — Grok CLI vessel (hybrid memory, GitOps, wiki).
+- **[aim-opencode](https://github.com/BrianV1981/aim-opencode)** — OpenCode CLI vessel.
+- **[aim-codex](https://github.com/BrianV1981/aim-codex)** — Codex-native vessel (**on the horizon** — not deprecated).
+
+**Tools & workspaces:**
+- **[aim-connect](https://github.com/BrianV1981/aim-connect)** — Self-hosted remote workspace web UI.
+- **[aim-tmux-dashboard](https://github.com/BrianV1981/aim-tmux-dashboard)** — Terminal multi-session monitor.
+- **[aim-browser](https://github.com/BrianV1981/aim-browser)** — Headed Chromium CDP engine + browser **skill suite**.
+- **[aim-google](https://github.com/BrianV1981/aim-google)** — Google Workspace CLI (Gmail, Drive, Calendar, …).
+- **[aim-flight-recorder](https://github.com/BrianV1981/aim-flight-recorder)** — Forensic Markdown session extractor.
+- **[aim-boardroom](https://github.com/BrianV1981/aim-boardroom)** — Multi-agent orchestration room (OS multiplexing + artifacts).
+- **[aim-skills](https://github.com/BrianV1981/aim-skills)** — **Skills index / multi-CLI install registry** (agy, grok, opencode, codex).
+
+**DNA, comms & lore:**
+- **[aim-coagents](https://github.com/BrianV1981/aim-coagents)** — DNA bank for sovereign co-agent blueprints.
+- **[aim-knowledge](https://github.com/BrianV1981/aim-knowledge)** — Public Obsidian vault / deep-lore archive.
+- **[aim-chalkboard](https://github.com/BrianV1981/aim-chalkboard)** — Optional cross-host async git mailbox (PoC; default same-host comms = **aim-communicate** skill).
+
+**Deprecated / not maintained:**
+- **[aim](https://github.com/BrianV1981/aim)** — Original **Gemini CLI** framework. Deprecated after loss of practical subscription access; **Great Migration → aim-agy**.
+- **[aim-swarm](https://github.com/BrianV1981/aim-swarm)** — Legacy Python swarm factory → use **aim-coagents** + aim-agy spawn.
+- **aim-claude / Anthropic-line vessels** — **Done.** Operator does not develop against Anthropic. Use aim-agy / aim-grok / aim-opencode (or aim-codex when ready).
+
+Full map: see **aim-skills** `docs/AIM_ECOSYSTEM_MAP.md` or Operator artifact `AIM_ECOSYSTEM_MAP.md`.
+<!-- AIM_ECOSYSTEM_END -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ☕ **Support the project:** [Buy Me a Coffee](https://buymeacoffee.com/brianv1981)
