@@ -11,7 +11,7 @@ from datetime import datetime
 def find_project_root(start_dir):
     current = os.path.abspath(start_dir)
     while current != '/':
-        if os.path.exists(os.path.join(current, ".aim_core/CONFIG.json")) or os.path.exists(os.path.join(current, "setup.sh")): return current
+        if os.path.exists(os.path.join(current, "aim-agy_os", ".aim_core")) or os.path.exists(os.path.join(current, "setup.sh")): return current
         current = os.path.dirname(current)
     return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -228,7 +228,10 @@ def init_workspace(args=None):
 
     # Base settings and ignores
     files = {
-        "README.md": "# Project Documentation\n\nUse this file to document your project. (A.I.M. Exoskeleton operates invisibly in the background).\n",
+        "README.md": "",
+        "CHANGELOG.md": "",
+        "VERSION": "",
+        "CONTRIBUTING.md": "",
         ".geminiignore": """workspace/
 archive/
 memory_lance/
@@ -282,7 +285,7 @@ engrams/
 
     # 1.5. Make A.I.M. OS Invisible (Append to .gitignore)
     gitignore_path = os.path.join(BASE_DIR, ".gitignore")
-    ignore_entries = "\n# --- A.I.M. OS Exoskeleton ---\n.gemini/\nAGENTS.md\naim-agy_os/\nmemory-wiki/\nworkspace/\n"
+    ignore_entries = "\n# --- A.I.M. OS Exoskeleton ---\n.gemini/\nAGENTS.md\naim-agy_os/\naim-agy_os_docs/\n.grok/\n.opencode/\nmemory-wiki/\nworkspace/\n"
     if os.path.exists(gitignore_path):
         with open(gitignore_path, "r") as f:
             existing_ignore = f.read()

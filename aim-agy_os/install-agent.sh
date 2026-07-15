@@ -40,10 +40,10 @@ if [ ! -d ".git" ]; then
     git init
 fi
 
-[ ! -f README.md ] && echo "# Project Documentation" > README.md
-[ ! -f CHANGELOG.md ] && echo "# Changelog" > CHANGELOG.md
-[ ! -f VERSION ] && echo "v0.1.0" > VERSION
-[ ! -f CONTRIBUTING.md ] && echo "# Contributing" > CONTRIBUTING.md
+[ ! -f README.md ] && touch README.md
+[ ! -f CHANGELOG.md ] && touch CHANGELOG.md
+[ ! -f VERSION ] && touch VERSION
+[ ! -f CONTRIBUTING.md ] && touch CONTRIBUTING.md
 
 # Base OS Provisioning (Moving the pre-baked DB to the active layer)
 mkdir -p aim-agy_os/memory_lance
