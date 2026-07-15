@@ -5,9 +5,13 @@ import hashlib, json, os, shutil, subprocess, sys, time
 from datetime import datetime, timezone
 from pathlib import Path
 
-VESSEL = Path("/home/kingb/aim-agy")
+VESSEL = Path(os.environ.get("AIM_VESSEL", os.getcwd())).resolve()
 AIM = VESSEL / "aim-agy_os"
+if not (AIM / ".aim_core").is_dir():
+    AIM = VESSEL  # flat layout fallback
 PY3 = sys.executable
+if (AIM / "venv" / "bin" / "python3").is_file():
+    PY3 = str(AIM / "venv" / "bin" / "python3")
 BRAIN = Path.home() / ".gemini/antigravity-cli/brain"
 WIKI = AIM / "memory-wiki"
 REPORT = AIM / "planning-artifacts" / "OPERATOR_E2E_REINCARNATE_WIKI_AGY_LATEST.md"
