@@ -31,26 +31,12 @@ mkdir -p aim-agy_os/memory_lance
 cp -r aim-agy_os/assets/default_lance/* aim-agy_os/memory_lance/
 
 echo "    [*] Linking Local Alias ($CLI_NAME)..."
-RC_FILE="$HOME/.bashrc"
-if [ -f "$HOME/.zshrc" ]; then RC_FILE="$HOME/.zshrc"; fi
-
-# We set NODE_OPTIONS to 8GB (8192) to support heavy embedding processes and massive workspaces
-SED_ALIAS="alias $CLI_NAME='NODE_OPTIONS=\"--max-old-space-size=8192\" $CURRENT_DIR/aim-agy_os/venv/bin/python3 $CURRENT_DIR/aim-agy_os/.aim_core/aim_cli.py'"
-
-if ! grep -q "alias $CLI_NAME=" "$RC_FILE"; then
-    echo "" >> "$RC_FILE"
-    echo "$SED_ALIAS" >> "$RC_FILE"
-    echo "    [SUCCESS] Alias added to $RC_FILE"
-else
-    echo "    [OK] Alias already exists."
-fi
+bash ./aim-agy_os/link_cli_alias.sh "$CURRENT_DIR" "$CLI_NAME"
 
 echo ""
 echo "--- INSTALLATION COMPLETE ---"
-echo "CRITICAL: You MUST run this command now to load the alias:"
-echo "  source $RC_FILE"
-echo ""
 echo "You are a Core Contributor. The .git history and developer folders (tests/, benchmarks/) have been preserved."
 echo "To set up your identity, run:"
 echo "  $CLI_NAME init"
+echo ""
 echo ""
