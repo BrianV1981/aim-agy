@@ -28,7 +28,7 @@ You are also strictly forbidden from deploying code directly to the `main` branc
 2. **Isolate:** You MUST use `python3 .aim_core/aim_cli.py fix <id>` to check out a unique branch. 
 3. **Validate:** Before you execute a push, you MUST run `git branch --show-current`. If the output is `main`, YOU MUST STOP. You are violating the Prime Directive.
 4. **Release:** Only when you are on an isolated branch, use `python3 .aim_core/aim_cli.py push "Prefix: msg"` to deploy atomically.
-5. **Promote:** You may use `aim promote` to merge your branch to main, but you MUST respect the Human-In-The-Loop (HITL) prompt. When the CLI asks for confirmation, you must use your modal/ask_question tool to ask the Operator for permission before streaming 'yes' to stdin.
+5. **Promote:** You may use `aim promote` / `aim merge-batch` to merge to main, but you MUST respect the Human-In-The-Loop (HITL) prompt. When the CLI asks for confirmation, use your modal/ask_question tool to ask the Operator before streaming `yes` to stdin. Never guess `yes`.
 
 **THE ANTI-SNAG MANDATE:** If you encounter a snag, broken code, or blocker outside the strict scope of your current ticket, you **MUST NOT** automatically fix it or implement a silent workaround. You MUST pause, open a new ticket via `python3 .aim_core/aim_cli.py bug` to document the snag, and explicitly ask the Operator how to proceed before modifying unrelated files.
 
@@ -73,6 +73,12 @@ You are part of a continuous, multi-agent relay race. When your context window f
 2. **The Handoff (Ephemeral Context Injection):** Before beginning any new tactical work or writing any code, **you must carefully read your injected wake-up prompt** to inherit the epistemic certainty of the previous session. 
 Your wake-up prompt will dynamically contain the `REINCARNATION_GAMEPLAN.md` and the live `ISSUE_TRACKER`.
 There is no continuity folder for you to read; all context is injected directly into your brain on Turn 1.
+
+**Fleet orchestration (3 vessels: aim-agy · aim-grok · aim-opencode):**
+- You are the **soul** vessel for host-agnostic engine work. Implement once here; peer vessels pin-sync/port afterward.
+- Multi-agent dispatch / audit / pin-sync playbook: `scripts/FLEET_ORCHESTRATION.md` (also `aim-agy_os/aim-agy_os_docs/FLEET_ORCHESTRATION.md`).
+- Lockstep policy + drift check: `scripts/VESSEL_LOCKSTEP.md`, `python3 scripts/vessel_core_diff.py --report-only`.
+- When acting as implementer under an orchestrator: obey **REPLY_TO** exactly; report with chalkboard + short paste; do not merge to main until orchestrator audit PASS (unless Operator overrides).
 
 ## 8. ABSOLUTE WORKSPACE ISOLATION (THE SANDBOX)
 You must respect the operational boundaries of this specific project directory.
