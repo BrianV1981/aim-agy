@@ -10,9 +10,34 @@ def spawn_coagent(name, project_dir, prompt):
     if result.returncode == 0:
         return {"error": f"Session '{name}' already exists."}
 
-    cmd = ["tmux", "new-session", "-d", "-s", name, "-c", project_dir, "agy", "--dangerously-skip-permissions"]
+    # Folder trust is NOT covered by --dangerously-skip-permissions
+    try:
+        from agy_workspace_trust import prepare_agy_spawn, dismiss_trust_prompt_tmux
+
+        project_dir = prepare_agy_spawn(project_dir)
+    except Exception as te:
+        print(f"[TRUST] WARN prepare_agy_spawn: {te}")
+        dismiss_trust_prompt_tmux = None  # type: ignore
+
+    cmd = [
+        "tmux",
+        "new-session",
+        "-d",
+        "-s",
+        name,
+        "-c",
+        project_dir,
+        "agy",
+        "--dangerously-skip-permissions",
+    ]
     subprocess.run(cmd, check=True)
-    time.sleep(3)
+
+    if dismiss_trust_prompt_tmux:
+        try:
+            dismiss_trust_prompt_tmux(name)
+        except Exception:
+            pass
+    time.sleep(1)
 
     if prompt:
         send_message(name, prompt)

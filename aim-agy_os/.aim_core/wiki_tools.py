@@ -89,6 +89,14 @@ def process_wiki_agent():
         print(f"[{session_name}] is already active and processing the queue. Skipping new spawn.")
         return
     print(f"Starting fresh '{session_name}' tmux session (agy)...")
+    try:
+        from agy_workspace_trust import prepare_agy_spawn, dismiss_trust_prompt_tmux
+
+        wiki_dir = prepare_agy_spawn(wiki_dir)
+    except Exception as te:
+        print(f"[TRUST] WARN: {te}")
+        dismiss_trust_prompt_tmux = None  # type: ignore
+
     subprocess.run([
         "tmux", "new-session", "-d", "-s", session_name, "-c", wiki_dir,
         "bash", "-c", f"cd {wiki_dir} && source ~/.bashrc 2>/dev/null; agy --dangerously-skip-permissions",
@@ -100,7 +108,8 @@ def process_wiki_agent():
         f"`tmux kill-session -t {session_name}`."
     )
     try:
-        trusted = False
+        if dismiss_trust_prompt_tmux:
+            dismiss_trust_prompt_tmux(session_name)
         injected = False
         for _ in range(30):
             result = subprocess.run(
@@ -108,11 +117,10 @@ def process_wiki_agent():
                 capture_output=True, text=True,
             )
             out = result.stdout or ""
-            if "trust" in out.lower() and not trusted:
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
+            if "trust" in out.lower():
+                # List UI: Enter on pre-selected Yes — never send "y"
                 subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
-                trusted = True
-                time.sleep(1)
+                time.sleep(0.5)
                 continue
             if "Antigravity" in out or "Enter your" in out or "❯" in out:
                 subprocess.run(["tmux", "set-buffer", prompt], check=True)
