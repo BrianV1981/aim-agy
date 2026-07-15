@@ -17,23 +17,55 @@ def get_current_tmux_session():
 def spawn_new_agent(workspace, session_name, wake_up_prompt):
     print("[2/4] Spawning new host vessel (tmux session) with Ephemeral Context Injection...")
     try:
+        # Folder trust is SEPARATE from --dangerously-skip-permissions (tool perms only).
+        # Pre-register exact cwd in ~/.gemini/antigravity-cli/settings.json trustedWorkspaces.
+        try:
+            from agy_workspace_trust import prepare_agy_spawn, dismiss_trust_prompt_tmux
+
+            workspace = prepare_agy_spawn(workspace)
+        except Exception as te:
+            print(f"      [TRUST] WARN pre-register failed: {te}")
+            dismiss_trust_prompt_tmux = None  # type: ignore
+
+        agy_bin = os.environ.get("AGY_BIN", "/home/kingb/.local/bin/agy")
+        if not os.path.isfile(agy_bin):
+            agy_bin = "agy"
+
         subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", workspace, "/home/kingb/.local/bin/agy", "--dangerously-skip-permissions", "-i", wake_up_prompt],
-            check=True
+            [
+                "tmux",
+                "new-session",
+                "-d",
+                "-s",
+                session_name,
+                "-c",
+                workspace,
+                agy_bin,
+                "--dangerously-skip-permissions",
+                "-i",
+                wake_up_prompt,
+            ],
+            check=True,
         )
-        
-        # Deterministically handle trust prompt if it appears
-        # Note: The agy --dangerously-skip-permissions flag is intended to bypass this, 
-        # but its reliability is inconsistent across different OS environments and CLI updates.
-        # This fallback polling ensures the agent doesn't hang forever waiting for user input.
-        for _ in range(15):
-            result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
-            if "trust" in result.stdout.lower():
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "y"], check=True)
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
-                break
-            time.sleep(0.5)
-            
+
+        # Fallback: list UI needs Enter on "Yes", not "y"
+        if dismiss_trust_prompt_tmux:
+            dismiss_trust_prompt_tmux(session_name)
+        else:
+            for _ in range(15):
+                result = subprocess.run(
+                    ["tmux", "capture-pane", "-p", "-t", session_name],
+                    capture_output=True,
+                    text=True,
+                )
+                if "trust" in (result.stdout or "").lower():
+                    subprocess.run(
+                        ["tmux", "send-keys", "-t", session_name, "Enter"],
+                        check=True,
+                    )
+                    break
+                time.sleep(0.5)
+
         print(f"      [Success] New agent is awake in tmux session: {session_name}")
     except FileNotFoundError:
         print("[ERROR] 'tmux' is not installed. The Reincarnation Protocol requires tmux.")

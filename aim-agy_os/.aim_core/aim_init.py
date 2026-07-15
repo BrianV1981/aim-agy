@@ -330,32 +330,69 @@ engrams/
             bootstrap_content = f.read()
             bootstrap_content = bootstrap_content.replace("aim_onboarding", session_name)
             
-        subprocess.run(["tmux", "new-session", "-d", "-s", session_name, "-c", BASE_DIR, "agy --dangerously-skip-permissions"], check=True)
-        
+        try:
+            from agy_workspace_trust import prepare_agy_spawn, dismiss_trust_prompt_tmux
+
+            base_cwd = prepare_agy_spawn(BASE_DIR)
+        except Exception:
+            base_cwd = BASE_DIR
+            dismiss_trust_prompt_tmux = None  # type: ignore
+
+        subprocess.run(
+            [
+                "tmux",
+                "new-session",
+                "-d",
+                "-s",
+                session_name,
+                "-c",
+                base_cwd,
+                "agy",
+                "--dangerously-skip-permissions",
+            ],
+            check=True,
+        )
+
         # Deterministic polling for trust prompt and ready state
         max_retries = 20
         trusted = False
         injected = False
-        
+
+        if dismiss_trust_prompt_tmux:
+            if dismiss_trust_prompt_tmux(session_name):
+                trusted = True
+
         for _ in range(max_retries):
-            result = subprocess.run(["tmux", "capture-pane", "-p", "-t", session_name], capture_output=True, text=True)
-            out = result.stdout
-            
-            if "trust the contents" in out or "trust this folder" in out:
+            result = subprocess.run(
+                ["tmux", "capture-pane", "-p", "-t", session_name],
+                capture_output=True,
+                text=True,
+            )
+            out = result.stdout or ""
+
+            if "trust the contents" in out or "trust this folder" in out or "Yes, I trust" in out:
                 if not trusted:
-                    subprocess.run(["tmux", "send-keys", "-t", session_name, "Enter"], check=True)
+                    # List UI: Enter confirms pre-selected Yes (do not send "y")
+                    subprocess.run(
+                        ["tmux", "send-keys", "-t", session_name, "Enter"], check=True
+                    )
                     trusted = True
                     time.sleep(1)
                     continue
-                
+
             # Wait for the CLI to fully load (it usually prints "Antigravity" or an agent prompt)
             if "Antigravity" in out or "Enter your" in out:
                 subprocess.run(["tmux", "set-buffer", bootstrap_content], check=True)
-                subprocess.run(["tmux", "paste-buffer", "-p", "-t", session_name], check=True)
-                subprocess.run(["tmux", "send-keys", "-t", session_name, "Escape", "Enter"], check=True)
+                subprocess.run(
+                    ["tmux", "paste-buffer", "-p", "-t", session_name], check=True
+                )
+                subprocess.run(
+                    ["tmux", "send-keys", "-t", session_name, "Escape", "Enter"],
+                    check=True,
+                )
                 injected = True
                 break
-                
+
             time.sleep(0.5)
             
         if not injected:
