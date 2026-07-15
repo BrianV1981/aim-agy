@@ -36,7 +36,7 @@ def find_project_root():
 PROJECT_ROOT = find_project_root()
 OS_ROOT = os.path.join(PROJECT_ROOT, "aim-agy_os")
 AIM_ROOT = OS_ROOT  # Default for most scripts
-CONFIG_PATH = os.path.join(PROJECT_ROOT, ".aim_core/CONFIG.json")
+CONFIG_PATH = os.path.join(OS_ROOT, ".aim_core/CONFIG.json")
 
 def load_config():
     """Loads, validates, and auto-repairs paths for the current machine."""

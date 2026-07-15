@@ -222,7 +222,6 @@ def init_workspace(args=None):
             "continuity/private", "continuity", "workstreams", "hooks", "scripts", "projects", "foundry", ".aim_core", "memory-wiki", "memory-wiki/_ingest", "planning-artifacts", "workspace"]
     for d in dirs: os.makedirs(os.path.join(OS_DIR, d), exist_ok=True)
     os.makedirs(os.path.join(BASE_DIR, ".gemini"), exist_ok=True)
-    os.makedirs(os.path.join(BASE_DIR, ".aim_core"), exist_ok=True)
 
     is_light_mode = "--light" in args
     register_hooks(is_light_mode)
@@ -256,7 +255,7 @@ engrams/
 }
 """,
         f"aim-agy_os/memory-wiki/AGENTS.md": T_WIKI_AGENT,
-        ".aim_core/CONFIG.json": json.dumps({
+        "aim-agy_os/.aim_core/CONFIG.json": json.dumps({
             "agent_identity": {
                 "name": "A.I.M.",
                 "role": "High-context technical lead and sovereign orchestrator.",
@@ -283,7 +282,7 @@ engrams/
 
     # 1.5. Make A.I.M. OS Invisible (Append to .gitignore)
     gitignore_path = os.path.join(BASE_DIR, ".gitignore")
-    ignore_entries = "\n# --- A.I.M. OS Exoskeleton ---\n.aim_core/\n.gemini/\nAGENTS.md\naim-agy_os/\nmemory-wiki/\nworkspace/\n"
+    ignore_entries = "\n# --- A.I.M. OS Exoskeleton ---\n.gemini/\nAGENTS.md\naim-agy_os/\nmemory-wiki/\nworkspace/\n"
     if os.path.exists(gitignore_path):
         with open(gitignore_path, "r") as f:
             existing_ignore = f.read()
