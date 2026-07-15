@@ -58,5 +58,26 @@ WRAP
   echo "    [SUCCESS] Local ./aim wrapper written"
 fi
 
+# Systemic AGY folder-trust: wrap host `agy` so every spawn pre-registers cwd
+TRUST_INSTALL="$PROJECT_ROOT/aim-agy_os/scripts/install_agy_trust_wrapper.sh"
+if [[ -f "$TRUST_INSTALL" ]]; then
+  bash "$TRUST_INSTALL" || echo "    [WARN] agy trust wrapper install failed (non-fatal)"
+else
+  # headless install-agent may strip scripts/; try copy from .aim_core helper alone
+  if [[ -f "$PROJECT_ROOT/aim-agy_os/.aim_core/agy_workspace_trust.py" ]]; then
+    mkdir -p "$HOME/.local/share/aim-agy"
+    cp -a "$PROJECT_ROOT/aim-agy_os/.aim_core/agy_workspace_trust.py" \
+      "$HOME/.local/share/aim-agy/agy_workspace_trust.py" 2>/dev/null || true
+  fi
+fi
+
+# Always pre-trust this project root (exact path — parent trust does not cascade)
+if [[ -f "$PROJECT_ROOT/aim-agy_os/.aim_core/agy_workspace_trust.py" ]]; then
+  PYTHONPATH="$PROJECT_ROOT/aim-agy_os/.aim_core${PYTHONPATH:+:$PYTHONPATH}" \
+    python3 "$PROJECT_ROOT/aim-agy_os/.aim_core/agy_workspace_trust.py" "$PROJECT_ROOT" \
+    >/dev/null 2>&1 || true
+  echo "    [OK] Registered AGY trusted workspace: $PROJECT_ROOT"
+fi
+
 echo "    [ACTION] Load the alias:  source $RC_FILE"
 echo "    [ACTION] Then run:        ${CLI_NAME} doctor"

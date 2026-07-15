@@ -19,34 +19,59 @@ Agents repeatedly claimed this was fixed. It was not. Root causes:
    `/home/kingb/aim-agy/workspace/issue-10/ai`.
 3. Keystroke bypass often sent **`y` then Enter**. The UI is a **list** with `>` on Yes — only **Enter** is correct. Sending `y` can leave the agent stuck.
 
-## The fix (aim-agy)
+## The fix (aim-agy) — systemic, not one code path
+
+### Layer A — Host wrapper (covers *all* launches)
+
+```bash
+bash aim-agy_os/scripts/install_agy_trust_wrapper.sh
+```
+
+- Moves real ELF to `~/.local/bin/agy.real`
+- Installs `~/.local/bin/agy` shell wrapper that **pre-trusts `pwd` (+ `--add-dir`)** before `exec` real binary  
+- Covers: manual `cd newdir && agy`, tmux scribes, swarm, reincarnate, install-agent scaffolds, Claude/opus panes — **anything that calls `agy` from PATH**
+
+Re-run after `agy update` if the update overwrites the wrapper (reinstall script is idempotent).
+
+### Layer B — Library (Python spawn sites)
 
 Module: `aim-agy_os/.aim_core/agy_workspace_trust.py`
 
-- `ensure_workspace_trusted(cwd)` — register **exact** absolute path before spawn  
-- `prepare_agy_spawn(cwd)` — call from every spawn site  
-- `dismiss_trust_prompt_tmux(session)` — Enter-only fallback if UI still appears  
+- `ensure_workspace_trusted(cwd)` — register **exact** absolute path  
+- `prepare_agy_spawn(cwd)` — call before every programmatic spawn  
+- `dismiss_trust_prompt_tmux(session)` — Enter-only fallback (not `y`)  
 
 Wired into:
 
-- `reincarnation/teleport_engine.py` (reincarnate vessels)  
-- `wiki_tools.py` (wiki agent mode)  
-- `aim_init.py` (onboarding spawn)  
+- `reincarnation/teleport_engine.py` (reincarnate)  
+- `wiki_tools.py` (wiki agent)  
+- `aim_init.py` (onboarding)  
+- `aim_swarm.py` (`./aim swarm spawn`)  
+- `link_cli_alias.sh` / `install-agent.sh` (register project root + install wrapper)  
+
+### Scenarios that used to break (all of these)
+
+| Scenario | Why it broke | Mitigation |
+|----------|--------------|------------|
+| `./aim fix` worktree / new folder | New exact path | Wrapper trusts pwd; spawn sites call prepare |
+| Wiki / scribe agent | cwd = memory-wiki or worktree leaf | Same |
+| Reincarnate vessel | New session cwd | teleport_engine + wrapper |
+| `aim swarm spawn` | project_dir may be new | aim_swarm + wrapper |
+| Manual `cd … && agy` | Human path | **Wrapper only** |
+| install-agent persona node | Fresh project root | link_cli_alias + install-agent |
 
 ## Operator / agent rule
 
-**Before every `tmux … agy` with a new `-c` directory:**
+1. **Install the host wrapper once per machine** (and after agy upgrades).  
+2. Any Python that spawns tmux+agy must still call `prepare_agy_spawn(cwd)` (belt + suspenders).  
 
 ```python
 from agy_workspace_trust import prepare_agy_spawn
 cwd = prepare_agy_spawn(workspace_path)
-# then tmux new-session -c cwd agy --dangerously-skip-permissions ...
 ```
 
-Or CLI:
-
 ```bash
-PYTHONPATH=aim-agy_os/.aim_core python3 -m agy_workspace_trust /path/to/cwd
+PYTHONPATH=aim-agy_os/.aim_core python3 aim-agy_os/.aim_core/agy_workspace_trust.py /path/to/cwd
 ```
 
 ## Verify
