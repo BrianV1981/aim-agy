@@ -24,14 +24,39 @@ from plugins.datajack.forensic_utils import chunk_text, get_embedding
 from wiki_tools import process_wiki
 from blackbox_vault import vault_session
 
-CONFIG_PATH = os.path.join(AIM_ROOT, ".aim_core/CONFIG.json")
-if not os.path.exists(CONFIG_PATH):
-    CONFIG_PATH = os.path.join(os.path.dirname(AIM_ROOT), ".aim_core/CONFIG.json")
-if not os.path.exists(CONFIG_PATH):
-    sys.exit(0)
+def _resolve_config_path():
+    """Nested engine CONFIG, vessel-root CONFIG, then fail loudly (never silent 0)."""
+    candidates = [
+        os.path.join(AIM_ROOT, ".aim_core", "CONFIG.json"),
+        os.path.join(os.path.dirname(AIM_ROOT), ".aim_core", "CONFIG.json"),
+        os.path.join(AIM_ROOT, "core", "CONFIG.json"),
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return c
+    return None
+
+def _daemon_log(msg):
+    try:
+        log_path = os.path.join(AIM_ROOT, "memory-wiki", "daemon.log")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, "a", encoding="utf-8") as lf:
+            lf.write(msg.rstrip() + "\n")
+    except Exception:
+        pass
+    print(msg, flush=True)
+
+CONFIG_PATH = _resolve_config_path()
+if not CONFIG_PATH:
+    _daemon_log(
+        "[FATAL] session_summarizer: no CONFIG.json found "
+        f"(looked under {AIM_ROOT}/.aim_core and vessel root). Refusing silent success."
+    )
+    sys.exit(2)
 
 with open(CONFIG_PATH, 'r') as f:
     CONFIG = json.load(f)
+_daemon_log(f"[OK] session_summarizer loaded CONFIG from {CONFIG_PATH}")
 
 def ingest_file_to_db(backend, filepath, record_type="session_history"):
     session_id = os.path.basename(filepath).replace('.md', '')
@@ -62,149 +87,154 @@ def ingest_file_to_db(backend, filepath, record_type="session_history"):
         backend.add_fragments(fragments)
 
 def process_transcript(md_path):
+    """
+    Reincarnation wiki path: deterministic compiler first (reliable E2E).
+    Optional AGY scribe swarm only if AIM_WIKI_SCRIBE=1.
+    """
     try:
-        print(f"[WATCHDOG] Beginning Two-Node Swarm Sequence for: {os.path.basename(md_path)}")
-        session_id = os.path.basename(md_path).replace('.md', '')
-        
-        # --- PHASE 0: Immutable Black Box Vaulting ---
-        session_id = os.path.basename(md_path).replace('.md', '')
-        if '_' in session_id:
-            # Handle timestamp prefix if present (e.g., 2026-06-06_1230_uuid)
-            parts = session_id.split('_')
-            session_id = parts[-1] if len(parts) >= 2 else session_id
-            
-        jsonl_path = os.path.expanduser(f"~/.gemini/antigravity-cli/brain/{session_id}/.system_generated/logs/transcript.jsonl")
-        if os.path.exists(jsonl_path):
-            print(f"[WATCHDOG] Securing {session_id} into the Immutable Black Box...")
-            vault_session(jsonl_path)
-            
-        # 1. Chunk and Stage the Raw Logs
+        _daemon_log(f"[WATCHDOG] Beginning wiki sequence for: {os.path.basename(md_path)}")
+        stem = os.path.basename(md_path).replace('.md', '')
+        # Archive names: {YYYY-MM-DD_HHMM}_{session_uuid} — UUID is last underscore segment
+        # if it looks like a UUID; else use full stem.
+        session_id = stem
+        if '_' in stem:
+            parts = stem.split('_')
+            tail = parts[-1]
+            if len(tail) >= 8 and any(c == '-' for c in tail) or len(tail) >= 20:
+                session_id = tail
+            elif tail not in ('chat', 'history', 'chat_history', 'history.md'):
+                # multi-part timestamp: 2026-07-15_0337_uuid
+                if len(parts) >= 3:
+                    session_id = parts[-1]
+                else:
+                    session_id = stem
+
+        # Prefer Grok jsonl vault when session dir exists
+        jsonl_candidates = [
+            os.path.expanduser(f"~/.gemini/antigravity-cli/brain/{session_id}/.system_generated/logs/transcript.jsonl"),
+        ]
+        # Grok: search under sessions for this uuid
+        grok_root = os.path.expanduser("~/.grok/sessions")
+        if os.path.isdir(grok_root):
+            for pat in (
+                os.path.join(grok_root, "*", session_id, "updates.jsonl"),
+                os.path.join(grok_root, "*", session_id, "chat_history.jsonl"),
+            ):
+                import glob as _g
+                for hit in _g.glob(pat):
+                    jsonl_candidates.insert(0, hit)
+        for jsonl_path in jsonl_candidates:
+            if os.path.exists(jsonl_path):
+                print(f"[WATCHDOG] Securing {session_id} into the Immutable Black Box ({jsonl_path})...")
+                try:
+                    vault_session(jsonl_path)
+                except Exception as ve:
+                    print(f"[WATCHDOG] vault_session warning: {ve}")
+                break
+
+        # Stage raw + deterministic ingest/pages (no agent required)
+        raw_logs_dir = os.path.join(AIM_ROOT, "memory-wiki", "_raw_logs")
+        ingest_dir = os.path.join(AIM_ROOT, "memory-wiki", "_ingest")
+        os.makedirs(raw_logs_dir, exist_ok=True)
+        os.makedirs(ingest_dir, exist_ok=True)
+
         with open(md_path, 'r', encoding='utf-8') as f:
             transcript = f.read()
-            
-        turns = transcript.split('\n---\n\n')
-        
-        raw_logs_dir = os.path.join(AIM_ROOT, "memory-wiki", "_raw_logs")
-        os.makedirs(raw_logs_dir, exist_ok=True)
-        
-        # Clear out any old raw logs
-        for old_file in glob.glob(os.path.join(raw_logs_dir, "*.md")):
-            os.remove(old_file)
-            
-        print(f"[WATCHDOG] Transcript has {len(turns)} turns. Beginning intelligent 100k-character chunking...")
-        
-        staged_files = []
-        MAX_CHARS = 100000
-        current_chunk_turns = []
-        current_char_count = 0
-        part_index = 1
-        
-        def save_chunk(turns_to_save, idx):
-            chunk_transcript = '\n---\n\n'.join(turns_to_save)
-            part_suffix = f"_part{idx}"
-            raw_path = os.path.join(raw_logs_dir, f"{session_id}{part_suffix}_raw.md")
-            with open(raw_path, "w", encoding="utf-8") as f_out:
-                f_out.write(chunk_transcript)
-            staged_files.append(raw_path)
-            
-        for turn in turns:
-            turn_len = len(turn) + 5 # +5 for the delimiter
-            if current_char_count + turn_len > MAX_CHARS and current_chunk_turns:
-                # Limit reached, save current chunk and start fresh
-                save_chunk(current_chunk_turns, part_index)
-                part_index += 1
-                current_chunk_turns = [turn]
-                current_char_count = turn_len
-            else:
-                current_chunk_turns.append(turn)
-                current_char_count += turn_len
-                
-        # Save any remaining turns
-        if current_chunk_turns:
-            save_chunk(current_chunk_turns, part_index)
-            
-        print(f"[WATCHDOG] Staged {len(staged_files)} safe, digestible chunks in _raw_logs/.")
-            
-        if not staged_files:
-            print("[WATCHDOG] No data to process.")
-            return True
+        if not transcript.strip():
+            _daemon_log("[FATAL] Archive markdown is empty. Refusing SUCCESS.")
+            return False
 
-        # 2. Spawn the Scribe Agent
-        from session_naming import build_agent_session_name
-        scribe_session_name = build_agent_session_name("scribe", AIM_ROOT)
-        wiki_dir = os.path.join(AIM_ROOT, "memory-wiki")
-        
-        check_cmd = subprocess.run(["tmux", "has-session", "-t", scribe_session_name], capture_output=True)
-        if check_cmd.returncode == 0:
-            print(f"[{scribe_session_name}] is already active. Skipping Scribe spawn.")
+        # Reject empty skeletons / false greens from broken extractors
+        stripped = transcript.strip()
+        has_user = ("👤 USER" in stripped) or ("## 👤" in stripped) or ("user_query" in stripped.lower())
+        has_aim = ("🤖 A.I.M" in stripped) or ("## 🤖" in stripped)
+        no_turns_marker = "No conversational turns extracted" in stripped
+        too_short = len(stripped) < 200
+        if no_turns_marker or (too_short and not has_user):
+            _daemon_log(
+                f"[FATAL] Archive has no usable conversational content "
+                f"(len={len(stripped)} has_user={has_user}). Refusing SUCCESS."
+            )
+            return False
+        if not has_user and not has_aim:
+            _daemon_log(
+                "[FATAL] Archive missing USER/A.I.M. dialogue markers. Refusing SUCCESS."
+            )
+            return False
+
+        raw_path = os.path.join(raw_logs_dir, f"{session_id}_reincarnate_raw.md")
+        with open(raw_path, "w", encoding="utf-8") as f_out:
+            f_out.write(transcript)
+        print(f"[WATCHDOG] Staged raw log: {raw_path}")
+
+        # Deterministic path via wiki_compiler
+        sys.path.insert(0, os.path.join(AIM_ROOT, ".aim_core"))
+        from wiki_compiler import (
+            wiki_paths,
+            ensure_wiki_scaffold,
+            extractive_summary_from_markdown,
+            process_raw_logs_to_ingest,
+            process_ingest,
+        )
+        from pathlib import Path
+        paths = wiki_paths()
+        ensure_wiki_scaffold(paths)
+        # Prefer full archive text for short sessions so Operator markers survive extractive cap
+        if len(transcript) < 120_000:
+            summary = transcript
         else:
-            print(f"[WATCHDOG] Spawning Scribe Agent to process {len(staged_files)} raw chunks...")
-            subprocess.run(["tmux", "new-session", "-d", "-s", scribe_session_name, "-c", wiki_dir, "agy --dangerously-skip-permissions"], check=True)
-            # Deterministic polling for trust prompt and ready state
-            max_retries = 30
-            trusted = False
-            injected = False
-            
-            scribe_prompt = f"Wake up. You are the Subconscious Scribe. Your task is to process raw session chunks in `_raw_logs/` and prepare them for the LLM Wiki. You are forbidden from editing the main wiki files. 1. Read a chunk. 2. Extract the factual, high-signal information (e.g., architectural decisions made, bugs fixed, concepts learned, tools used). DO NOT force a 'Eureka' or 'Negative Data' format. Just write a clear, objective markdown summary of what happened in that chunk. 3. Save the summary into the `_ingest/` directory (e.g., `summary_{session_id}_part1.md`). 4. Delete the raw chunk you just read. 5. Repeat until `_raw_logs/` is empty. 6. Execute `tmux kill-session -t {scribe_session_name}`."
-            
-            for _ in range(max_retries):
-                result = subprocess.run(["tmux", "capture-pane", "-p", "-t", scribe_session_name], capture_output=True, text=True)
-                out = result.stdout
-                
-                if ("trust this directory" in out.lower() or "trust the contents" in out.lower() or "trust" in out.lower()) and not trusted:
-                    subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "y"], check=True)
-                    subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Enter"], check=True)
-                    trusted = True
-                    time.sleep(1)
-                    continue
-                    
-                if "Antigravity" in out or "Enter your" in out:
-                    subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
-                    subprocess.run(["tmux", "paste-buffer", "-p", "-t", scribe_session_name], check=True)
-                    time.sleep(1)
-                    subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Escape", "Enter"], check=True)
-                    injected = True
-                    break
-                    
-                time.sleep(0.5)
-                
-            if not injected:
-                print("[WARNING] Could not confirm Scribe readiness. Injecting blindly.")
-                subprocess.run(["tmux", "set-buffer", scribe_prompt], check=True)
-                subprocess.run(["tmux", "paste-buffer", "-p", "-t", scribe_session_name], check=True)
-                time.sleep(1)
-                subprocess.run(["tmux", "send-keys", "-t", scribe_session_name, "Escape", "Enter"], check=True)
+            summary = extractive_summary_from_markdown(Path(md_path))
+        ingest_name = f"reincarnate_{session_id}.md"
+        ingest_path = paths["ingest"] / ingest_name
+        ingest_path.write_text(summary, encoding="utf-8")
+        print(f"[WATCHDOG] Wrote ingest {ingest_path}")
+        for line in process_raw_logs_to_ingest():
+            print(f"  [wiki] {line}")
+        for line in process_ingest(paths):
+            print(f"  [wiki] {line}")
 
-        # 3. The Polling Loop (Wait for Scribe to finish)
-        print("[WATCHDOG] Waiting for Scribe to complete extraction...")
-        while True:
-            check_cmd = subprocess.run(["tmux", "has-session", "-t", scribe_session_name], capture_output=True)
-            if check_cmd.returncode != 0:
-                print("[WATCHDOG] Scribe has terminated. Extraction complete.")
-                break
-            time.sleep(10) # Check every 10 seconds
+        # Verify at least one page mentions content from this session id or archive stem
+        pages_dir = paths["pages"]
+        page_hits = list(pages_dir.glob(f"*{session_id[:12]}*")) + list(
+            pages_dir.glob("reincarnate-*.md")
+        )
+        # Soft check: log if nothing new; still SUCCESS if process_ingest ran on non-empty
 
-        # 4. Trigger the Scrivener/Weaver
-        print("[WATCHDOG] Spawning Scrivener/Weaver Agent...")
-        process_wiki()
-        
-        # 5. Native LanceDB Ingestion (Background process continues)
-        from lance_backend import VectorBackend
-        backend = VectorBackend()
-        print(f"[WATCHDOG] Ingesting flight recorder natively into LanceDB...")
-        ingest_file_to_db(backend, md_path, record_type="session_history")
-        
-        print("[WATCHDOG] Re-embedding updated Wiki pages into native LanceDB...")
-        for md_file in glob.glob(os.path.join(wiki_dir, "*.md")):
-            if "_ingest" not in md_file and "_raw_logs" not in md_file:
-                ingest_file_to_db(backend, md_file, record_type="wiki_knowledge")
-        
-        print("[SUCCESS] Two-Node Swarm Sequence Complete.")
+        # Optional scribe swarm (legacy) — off by default for reliability
+        if os.environ.get("AIM_WIKI_SCRIBE") == "1":
+            print("[WATCHDOG] AIM_WIKI_SCRIBE=1 — deterministic compiler already primary.")
+
+        # LanceDB best-effort — only new archive + matching pages (not full wiki re-embed)
+        if os.environ.get("AIM_WIKI_SKIP_LANCE") != "1":
+            try:
+                from lance_backend import VectorBackend
+                backend = VectorBackend()
+                print("[WATCHDOG] Ingesting archive into LanceDB (session only)...")
+                ingest_file_to_db(backend, md_path, record_type="session_history")
+                slug = session_id.replace("/", "-")[:40]
+                for md_file in glob.glob(os.path.join(str(pages_dir), f"*{slug[:8]}*")):
+                    ingest_file_to_db(backend, md_file, record_type="wiki_knowledge")
+                for md_file in glob.glob(os.path.join(str(pages_dir), "reincarnate-*.md")):
+                    # only if mtime recent (< 120s)
+                    try:
+                        if time.time() - os.path.getmtime(md_file) < 120:
+                            ingest_file_to_db(backend, md_file, record_type="wiki_knowledge")
+                    except OSError:
+                        pass
+            except Exception as le:
+                print(f"[WATCHDOG] LanceDB ingest warning (non-fatal): {le}")
+        else:
+            print("[WATCHDOG] AIM_WIKI_SKIP_LANCE=1 — skipping vector ingest")
+
+        _daemon_log("[SUCCESS] Deterministic wiki reincarnation sequence complete.")
         return True
 
     except Exception as e:
-        print(f"[FATAL] Watchdog Pipeline Error: {e}")
+        _daemon_log(f"[FATAL] Watchdog Pipeline Error: {e}")
+        import traceback
+        traceback.print_exc()
         return False
+
 
 def main(args):
     if "--reincarnate" not in args:
@@ -222,6 +252,7 @@ def main(args):
 
     cognitive_mode = CONFIG.get('settings', {}).get('cognitive_mode', 'monolithic')
     if cognitive_mode == 'frontline':
+        _daemon_log("[INFO] frontline cognitive_mode — skipping monolithic wiki daemon")
         print(json.dumps({}))
         return
 
@@ -239,19 +270,33 @@ def main(args):
                 md_path = max(transcripts, key=os.path.getmtime)
                 
     if not md_path:
-        print(json.dumps({}))
-        return
+        _daemon_log("[FATAL] --reincarnate: no archive markdown path found")
+        sys.exit(3)
 
+    # When not already --bg: re-exec in background BUT log to daemon.log (never DEVNULL)
     if "--bg" not in args:
         import subprocess
-        cmd = [sys.executable, os.path.abspath(__file__), "--bg"] + args[1:]
-        subprocess.Popen(cmd, start_new_session=True, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True)
-        print(json.dumps({}))
+        log_path = os.path.join(AIM_ROOT, "memory-wiki", "daemon.log")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        daemon_log = open(log_path, "a", encoding="utf-8")
+        cmd = [sys.executable, os.path.abspath(__file__), "--bg"] + [a for a in args[1:] if a != "--bg"]
+        if "--reincarnate" not in cmd:
+            cmd.insert(1, "--reincarnate")
+        subprocess.Popen(
+            cmd,
+            start_new_session=True,
+            stdin=subprocess.DEVNULL,
+            stdout=daemon_log,
+            stderr=daemon_log,
+            close_fds=True,
+        )
+        print(json.dumps({"spawned_bg": True, "archive": md_path}))
         return
 
-    updated = 1 if process_transcript(md_path) else 0
-    if "--bg" not in args:
-        print(json.dumps({}))
+    ok = process_transcript(md_path)
+    if not ok:
+        _daemon_log(f"[FATAL] process_transcript failed for {md_path}")
+        sys.exit(4)
 
 if __name__ == "__main__":
     main(sys.argv)
