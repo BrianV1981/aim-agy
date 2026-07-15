@@ -102,10 +102,12 @@ def process_wiki_agent():
         "bash", "-c", f"cd {wiki_dir} && source ~/.bashrc 2>/dev/null; agy --dangerously-skip-permissions",
     ])
     print(f"Handing off {len(files)} file(s) to {session_name} for processing...")
+    # Thin pointer — full rules live in memory-wiki/AGENTS.md (schema)
     prompt = (
-        "Wake up. You are the disciplined LLM Wiki Maintainer. Process `_ingest/` "
-        "into index.md, log.md, and pages/; delete absorbed files; then "
-        f"`tmux kill-session -t {session_name}`."
+        "Read AGENTS.md (schema) and index.md first. "
+        "Process exactly ONE file in `_ingest/` per the schema: integrate into "
+        "index.md, log.md, and pages/; delete that file; stop. "
+        f"When `_ingest/` is empty: `tmux kill-session -t {session_name}`."
     )
     try:
         if dismiss_trust_prompt_tmux:

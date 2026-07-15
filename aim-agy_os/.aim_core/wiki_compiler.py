@@ -69,6 +69,19 @@ def _excerpt(content: str, max_chars: int = 1200) -> str:
     return text[:max_chars].rsplit("\n", 1)[0] + "\n\n*(truncated for wiki)*\n"
 
 
+def _default_wiki_agents_text() -> str:
+    """Interim schema (lockstep B). Full LLM-Wiki v2 schema is a later PR."""
+    template = Path(__file__).resolve().parent / "templates" / "memory_wiki_AGENTS.md"
+    if template.is_file():
+        return template.read_text(encoding="utf-8")
+    return (
+        "<!-- Schema-Version: 1-interim -->\n"
+        "# Wiki Maintainer\n\n"
+        "Process `_ingest/` one file at a time into index.md, log.md, and pages/.\n"
+        "Read this file and index.md before writing. Stay sandboxed to memory-wiki/.\n"
+    )
+
+
 def ensure_wiki_scaffold(paths: dict) -> None:
     paths["wiki"].mkdir(parents=True, exist_ok=True)
     paths["ingest"].mkdir(parents=True, exist_ok=True)
@@ -76,11 +89,15 @@ def ensure_wiki_scaffold(paths: dict) -> None:
     paths["pages"].mkdir(parents=True, exist_ok=True)
     if not paths["index"].is_file():
         paths["index"].write_text(
-            "# A.I.M. Wiki Index\n\nPersistent project lore for the aim-grok vessel.\n\n## Pages\n\n",
+            "# A.I.M. Wiki Index\n\nPersistent project lore.\n\n## Pages\n\n",
             encoding="utf-8",
         )
     if not paths["log"].is_file():
         paths["log"].write_text("# Wiki Log\n\n", encoding="utf-8")
+    # Always ensure AGENTS schema exists (install/init/reincarnate lockstep)
+    agents = paths.get("agents") or (paths["wiki"] / "AGENTS.md")
+    if not agents.is_file():
+        agents.write_text(_default_wiki_agents_text(), encoding="utf-8")
 
 
 def append_log(paths: dict, message: str) -> None:

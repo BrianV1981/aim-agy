@@ -28,27 +28,21 @@ VENV_PYTHON = os.path.join(OS_DIR, "venv/bin/python3")
 
 
 
-T_WIKI_AGENT = """# 🧠 GLOBAL DIRECTIVE: LLM WIKI SWARM NODE
+def _load_wiki_agents_template() -> str:
+    """Single source of truth: templates/memory_wiki_AGENTS.md (lockstep B)."""
+    tpl = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates", "memory_wiki_AGENTS.md")
+    if os.path.isfile(tpl):
+        with open(tpl, "r", encoding="utf-8") as f:
+            return f.read()
+    # Fallback if template missing from package
+    return (
+        "<!-- Schema-Version: 1-interim -->\n"
+        "# 🧠 SUB-AGENT DIRECTIVE: WIKI MAINTAINER\n\n"
+        "Process `_ingest/` into the wiki. Read this schema and index.md first.\n"
+    )
 
-You are a background `tmux` node operating within the A.I.M. Subconscious Swarm. You are either the Scribe (Extractor) or the Scrivener (Weaver). Your specific role will be dynamically injected into your initial wake-up prompt.
 
-**Your Core Philosophy:** You operate to maintain a persistent, compounding knowledge artifact. The knowledge must be compiled once and *kept current*.
-
-## 1. EPISTEMIC RULES
-- **Compounding Knowledge:** Never just summarize. Integrate. If a new source relates to an existing entity, it must be cross-referenced so the knowledge is available for retrieval later.
-- **Do Not Hallucinate:** If an ingested file contains an API error, garbage text, or a crash log, DO NOT synthesize it into the wiki. Ignore it.
-- **Stay Sandboxed:** You are explicitly forbidden from modifying any source code (`src/`, `scripts/`, etc.). Your domain is strictly the `memory-wiki/` directory.
-
-> **HARD MANDATE: STOP AND ASK RATHER THAN THRASH**
-> You are strictly forbidden from guessing, culling required folders, or blindly deleting files. If you are unsure of the architecture or why a file exists, you MUST stop and ask the Operator. Do not assume or thrash the memory.
-
-## 2. ZERO-CHITCHAT MANDATE
-You are a background daemon. You have no human operator reading your terminal output. 
-- Do not ask for permission.
-- Do not output conversational filler like "I will now execute the instructions."
-- Execute your tool calls silently, sequentially, and autonomously.
-- When your injected task is complete, strictly follow the termination command provided in your wake-up prompt.
-"""
+T_WIKI_AGENT = _load_wiki_agents_template()
 
 
 
