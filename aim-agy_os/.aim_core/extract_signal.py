@@ -272,11 +272,53 @@ def extract_signal_from_agy_transcript(json_path: str) -> Signal:
     return signal
 
 
+# Antigravity brain event types that are NOT chat_style roles.
+# Real logs often lead with GENERIC/tool rows before USER_INPUT — must not
+# short-circuit detect_jsonl_kind to chat_style on those.
+_AGY_DIALOGUE_TYPES = frozenset(
+    {
+        "USER_INPUT",
+        "PLANNER_RESPONSE",
+        "EPHEMERAL_MESSAGE",
+        "CONVERSATION_HISTORY",
+    }
+)
+_AGY_TOOLISH_TYPES = frozenset(
+    {
+        "GENERIC",
+        "RUN_COMMAND",
+        "VIEW_FILE",
+        "CODE_ACTION",
+        "GREP_SEARCH",
+        "LIST_DIRECTORY",
+        "SEARCH_WEB",
+        "INVOKE_SUBAGENT",
+        "ASK_QUESTION",
+        "CHECKPOINT",
+        "ERROR_MESSAGE",
+        "SYSTEM_MESSAGE",
+        "NOTIFY_USER",
+        "BROWSER_ACTION",
+        "EDIT_FILE",
+        "WRITE_TO_FILE",
+        "TASK_BOUNDARY",
+    }
+)
+_AGY_SOURCES = frozenset({"MODEL", "USER_EXPLICIT", "SYSTEM", "USER"})
+
+
 def detect_jsonl_kind(json_path: str) -> str:
-    """Return 'grok_updates' | 'agy_transcript' | 'chat_style' | 'unknown'."""
+    """Return 'grok_updates' | 'agy_transcript' | 'chat_style' | 'unknown'.
+
+    Scan enough leading rows: AGY brain transcripts frequently start with
+    GENERIC/tool events (still have ``type``), which must not be labeled
+    chat_style before USER_INPUT appears.
+    """
+    saw_agy_toolish = False
+    saw_chat_role = False
     try:
         with open(json_path, "r", encoding="utf-8") as f:
-            for _ in range(30):
+            for _ in range(200):
                 line = f.readline()
                 if not line:
                     break
@@ -291,17 +333,34 @@ def detect_jsonl_kind(json_path: str) -> str:
                 if _is_grok_updates_line(msg):
                     return "grok_updates"
                 t = msg.get("type") or ""
-                if t in (
-                    "USER_INPUT",
-                    "PLANNER_RESPONSE",
-                    "EPHEMERAL_MESSAGE",
-                    "CONVERSATION_HISTORY",
-                ):
+                src = msg.get("source") or ""
+                if t in _AGY_DIALOGUE_TYPES:
                     return "agy_transcript"
+                if t in _AGY_TOOLISH_TYPES or src in _AGY_SOURCES:
+                    saw_agy_toolish = True
+                    continue
+                role = (msg.get("role") or "").lower()
+                # Grok / classic chat rows
+                if role in ("user", "assistant", "system", "model", "agy") or t in (
+                    "user",
+                    "assistant",
+                    "system",
+                    "model",
+                    "agy",
+                    "reasoning",
+                ):
+                    saw_chat_role = True
+                    # keep scanning a bit — AGY dialogue types win if seen later
+                    continue
                 if msg.get("type") or msg.get("role"):
-                    return "chat_style"
+                    # unknown typed row: do not commit yet
+                    continue
     except OSError:
         pass
+    if saw_agy_toolish:
+        return "agy_transcript"
+    if saw_chat_role:
+        return "chat_style"
     if json_path.endswith("transcript.jsonl"):
         return "agy_transcript"
     return "unknown"
@@ -325,7 +384,21 @@ def extract_signal(json_path: str) -> ExtractResult:
             return signal
         if kind == "agy_transcript":
             return extract_signal_from_agy_transcript(json_path)
-        return extract_signal_from_chat_style(json_path)
+        signal = extract_signal_from_chat_style(json_path)
+        # Recover: misdetect as chat_style but file is AGY brain transcript
+        if (
+            (not signal or conversational_turn_count(signal) < 1)
+            and (
+                json_path.endswith("transcript.jsonl")
+                or "antigravity-cli/brain" in json_path.replace("\\", "/")
+            )
+        ):
+            agy_sig = extract_signal_from_agy_transcript(json_path)
+            if conversational_turn_count(agy_sig) > conversational_turn_count(
+                signal if isinstance(signal, list) else []
+            ):
+                return agy_sig
+        return signal
     except Exception as e:
         return f"Extraction Error: {e}"
 
