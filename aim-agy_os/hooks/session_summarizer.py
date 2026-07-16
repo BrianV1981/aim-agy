@@ -175,6 +175,7 @@ def process_transcript(md_path):
             extractive_summary_from_markdown,
             process_raw_logs_to_ingest,
             process_ingest,
+            stage0_multi_page_integrate,
         )
         from pathlib import Path
         paths = wiki_paths()
@@ -190,6 +191,9 @@ def process_transcript(md_path):
         print(f"[WATCHDOG] Wrote ingest {ingest_path}")
         for line in process_raw_logs_to_ingest():
             print(f"  [wiki] {line}")
+        # Schema-aligned multi-page Stage 0 (source + concept/entity stubs)
+        for line in stage0_multi_page_integrate(Path(md_path), source_id=session_id):
+            print(f"  [stage0] {line}")
         for line in process_ingest(paths):
             print(f"  [wiki] {line}")
 
