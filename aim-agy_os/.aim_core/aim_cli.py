@@ -69,12 +69,23 @@ def cmd_core_memory(args):
 
 def cmd_status(args):
     """Displays the current A.I.M. operational pulse."""
-    status_file = os.path.join(OS_DIR, "continuity/CURRENT_PULSE.md")
-    if os.path.exists(status_file):
-        with open(status_file, 'r') as f:
+    # handoff_pulse_generator writes .aim_core/temp/CURRENT_PULSE.md (canonical).
+    # continuity/ is legacy doc path — still accepted as fallback.
+    candidates = [
+        os.path.join(OS_DIR, ".aim_core", "temp", "CURRENT_PULSE.md"),
+        os.path.join(OS_DIR, "continuity", "CURRENT_PULSE.md"),
+        os.path.join(PROJECT_ROOT, "continuity", "CURRENT_PULSE.md"),
+    ]
+    status_file = next((p for p in candidates if os.path.isfile(p)), None)
+    if status_file:
+        with open(status_file, "r", encoding="utf-8") as f:
             print(f.read())
     else:
-        print("Error: CURRENT_PULSE.md not found. Run 'aim handoff' to generate.", file=sys.stderr)
+        print(
+            "Error: CURRENT_PULSE.md not found. Run 'aim handoff' / 'aim pulse' to generate "
+            f"(looked under {candidates[0]}).",
+            file=sys.stderr,
+        )
 
 def cmd_search(args):
     """Dispatches to retriever.py."""
