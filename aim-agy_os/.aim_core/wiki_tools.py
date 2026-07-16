@@ -151,10 +151,16 @@ def process_wiki_deterministic():
     """Compile _ingest/ (and optional raw logs) without a second agent."""
     print("--- WIKI PROCESS (deterministic) ---")
     try:
-        from wiki_compiler import process_raw_logs_to_ingest, process_ingest
+        from wiki_compiler import (
+            process_raw_logs_to_ingest,
+            process_ingest,
+            ensure_wiki_scaffold,
+            wiki_paths,
+        )
     except ImportError:
         print("[ERROR] wiki_compiler.py missing — cannot run deterministic wiki.")
         return []
+    ensure_wiki_scaffold(wiki_paths())
     for line in process_raw_logs_to_ingest():
         print(" ", line)
     results = process_ingest()

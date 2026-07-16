@@ -94,8 +94,11 @@ def cmd_wiki(args):
         search_wiki(query)
     elif args.wiki_command == "process":
         process_wiki()
+    elif args.wiki_command in ("schema-upgrade", "schema_upgrade"):
+        from wiki_compiler import upgrade_wiki_schema
+        print(upgrade_wiki_schema())
     else:
-        print("Usage: aim wiki {search|process}")
+        print("Usage: aim wiki {search|process|schema-upgrade}")
 
 def cmd_map(args):
     """Prints the surgical Index of Keys."""
@@ -931,12 +934,20 @@ def main():
     wiki_subparsers = wiki_parser.add_subparsers(dest="wiki_command")
     wiki_search = wiki_subparsers.add_parser("search", help="Search the Wiki using local lookup")
     wiki_search.add_argument("query", nargs="+", help="The search query")
-    wiki_process = wiki_subparsers.add_parser("process", help="Process the memory-wiki/_ingest folder")
+    wiki_subparsers.add_parser("process", help="Process the memory-wiki/_ingest folder")
+    wiki_subparsers.add_parser(
+        "schema-upgrade",
+        help="Install packaged memory-wiki/AGENTS.md schema (Schema-Version 2+)",
+    )
     wiki_alias = subparsers.add_parser("wiki", help="Alias for memory-wiki")
     wiki_alias_sub = wiki_alias.add_subparsers(dest="wiki_command")
     _ws = wiki_alias_sub.add_parser("search", help="Search the Wiki using local lookup")
     _ws.add_argument("query", nargs="+", help="The search query")
     wiki_alias_sub.add_parser("process", help="Process the memory-wiki/_ingest folder")
+    wiki_alias_sub.add_parser(
+        "schema-upgrade",
+        help="Install packaged memory-wiki/AGENTS.md schema (Schema-Version 2+)",
+    )
 
 
     subparsers.add_parser("map", help="Print the Index of Keys (Knowledge Map)")
