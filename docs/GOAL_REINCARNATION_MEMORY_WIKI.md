@@ -24,7 +24,7 @@ False greens are worse than failures. The bar is **operator outcome**, not pipel
 
 ## Non-negotiable acceptance bar (all vessels)
 
-For **each** of: `aim-grok`, `aim-agy`, `aim-opencode`:
+For **each** of: `aim-grok`, `aim-agy`, `aim-opencode`, `aim-codex`:
 
 | Step | Requirement |
 |------|-------------|
