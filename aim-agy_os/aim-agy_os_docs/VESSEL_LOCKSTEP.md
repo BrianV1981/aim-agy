@@ -1,4 +1,4 @@
-# Vessel lockstep (agy · grok · opencode)
+# Vessel lockstep (agy · grok · opencode · codex)
 
 **Orchestration (how to run multi-vessel work):** see `scripts/FLEET_ORCHESTRATION.md` — triage → dispatch → audit → merge → pin-sync, plus FROM/REPLY_TO tmux contract and surgical vs full sync.
 

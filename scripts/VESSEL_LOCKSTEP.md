@@ -1,4 +1,4 @@
-# Vessel lockstep (agy · grok · opencode)
+# Vessel lockstep (agy · grok · opencode · codex)
 
 **Orchestration (how to run multi-vessel work):** see `scripts/FLEET_ORCHESTRATION.md` — triage → dispatch → audit → merge → pin-sync, plus FROM/REPLY_TO tmux contract and surgical vs full sync.
 
@@ -77,3 +77,7 @@ Dispatch template: `scripts/DISPATCH_OPENCODE_LOCKSTEP.md`
 | agy merges engine PR | grok sync ritual; opencode port or ticket |
 | Weekly | `vessel_core_diff.py --report-only` → file tickets for unexpected diffs |
 | Before multi-vessel release | lockstep modules all `SYNC` or documented overlay |
+
+### agy → codex
+
+See aim-codex `SYNC_FROM_AIM_AGY.md`. Nested `aim-agy_os/`. Keep overlays: vessel_paths, handoff, teleport, session_naming. Pin `SOURCE.md`.
