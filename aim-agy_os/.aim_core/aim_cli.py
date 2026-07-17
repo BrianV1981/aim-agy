@@ -487,7 +487,13 @@ def cmd_sync_issues(args):
 
 def cmd_reincarnate(args):
     """Triggers the automated reincarnate handoff loop."""
-    run_script(os.path.join(AIM_CORE_DIR, "aim_reincarnate.py"), [])
+    rein_args = []
+    sid = getattr(args, "session_id", None)
+    if sid:
+        rein_args += ["--session-id", sid]
+    if getattr(args, "no_teleport", False):
+        rein_args += ["--no-teleport"]
+    run_script(os.path.join(AIM_CORE_DIR, "aim_reincarnate.py"), rein_args)
 
 
 def cmd_vault(args):
