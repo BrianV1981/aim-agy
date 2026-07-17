@@ -65,3 +65,10 @@ memory_lance.bak/
 workspace/
 aim-agy_os/memory/
 aim-agy_os/memory_lance/
+
+# Vessel black box
+archive/.raw_jsonl_blackbox/
+**/.raw_jsonl_blackbox/
+**/*.enc
+.aim/blackbox.key
+**/blackbox.key
