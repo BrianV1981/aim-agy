@@ -1,5 +1,9 @@
 # Changelog
 
+## [v1.1.0] - 2026-07-23
+- feat: port handoff vnext
+
+
 ## [v1.0.8] - 2026-07-12
 - Feature: Namespace all spawned agent tmux sessions (Closes #95)
 - Feature: Prefix reincarnation tmux sessions as agy_reincarnation_* (Closes #93)

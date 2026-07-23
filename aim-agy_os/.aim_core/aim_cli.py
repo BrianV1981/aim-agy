@@ -496,6 +496,43 @@ def cmd_reincarnate(args):
     run_script(os.path.join(AIM_CORE_DIR, "aim_reincarnate.py"), rein_args)
 
 
+def cmd_handoff_vnext(args):
+    """Handoff vNext three pipelines (docs/HANDOFF_VNEXT_E2E.md / issue #32)."""
+    import subprocess
+    import sys as _sys
+
+    os_root = os.path.dirname(AIM_CORE_DIR)  # aim-agy_os
+    vessel = os.path.dirname(os_root)
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os_root + os.pathsep + AIM_CORE_DIR + (
+        os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
+    )
+    env.setdefault("AIM_BLACKBOX_ALLOW_CRON", "1")
+    cmd = [
+        _sys.executable,
+        "-m",
+        "handoff.cli",
+        args.vnext_command,
+        "--adapter",
+        getattr(args, "adapter", None) or "agy",
+        "--vessel-root",
+        vessel,
+        "--project-root",
+        vessel,
+        "--limit",
+        str(getattr(args, "limit", 50) or 50),
+    ]
+    if getattr(args, "session_id", None):
+        cmd += ["--session-id", args.session_id]
+    if getattr(args, "fixture_root", None):
+        cmd += ["--fixture-root", args.fixture_root]
+    if getattr(args, "marker", None):
+        cmd += ["--marker", args.marker]
+    if getattr(args, "json", False):
+        cmd.append("--json")
+    raise SystemExit(subprocess.call(cmd, env=env, cwd=vessel))
+
+
 def cmd_vault(args):
     """Operator forensic black box (audit/verify/seal). Non-agent critical path."""
     sys.path.insert(0, AIM_CORE_DIR)
@@ -968,6 +1005,21 @@ def main():
         action="store_true",
         help="Pulse + vault + wake prompt only; skip tmux spawn/teleport (E2E/CI safe)",
     )
+
+    hv_parser = subparsers.add_parser(
+        "handoff-vnext",
+        help="Handoff vNext: handoff | wiki-batch | blackbox-cron | cron-all | e2e-staged",
+    )
+    hv_parser.add_argument(
+        "vnext_command",
+        choices=["handoff", "wiki-batch", "blackbox-cron", "cron-all", "e2e-staged"],
+    )
+    hv_parser.add_argument("--session-id", default=None)
+    hv_parser.add_argument("--adapter", default="agy", help="agy|grok|fixture")
+    hv_parser.add_argument("--fixture-root", default=None)
+    hv_parser.add_argument("--marker", default=None)
+    hv_parser.add_argument("--limit", type=int, default=50)
+    hv_parser.add_argument("--json", action="store_true")
     
     delegate_parser = subparsers.add_parser("delegate", help="Spawn parallel sub-agents to analyze multiple files (The RLM Pattern)")
     delegate_parser.add_argument("instruction", help="The prompt to give each sub-agent")
@@ -1110,6 +1162,7 @@ def main():
     elif args.command == "sync": cmd_sync(args)
     elif args.command == "sync-issues": cmd_sync_issues(args)
 
+    elif args.command == "handoff-vnext": cmd_handoff_vnext(args)
     elif args.command == "reincarnate": cmd_reincarnate(args)
     elif args.command == "vault": cmd_vault(args)
     elif args.command == "clean": cmd_clean(args)
