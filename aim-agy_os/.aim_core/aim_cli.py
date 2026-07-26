@@ -1076,7 +1076,7 @@ def main():
     wiki_subparsers = wiki_parser.add_subparsers(dest="wiki_command")
     wiki_search = wiki_subparsers.add_parser("search", help="Search the Wiki using local lookup")
     wiki_search.add_argument("query", nargs="+", help="The search query")
-    wiki_subparsers.add_parser("process", help="Process the memory-wiki/_ingest folder")
+    wiki_subparsers.add_parser("process", help="[DEPRECATED] Process the memory-wiki/_ingest folder")
     wiki_subparsers.add_parser(
         "schema-upgrade",
         help="Install packaged memory-wiki/AGENTS.md schema (Schema-Version 2+)",
@@ -1085,7 +1085,7 @@ def main():
     wiki_alias_sub = wiki_alias.add_subparsers(dest="wiki_command")
     _ws = wiki_alias_sub.add_parser("search", help="Search the Wiki using local lookup")
     _ws.add_argument("query", nargs="+", help="The search query")
-    wiki_alias_sub.add_parser("process", help="Process the memory-wiki/_ingest folder")
+    wiki_alias_sub.add_parser("process", help="[DEPRECATED] Process the memory-wiki/_ingest folder")
     wiki_alias_sub.add_parser(
         "schema-upgrade",
         help="Install packaged memory-wiki/AGENTS.md schema (Schema-Version 2+)",

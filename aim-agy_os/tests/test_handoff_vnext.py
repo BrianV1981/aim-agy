@@ -19,7 +19,6 @@ from handoff.blackbox_cron import run_blackbox_cron
 from handoff.handoff_core import run_handoff
 from handoff.packet import build_packet, validate_packet
 from handoff.models import Turn
-from handoff.wiki_batch import run_wiki_batch
 
 
 FIX = OS / "tests" / "fixtures" / "handoff_vnext"
@@ -93,23 +92,6 @@ class TestThreePipelines(unittest.TestCase):
         self.assertIn(res.status, ("empty", "error"))
         self.assertNotEqual(res.code, "OK")
 
-    def test_wiki_batch_fr_embed(self):
-        res = run_wiki_batch(
-            adapter=self.adapter,
-            root=self.tmp,
-            project_root=self.tmp,
-            since_mtime=0.0,
-            limit=10,
-        )
-        self.assertIn(res.status, ("ok", "partial"), res.errors)
-        fr = self.tmp / "continuity" / "flight_records" / "e2e-vnext-session-alpha.md"
-        self.assertTrue(fr.is_file(), "FR missing")
-        self.assertIn("Operator", fr.read_text())
-        pages = list((self.tmp / "aim-agy_os" / "memory-wiki" / "pages").glob("source-*.md"))
-        self.assertTrue(pages, "wiki pages missing")
-        db = self.tmp / "aim-agy_os" / "memory_lance" / "handoff_vnext"
-        jsonls = list(db.glob("*.jsonl"))
-        self.assertTrue(jsonls, "embed jsonl missing")
 
     def test_blackbox_cron(self):
         res = run_blackbox_cron(

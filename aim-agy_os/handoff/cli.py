@@ -39,7 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Handoff vNext three pipelines")
     p.add_argument(
         "command",
-        choices=["handoff", "wiki-batch", "blackbox-cron", "cron-all", "e2e-staged"],
+        choices=["handoff", "blackbox-cron", "e2e-staged"],
     )
     p.add_argument("--session-id", default=None)
     p.add_argument("--adapter", default="grok", help="grok|fixture")
@@ -73,18 +73,6 @@ def main(argv: list[str] | None = None) -> int:
         )
         return _emit(res, args.json)
 
-    if args.command == "wiki-batch":
-        from handoff.wiki_batch import run_wiki_batch
-
-        res = run_wiki_batch(
-            adapter=adapter,
-            root=root,
-            project_root=Path(args.project_root or root),
-            since_mtime=args.since_mtime if args.since_mtime is not None else None,
-            limit=args.limit,
-        )
-        return _emit(res, args.json)
-
     if args.command == "blackbox-cron":
         from handoff.blackbox_cron import run_blackbox_cron
 
@@ -95,36 +83,6 @@ def main(argv: list[str] | None = None) -> int:
             limit=args.limit,
         )
         return _emit(res, args.json)
-
-    if args.command == "cron-all":
-        from handoff.blackbox_cron import run_blackbox_cron
-        from handoff.wiki_batch import run_wiki_batch
-
-        r1 = run_blackbox_cron(
-            adapter=adapter,
-            root=root,
-            since_mtime=args.since_mtime or 0.0,
-            limit=args.limit,
-        )
-        r2 = run_wiki_batch(
-            adapter=adapter,
-            root=root,
-            project_root=Path(args.project_root or root),
-            since_mtime=args.since_mtime if args.since_mtime is not None else None,
-            limit=args.limit,
-        )
-        combined = {
-            "blackbox": r1.to_dict(),
-            "wiki_batch": r2.to_dict(),
-        }
-        print(json.dumps(combined, indent=2) if args.json else combined)
-        # fail if either hard-failed
-        bad = { "error"}
-        if r1.status in bad or r2.status in bad:
-            return 1
-        if r1.status == "empty" and r2.status == "empty":
-            return 2
-        return 0
 
     return 2
 
@@ -151,10 +109,8 @@ def _emit(res, as_json: bool) -> int:
 
 def _e2e_staged(root: Path, args) -> int:
     """Full three-pipeline E2E on staged fixture history."""
-    from handoff.adapters.fixture import FixtureAdapter
     from handoff.blackbox_cron import run_blackbox_cron
     from handoff.handoff_core import run_handoff
-    from handoff.wiki_batch import run_wiki_batch
 
     fix = Path(args.fixture_root or (root / "aim-agy_os/tests/fixtures/handoff_vnext"))
     if not fix.is_dir():
@@ -178,18 +134,9 @@ def _e2e_staged(root: Path, args) -> int:
         marker=marker,
     )
     r_b = run_blackbox_cron(adapter=adapter, root=root, since_mtime=0.0, limit=20)
-    r_w = run_wiki_batch(
-        adapter=adapter,
-        root=root,
-        project_root=root,
-        since_mtime=0.0,
-        limit=20,
-    )
-
     report = {
         "handoff": r_h.to_dict(),
         "blackbox": r_b.to_dict(),
-        "wiki_batch": r_w.to_dict(),
     }
     out = root / "continuity" / "cron_state" / "e2e_staged_report.json"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -204,9 +151,6 @@ def _e2e_staged(root: Path, args) -> int:
     if r_b.status not in ("ok", "partial"):
         ok = False
         reasons.append(f"blackbox failed: {r_b.status}")
-    if r_w.status not in ("ok", "partial"):
-        ok = False
-        reasons.append(f"wiki failed: {r_w.status}")
     else:
         # wiki page should mention session
         wiki_pages = list((root / "aim-agy_os" / "memory-wiki" / "pages").glob(f"source-*{sid[:20]}*"))
