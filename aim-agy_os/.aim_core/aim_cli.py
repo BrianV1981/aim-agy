@@ -868,17 +868,37 @@ def cmd_update(args):
     # Overwrite .aim_core
     local_core = os.path.join(OS_DIR, ".aim_core")
     if os.path.exists(local_core): shutil.rmtree(local_core)
-    # Note: the downloaded repo has "aim_core", we rename it to ".aim_core" locally
     shutil.copytree(os.path.join(source_os_dir, ".aim_core"), local_core)
     
     # Overwrite aim-agy_os_docs protocols
     local_os = os.path.join(OS_DIR, "aim-agy_os_docs")
     if os.path.exists(local_os): shutil.rmtree(local_os)
     shutil.copytree(os.path.join(source_os_dir, "aim-agy_os_docs"), local_os)
+
+    # Overwrite handoff module
+    local_handoff = os.path.join(OS_DIR, "handoff")
+    if os.path.exists(local_handoff): shutil.rmtree(local_handoff)
+    shutil.copytree(os.path.join(source_os_dir, "handoff"), local_handoff)
+
+    # Overwrite scripts
+    local_scripts = os.path.join(OS_DIR, "scripts")
+    if os.path.exists(local_scripts): shutil.rmtree(local_scripts)
+    shutil.copytree(os.path.join(source_os_dir, "scripts"), local_scripts)
+
+    # Overwrite hooks
+    local_hooks = os.path.join(OS_DIR, "hooks")
+    if os.path.exists(local_hooks): shutil.rmtree(local_hooks)
+    shutil.copytree(os.path.join(source_os_dir, "hooks"), local_hooks)
     
     # Overwrite setup scripts
     shutil.copy2(os.path.join(source_os_dir, "setup.sh"), os.path.join(OS_DIR, "setup.sh"))
     shutil.copy2(os.path.join(source_os_dir, "requirements.txt"), os.path.join(OS_DIR, "requirements.txt"))
+
+    # Cleanup deprecated background daemons (Active Memory Protocol)
+    deprecated_wiki_agents = os.path.join(OS_DIR, "memory-wiki", "AGENTS.md")
+    if os.path.exists(deprecated_wiki_agents): os.remove(deprecated_wiki_agents)
+    deprecated_ingest = os.path.join(OS_DIR, "memory-wiki", "_ingest")
+    if os.path.exists(deprecated_ingest): shutil.rmtree(deprecated_ingest)
 
     # 3. Rebuild dependencies
     print("[*] Rebuilding dependencies...")
