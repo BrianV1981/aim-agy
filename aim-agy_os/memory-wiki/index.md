@@ -1,6 +1,10 @@
-# A.I.M. Wiki Index
-This is the persistent LLM wiki. Agents should read this index to orient themselves.
+# Project Wiki Index
+This is the persistent LLM wiki for the A.I.M. project. Active agents use the `aim-memory-wiki` skill to systematically update this index and associated pages to maintain a cohesive, long-term memory of architectural decisions, context, and project lore.
 
-## Sessions
+## Core Concepts
+- [Active Memory Protocol](pages/active-memory-protocol.md): The shift from offline background cron vacuuming to JIT, active-agent synthesis.
 
-- [d408fa01-2367-4240-a262-56b650ddd980](pages/source-d408fa01-2367-4240-a262-56b650ddd980.md)
+## Architecture
+
+## Operations
+
