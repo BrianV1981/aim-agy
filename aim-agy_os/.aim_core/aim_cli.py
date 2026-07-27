@@ -844,14 +844,23 @@ def cmd_update(args):
     print("--- A.I.M. SOVEREIGN ENGINE UPDATE ---")
     print("[*] Contacting remote Swarm network...")
     
-    # 1. Clone fresh payload to temp directory
+    # 1. Download and extract fresh payload (ZIP) to temp directory
     temp_dir = os.path.join(OS_DIR, ".aim_temp_update")
     if os.path.exists(temp_dir):
         import shutil
         shutil.rmtree(temp_dir)
+    os.makedirs(temp_dir, exist_ok=True)
         
     try:
-        subprocess.run(["git", "clone", "--depth", "1", "https://github.com/BrianV1981/aim-agy.git", temp_dir], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        import urllib.request
+        import zipfile
+        import io
+        
+        zip_url = "https://github.com/BrianV1981/aim-agy/archive/refs/heads/main.zip"
+        req = urllib.request.Request(zip_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            with zipfile.ZipFile(io.BytesIO(response.read())) as z:
+                z.extractall(temp_dir)
         print("    [SUCCESS] Remote payload secured.")
     except Exception as e:
         traceback.print_exc()
@@ -862,8 +871,9 @@ def cmd_update(args):
     print("[*] Hot-swapping local execution engine...")
     import shutil
     
-    # Source directory in the cloned repository
-    source_os_dir = os.path.join(temp_dir, "aim-agy_os")
+    # Source directory in the extracted repository (GitHub zips prefix with repo-branch)
+    extracted_root = os.path.join(temp_dir, "aim-agy-main")
+    source_os_dir = os.path.join(extracted_root, "aim-agy_os")
     
     # Overwrite .aim_core
     local_core = os.path.join(OS_DIR, ".aim_core")
