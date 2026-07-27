@@ -912,7 +912,7 @@ def cmd_update(args):
 
     # 3. Rebuild dependencies
     print("[*] Rebuilding dependencies...")
-    subprocess.run([os.path.join(OS_DIR, "setup.sh")], check=True, cwd=BASE_DIR, stdout=subprocess.DEVNULL)
+    subprocess.run(["bash", os.path.join(OS_DIR, "setup.sh")], check=True, cwd=BASE_DIR, stdout=subprocess.DEVNULL)
     
     # 4. Clean up
     shutil.rmtree(temp_dir)
