@@ -1,3 +1,6 @@
+> ⚠️ **DEPRECATED**: This repository has been officially deprecated. The A.I.M. ecosystem has unified its active CLI vessels under a single, agnostic operating system. Please direct all usage and reference to **[J.O.S.H.U.A. (aim-joshua)](https://github.com/BrianV1981/aim-joshua)**.
+
+
 # A.I.M. (Actual Intelligent Memory)
 
 A.I.M. is an open-source engineering exoskeleton designed to solve context amnesia, token bloat, state loss, and drift in long-running autonomous AI coding sessions. 
