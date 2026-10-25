@@ -33,12 +33,12 @@ from pathlib import Path
 
 
 DEFAULTS = {
-    "agy": Path(os.environ.get("AIM_AGY_ROOT", "/home/kingb/aim-agy")),
-    "grok": Path(os.environ.get("AIM_GROK_ROOT", "/home/kingb/aim-grok")),
+    "agy": Path(os.environ.get("AIM_AGY_ROOT", "~/aim-agy")),
+    "grok": Path(os.environ.get("AIM_GROK_ROOT", "~/aim-grok")),
     "opencode": Path(
-        os.environ.get("AIM_OPENCODE_ROOT", "/home/kingb/aim-opencode")
+        os.environ.get("AIM_OPENCODE_ROOT", "~/aim-opencode")
     ),
-    "codex": Path(os.environ.get("AIM_CODEX_ROOT", "/home/kingb/aim-codex")),
+    "codex": Path(os.environ.get("AIM_CODEX_ROOT", "~/aim-codex")),
 }
 
 # Relative path from vessel root → engine core

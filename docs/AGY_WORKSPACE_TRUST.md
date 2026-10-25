@@ -15,8 +15,8 @@ Agents repeatedly claimed this was fixed. It was not. Root causes:
 1. **`agy --dangerously-skip-permissions` only auto-approves tool permission requests.** It does **not** skip the folder trust gate.
 2. Trust is stored as an **exact path list** in  
    `~/.gemini/antigravity-cli/settings.json` → `trustedWorkspaces[]`.  
-   Trusting `/home/kingb/aim-agy` does **not** trust  
-   `/home/kingb/aim-agy/workspace/issue-10/ai`.
+   Trusting `~/aim-agy` does **not** trust  
+   `~/aim-agy/workspace/issue-10/ai`.
 3. Keystroke bypass often sent **`y` then Enter**. The UI is a **list** with `>` on Yes — only **Enter** is correct. Sending `y` can leave the agent stuck.
 
 ## The fix (aim-agy) — systemic, not one code path

@@ -27,7 +27,7 @@ def spawn_new_agent(workspace, session_name, wake_up_prompt):
             print(f"      [TRUST] WARN pre-register failed: {te}")
             dismiss_trust_prompt_tmux = None  # type: ignore
 
-        agy_bin = os.environ.get("AGY_BIN", "/home/kingb/.local/bin/agy")
+        agy_bin = os.environ.get("AGY_BIN", "~/.local/bin/agy")
         if not os.path.isfile(agy_bin):
             agy_bin = "agy"
 

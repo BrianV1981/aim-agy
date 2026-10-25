@@ -14,9 +14,9 @@ Bring **aim-opencode** toward engine lockstep with aim-agy without destroying Op
 ### 1. Measure drift (do this first)
 
 ```bash
-python3 /home/kingb/aim-grok/scripts/vessel_core_diff.py --report-only
+python3 ~/aim-grok/scripts/vessel_core_diff.py --report-only
 # focus:
-python3 /home/kingb/aim-grok/scripts/vessel_core_diff.py --pair agy,opencode --report-only
+python3 ~/aim-grok/scripts/vessel_core_diff.py --pair agy,opencode --report-only
 ```
 
 Save summary into `planning-artifacts/LOCKSTEP_DIFF_$(date +%Y%m%d).md` in aim-opencode.

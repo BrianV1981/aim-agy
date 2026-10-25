@@ -38,7 +38,7 @@ case "${enabled,,}" in
 esac
 
 REASON="${1:-turn_end}"
-HOME_DIR="${HOME:-/home/kingb}"
+HOME_DIR="${HOME:-~}"
 STATE_DIR="${AIM_STATE_DIR:-$HOME_DIR/.aim/state}"
 SOUND_DEFAULTS=(
   "${AIM_TURN_CHIME_SOUND:-}"

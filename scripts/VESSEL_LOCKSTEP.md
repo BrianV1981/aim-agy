@@ -20,14 +20,14 @@ From aim-grok (or any checkout that has the script):
 
 ```bash
 # Human report (always exit 0)
-python3 /home/kingb/aim-grok/scripts/vessel_core_diff.py --report-only
+python3 ~/aim-grok/scripts/vessel_core_diff.py --report-only
 
 # CI-style: exit 1 if shared-module content drifts or lockstep modules disagree
-python3 /home/kingb/aim-grok/scripts/vessel_core_diff.py
+python3 ~/aim-grok/scripts/vessel_core_diff.py
 
 # Pair focus
-python3 /home/kingb/aim-grok/scripts/vessel_core_diff.py --pair agy,opencode --report-only
-python3 /home/kingb/aim-grok/scripts/vessel_core_diff.py --pair agy,grok --json | head
+python3 ~/aim-grok/scripts/vessel_core_diff.py --pair agy,opencode --report-only
+python3 ~/aim-grok/scripts/vessel_core_diff.py --pair agy,grok --json | head
 
 # Override roots
 AIM_OPENCODE_ROOT=/path/to/aim-opencode python3 scripts/vessel_core_diff.py --report-only
@@ -63,7 +63,7 @@ Canonical module should live on **aim-agy** once (#95); vessels re-export or syn
 
 ## Orchestrating an OpenCode agent
 
-1. Open tmux in `/home/kingb/aim-opencode` with opencode CLI.
+1. Open tmux in `~/aim-opencode` with opencode CLI.
 2. Paste a **short** pointer to the dispatch chalkboard (below).
 3. Require structured reply: AGREED / DONE / DIFF / QUESTIONS.
 4. Operator (or aim-grok) re-runs `vessel_core_diff.py` after their PR.

@@ -61,15 +61,15 @@ Shared *lessons* port. Shared *path strings* do not.
 
 ```bash
 # Grok
-cd /home/kingb/aim-grok && AIM_VESSEL=/home/kingb/aim-grok AIM_WIKI_SKIP_LANCE=1 \
+cd ~/aim-grok && AIM_VESSEL=~/aim-grok AIM_WIKI_SKIP_LANCE=1 \
   aim-agy_os/venv/bin/python3 aim-agy_os/scripts/operator_reincarnate_wiki_e2e.py
 
 # AGY
-cd /home/kingb/aim-agy && AIM_WIKI_SKIP_LANCE=1 PYTHONPATH=aim-agy_os/.aim_core \
+cd ~/aim-agy && AIM_WIKI_SKIP_LANCE=1 PYTHONPATH=aim-agy_os/.aim_core \
   python3 aim-agy_os/scripts/operator_reincarnate_wiki_e2e_agy.py
 
 # OpenCode
-cd /home/kingb/aim-opencode && PYTHONPATH=aim-agy_os/.aim_core \
+cd ~/aim-opencode && PYTHONPATH=aim-agy_os/.aim_core \
   python3 aim-agy_os/scripts/operator_reincarnate_wiki_e2e_oc.py
 ```
 
@@ -79,9 +79,9 @@ Exit **0** only = PASS.
 
 ```bash
 # From aim-grok (orchestrates all three)
-bash /home/kingb/aim-grok/scripts/fleet_full_reincarnate_gate.sh
+bash ~/aim-grok/scripts/fleet_full_reincarnate_gate.sh
 # or one vessel:
-AIM_VESSEL=grok|agy|opencode bash /home/kingb/aim-grok/scripts/fleet_full_reincarnate_gate.sh
+AIM_VESSEL=grok|agy|opencode bash ~/aim-grok/scripts/fleet_full_reincarnate_gate.sh
 ```
 
 Uses GitHub `main` by default (`AIM_LIFE_USE_LOCAL=1` only for offline debug).

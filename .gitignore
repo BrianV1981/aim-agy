@@ -72,3 +72,4 @@ archive/.raw_jsonl_blackbox/
 **/*.enc
 .aim/blackbox.key
 **/blackbox.key
+.vscode/mcp.json

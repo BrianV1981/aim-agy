@@ -13,7 +13,7 @@ Gates:
   5. wake prompt on disk contains marker
 
 Env:
-  AIM_VESSEL     path to vessel root (default /home/kingb/aim-grok)
+  AIM_VESSEL     path to vessel root (default ~/aim-grok)
   AIM_VESSEL_KIND  grok|agy|opencode  (default: infer from path)
   KEEP_SESSION=1 leave spawned reincarnate session running (default: kill after capture)
   MARKER=...     unique marker string
@@ -41,7 +41,7 @@ PROTECTED = frozenset(
     }
 )
 
-VESSEL = Path(os.environ.get("AIM_VESSEL", "/home/kingb/aim-grok")).resolve()
+VESSEL = Path(os.environ.get("AIM_VESSEL", "~/aim-grok")).resolve()
 AIM = VESSEL / "aim-agy_os"
 if not (AIM / ".aim_core").is_dir():
     AIM = VESSEL

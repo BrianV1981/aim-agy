@@ -41,9 +41,9 @@
 
 | Role | Typical session | Repo | Does |
 |------|-----------------|------|------|
-| **Orchestrator** | `aim-grok`, `grok_reincarnate_*`, sometimes `grok-audit` | `/home/kingb/aim-grok` | Triage, write dispatches, audit, pin-sync, Operator interface |
-| **Soul** | `aim-agy` | `/home/kingb/aim-agy` | Host-agnostic engine fixes, GitHub issues on BrianV1981/aim-agy, merge to soul main |
-| **Peer host** | `aim-opencode` | `/home/kingb/aim-opencode` | OpenCode-specific ports; same soul modules when possible |
+| **Orchestrator** | `aim-grok`, `grok_reincarnate_*`, sometimes `grok-audit` | `~/aim-grok` | Triage, write dispatches, audit, pin-sync, Operator interface |
+| **Soul** | `aim-agy` | `~/aim-agy` | Host-agnostic engine fixes, GitHub issues on BrianV1981/aim-agy, merge to soul main |
+| **Peer host** | `aim-opencode` | `~/aim-opencode` | OpenCode-specific ports; same soul modules when possible |
 
 **Rule of one implementer:** Never open parallel “same feature” PRs on two vessels. Implement **once on soul**, then **port/sync**.
 
@@ -79,7 +79,7 @@ See denylist in `SYNC_FROM_AIM_AGY.md` and `KNOWN_OVERLAYS` in `vessel_core_diff
 ### 2c. Empirical drift check
 
 ```bash
-cd /home/kingb/aim-grok
+cd ~/aim-grok
 python3 scripts/vessel_core_diff.py --report-only
 # pair focus:
 python3 scripts/vessel_core_diff.py --pair agy,grok --report-only
@@ -132,7 +132,7 @@ tmux capture-pane -t aim-agy -p -J -S -20   # idle?
 
 2. Write a **chalkboard** under soul planning artifacts, e.g.:
 
-`/home/kingb/aim-agy/aim-agy_os/planning-artifacts/DISPATCH_FROM_GROK_<topic>.md`
+`~/aim-agy/aim-agy_os/planning-artifacts/DISPATCH_FROM_GROK_<topic>.md`
 
 **Mandatory headers in every dispatch:**
 
@@ -155,11 +155,11 @@ tmux capture-pane -t aim-agy -p -J -S -20   # idle?
 
 ```bash
 FROM=$(tmux display-message -p '#{session_name}')
-bash /home/kingb/aim-grok/.grok/skills/aim-communicate/scripts/tmux_send.sh \
+bash ~/aim-grok/.grok/skills/aim-communicate/scripts/tmux_send.sh \
   --target aim-agy \
   --from "$FROM" \
   --reply-to "$FROM" \
-  --message "DISPATCH: <one line>. Full orders: /home/kingb/aim-agy/aim-agy_os/planning-artifacts/DISPATCH_….md"
+  --message "DISPATCH: <one line>. Full orders: ~/aim-agy/aim-agy_os/planning-artifacts/DISPATCH_….md"
 ```
 
 **Submit keys by vessel** (wrong key = silent failure):
@@ -263,11 +263,11 @@ Typical:
 
 | Session | CLI | Cwd |
 |---------|-----|-----|
-| `aim-agy` | `agy` | `/home/kingb/aim-agy` |
-| `aim-grok` | `grok` | `/home/kingb/aim-grok` |
+| `aim-agy` | `agy` | `~/aim-agy` |
+| `aim-grok` | `grok` | `~/aim-grok` |
 | `grok_reincarnate_*` | `grok` | aim-grok (fresh vessel) |
-| `aim-opencode` | `opencode` | `/home/kingb/aim-opencode` |
-| `grok-audit` | `grok` | `/home/kingb/grok-audit` (often historical orchestrator) |
+| `aim-opencode` | `opencode` | `~/aim-opencode` |
+| `grok-audit` | `grok` | `~/grok-audit` (often historical orchestrator) |
 
 ---
 
@@ -404,7 +404,7 @@ Three live agents are powerful but slow if every byte goes through chat.
 - No force-push main; no vessel reinstalls unless Operator orders.
 - Feature work off main via `aim fix <id>` / worktrees.
 - Surgical staging — never blind `git add .`.
-- Do not modify `/home/kingb/aim-agy` from grok unless Operator scopes it (prefer dispatching soul).
+- Do not modify `~/aim-agy` from grok unless Operator scopes it (prefer dispatching soul).
 - Inquiry → answer and **stop**. Directive → execute in scope only.
 - HITL promote/merge-batch: never guess `yes` without Operator/orchestrator auth for that merge.
 
@@ -421,21 +421,21 @@ tmux list-panes -a -F '#{session_name} #{pane_current_command} #{pane_current_pa
 
 # Message soul
 FROM=$(tmux display-message -p '#{session_name}')
-bash /home/kingb/aim-grok/.grok/skills/aim-communicate/scripts/tmux_send.sh \
+bash ~/aim-grok/.grok/skills/aim-communicate/scripts/tmux_send.sh \
   --target aim-agy --from "$FROM" --reply-to "$FROM" \
   --message "DISPATCH: … — read /abs/path.md"
 
 # Soul health / issues
-cd /home/kingb/aim-agy && gh issue list --state open
-cd /home/kingb/aim-agy && git rev-parse HEAD && git log -1 --oneline
+cd ~/aim-agy && gh issue list --state open
+cd ~/aim-agy && git rev-parse HEAD && git log -1 --oneline
 
 # Drift + pin
-cd /home/kingb/aim-grok && python3 scripts/vessel_core_diff.py --report-only
-grep -E 'Commit|Short|8f25|6191' SOURCE.md /home/kingb/aim-opencode/SOURCE.md
+cd ~/aim-grok && python3 scripts/vessel_core_diff.py --report-only
+grep -E 'Commit|Short|8f25|6191' SOURCE.md ~/aim-opencode/SOURCE.md
 
 # Doctors
-cd /home/kingb/aim-grok && ./aim doctor
-cd /home/kingb/aim-opencode && python3 aim-agy_os/.aim_core/aim_cli.py doctor
+cd ~/aim-grok && ./aim doctor
+cd ~/aim-opencode && python3 aim-agy_os/.aim_core/aim_cli.py doctor
 ```
 
 ---

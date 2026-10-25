@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install staggered crons for aim-agy handoff vNext
 
-VESSEL_ROOT="/home/kingb/aim-agy"
+VESSEL_ROOT="~/aim-agy"
 LOG_DIR="$HOME/.aim/cron/logs/aim-agy"
 
 mkdir -p "$LOG_DIR"
